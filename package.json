@@ -21,6 +21,6 @@
     "@changesets/cli": "^2.30.0",
     "turbo": "^2.9.6",
     "typescript": "^6.0.2",
-    "ultracite": "7.4.4"
+    "ultracite": "7.6.2"
   }
 }
