@@ -7,6 +7,13 @@ mf² ships with agent skills in `.agents/skills/` that teach AI coding agents (C
 
 ## Pre-installed Skills
 
+### Backend and Data
+
+| Skill | Description |
+|-------|-------------|
+| **convex** | Convex guidelines: schema design, queries, mutations, actions, validators, components |
+| **upstash-redis-js** | Upstash Redis for serverless: caching, rate limiting patterns |
+
 ### Authentication
 
 | Skill | Description |
@@ -14,11 +21,52 @@ mf² ships with agent skills in `.agents/skills/` that teach AI coding agents (C
 | **clerk** | Router skill that detects your task and routes to the right sub-skill |
 | **clerk-setup** | Framework detection and quickstart guides. Covers 12+ frameworks and migration from NextAuth, Supabase, Firebase, Auth0 |
 | **clerk-nextjs-patterns** | Advanced Next.js patterns: `await auth()` vs `useAuth()`, middleware strategies, Server Actions, caching |
+| **clerk-expo-patterns** | Expo/React Native patterns: SecureStore token cache, OAuth deep linking, protected routes |
 | **clerk-custom-ui** | Custom authentication flows and component appearance styling |
 | **clerk-orgs** | Multi-tenant B2B: org switching, role-based access, verified domains, enterprise SSO |
 | **clerk-webhooks** | Webhook event handling for user sync with Convex. Covers event types, signature verification, local testing |
 | **clerk-testing** | E2E testing with Playwright or Cypress. Auth state persistence and test setup |
 | **clerk-backend-api** | Clerk Backend REST API explorer and executor |
+
+### AI
+
+| Skill | Description |
+|-------|-------------|
+| **ai-sdk** | Vercel AI SDK: streaming, tools, agents, provider integration |
+
+### Payments
+
+| Skill | Description |
+|-------|-------------|
+| **stripe-best-practices** | Stripe integration best practices from the official Stripe AI team |
+| **revenuecat** | RevenueCat in-app purchases and subscriptions for the mobile app |
+
+### Email
+
+| Skill | Description |
+|-------|-------------|
+| **resend** | Sending email with Resend: domains, audiences, broadcasts, deliverability |
+| **react-email** | Building email templates with React Email components |
+
+### Observability and Analytics
+
+| Skill | Description |
+|-------|-------------|
+| **sentry-nextjs-sdk** | Sentry setup and instrumentation for Next.js |
+| **sentry-react-native-sdk** | Sentry setup and instrumentation for React Native/Expo |
+| **posthog-instrumentation** | PostHog event tracking and instrumentation patterns |
+
+### Collaboration
+
+| Skill | Description |
+|-------|-------------|
+| **liveblocks-best-practices** | Liveblocks real-time collaboration: presence, storage, comments, notifications |
+
+### Security
+
+| Skill | Description |
+|-------|-------------|
+| **arcjet** | Arcjet security: bot detection, rate limiting, email validation, attack protection |
 
 ### Expo and React Native
 
@@ -26,14 +74,23 @@ mf² ships with agent skills in `.agents/skills/` that teach AI coding agents (C
 |-------|-------------|
 | **building-native-ui** | Complete guide for building apps with Expo Router, styling, navigation, animations |
 | **expo-api-routes** | Creating API routes in Expo Router with EAS Hosting |
+| **expo-cicd-workflows** | EAS workflow YAML files for CI/CD, build pipelines, deployment automation |
 | **expo-deployment** | Deploying Expo apps to iOS App Store, Android Play Store, and web |
 | **expo-dev-client** | Build and distribute Expo development clients locally or via TestFlight |
 | **expo-module** | Writing Expo native modules and views using the Expo Modules API (Swift, Kotlin) |
-| **expo-ui-swiftui** | `@expo/ui/swift-ui` package for iOS SwiftUI views and modifiers |
-| **expo-ui-jetpack-compose** | `@expo/ui/jetpack-compose` package for Android Jetpack Compose views |
+| **expo-tailwind-setup** | Tailwind CSS v4 setup with react-native-css and NativeWind v5 |
+| **expo-ui** | `@expo/ui` package: native SwiftUI (iOS) and Jetpack Compose (Android) views from React |
 | **native-data-fetching** | Network requests, API calls, data fetching patterns for React Native |
+| **upgrading-expo** | Upgrading Expo SDK versions and fixing dependency issues |
 | **use-dom** | Expo DOM components for running web code in webview on native |
 | **vercel-react-native-skills** | React Native best practices for performance, animations, list performance |
+
+### React and Next.js
+
+| Skill | Description |
+|-------|-------------|
+| **vercel-react-best-practices** | React and Next.js performance optimization guidelines from Vercel Engineering |
+| **vercel-composition-patterns** | React composition patterns: compound components, lifting state, context providers |
 
 ### UI and Design
 
@@ -41,6 +98,13 @@ mf² ships with agent skills in `.agents/skills/` that teach AI coding agents (C
 |-------|-------------|
 | **shadcn** | Manages shadcn components and projects. Adding, searching, fixing, styling, composing UI |
 | **web-design-guidelines** | Reviews UI code against Web Interface Guidelines |
+
+### Docs and Monorepo
+
+| Skill | Description |
+|-------|-------------|
+| **mintlify** | Authoring and maintaining the Mintlify documentation site |
+| **turborepo** | Turborepo task pipelines, caching, filtering, monorepo best practices |
 
 ### Discovery
 
@@ -62,11 +126,10 @@ Skills that pair well with the mf² stack but are not included by default:
 
 | Skill | Install Command | Why |
 |-------|-----------------|-----|
-| **convex** | `bunx skills add waynesutton/convexskills --skill convex` | Convex functions, schema, real-time patterns, security |
-| **convex-best-practices** | `bunx skills add waynesutton/convexskills --skill convex-best-practices` | Production Convex: query patterns, validation, error handling |
-| **next-best-practices** | `bunx skills add vercel-labs/next-skills --skill next-best-practices` | 23+ Next.js topics: RSC boundaries, async patterns, metadata, fonts |
+| **convex-performance-audit** | `bunx skills add get-convex/agent-skills --skill convex-performance-audit` | Audit and optimize Convex queries and mutations |
+| **convex-migration-helper** | `bunx skills add get-convex/agent-skills --skill convex-migration-helper` | Plan and run Convex data migrations |
+| **convex-create-component** | `bunx skills add get-convex/agent-skills --skill convex-create-component` | Create new Convex components |
 | **tailwind-design-system** | `bunx skills add wshobson/agents --skill tailwind-design-system` | Tailwind v4 design systems: tokens, variants, OKLCH colors |
-| **ai-sdk** | `bunx skills add vercel/ai --skill ai-sdk` | Vercel AI SDK: streaming, tools, agents, provider integration |
 | **frontend-design** | `bunx skills add anthropics/skills --skill frontend-design` | Distinctive UI direction: typography, color, motion, layout |
 
 ## How Skills Work

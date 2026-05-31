@@ -109,7 +109,7 @@
     "primary": {
       "type": "button",
       "label": "Get Started",
-      "href": "https://mf2.dev/setup/installation"
+      "href": "https://mf2.dev/docs/setup/installation"
     }
   },
   "feedback": {

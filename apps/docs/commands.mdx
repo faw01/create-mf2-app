@@ -38,11 +38,10 @@ Convex functions use a separate ESLint plugin (`@convex-dev/eslint-plugin`) beca
 
 | Command | What it does |
 |---------|-------------|
-| `bun run env:init` | Create `.env.local` + `.env.production` from `.env.example` |
-| `bun run env:check` | Validate all env files have required keys |
+| `bun run env:check` | List env files and keys that are still blank |
 | `bun run env:push` | Sync env vars to Vercel and Convex |
 
-See [Environment Variables](/setup/env#env-scripts) for details.
+The CLI creates `.env.local` and `.env.production` from each `.env.example` at scaffold time, so there is no init step. See [Environment Variables](/setup/env#env-scripts) for details.
 
 ## Upgrading Dependencies
 
@@ -50,6 +49,7 @@ See [Environment Variables](/setup/env#env-scripts) for details.
 |---------|-------------|
 | `bun run bump-deps` | Update all npm dependencies to latest |
 | `bun run bump-ui` | Update all shadcn/ui components in the design system |
+| `bun run bump-ui-native` | Update all React Native Reusables components in the mobile app |
 | `bun run clean` | Remove all `node_modules` directories |
 
 ### bump-deps
@@ -67,6 +67,10 @@ Runs `bunx shadcn@latest add --all --overwrite` against `packages/design-system`
 <Warning>
   The `shadcn` CLI may make unwanted changes to your Tailwind config and `globals.css`. Review the diff before committing.
 </Warning>
+
+### bump-ui-native
+
+Runs the `@react-native-reusables/cli` with `add --all --overwrite` against `apps/mobile`, replacing every component with the latest version from React Native Reusables. The same customization warnings as `bump-ui` apply: modified components get overwritten.
 
 ## Convex
 

@@ -7,116 +7,110 @@ mf² follows a colocation-first approach: components, logic, and related files l
 
 ## The Principle
 
-Place files next to the code that uses them. Route-specific components go in the route folder. Shared components go in the nearest common parent. Globally shared code lives in `packages/`.
+Place files next to the code that uses them. Route-specific components go in a `components/` folder inside their route group. Shared components go in the nearest common parent. Globally shared code lives in `packages/`.
+
+This is the layout of the main app:
 
 ```
-apps/app/src/app/
-├── dashboard/
-│   ├── page.tsx
+apps/app/app/
+├── (authenticated)/
+│   ├── components/           # Components for authenticated routes
+│   │   ├── header.tsx
+│   │   ├── sidebar.tsx
+│   │   └── search.tsx
 │   ├── layout.tsx
-│   └── _components/         # Dashboard-specific components
-│       ├── stats-card.tsx
-│       └── recent-activity.tsx
-├── settings/
 │   ├── page.tsx
-│   └── _components/         # Settings-specific components
-│       └── settings-form.tsx
-└── (auth)/
-    ├── login/
-    │   ├── page.tsx
-    │   └── _components/     # Login-specific components
-    │       └── login-form.tsx
-    ├── register/
-    │   ├── page.tsx
-    │   └── _components/     # Register-specific components
-    │       └── register-form.tsx
-    └── _components/          # Shared across all auth routes
-        └── social-buttons.tsx
+│   ├── search/
+│   │   └── page.tsx
+│   └── webhooks/
+│       └── page.tsx
+├── (unauthenticated)/
+│   ├── layout.tsx
+│   ├── sign-in/
+│   └── sign-up/
+├── actions/                  # Server actions
+├── api/                      # Route handlers
+└── layout.tsx                # Root layout wraps everything
 ```
 
-## Private Folders
-
-Prefix folders with an underscore (`_components/`, `_hooks/`, `_lib/`) to opt them out of the routing system. Next.js treats these as [private folders](https://nextjs.org/docs/app/getting-started/project-structure#private-folders) and ignores them for route matching.
-
-This prevents component files from accidentally becoming route segments and keeps routing logic separate from UI code.
+A `components/` folder never becomes a route because it contains no `page.tsx`. Next.js only creates routes for folders with a `page` or `route` file, so component files can sit inside the router tree without affecting URLs.
 
 ## Where Things Live
 
 | Scope | Location | Example |
 |-------|----------|---------|
-| Single route | `app/dashboard/_components/` | A chart that only the dashboard renders |
-| Route group | `app/(auth)/_components/` | Social login buttons shared by login and register |
-| Single app | `apps/app/src/components/` | A sidebar used across all routes in the app |
+| Route group | `app/(authenticated)/components/` | The sidebar and header for authenticated pages |
+| Single app | `apps/web/components/` | A component used across one app's routes |
 | All apps | `packages/design-system/` | Buttons, cards, inputs from `@repo/design-system` |
 
 Move a component up only when a second consumer needs it. Start colocated, promote when reuse is proven.
 
 ## Route Groups
 
-Route groups wrap related routes without affecting the URL. Parenthesized folder names like `(auth)` and `(marketing)` organize code while keeping paths clean:
+Route groups wrap related routes without affecting the URL. Parenthesized folder names like `(authenticated)` and `(unauthenticated)` organize code while keeping paths clean:
 
 ```
-apps/app/src/app/
-├── (auth)/          # /login, /register — no "(auth)" in URL
-│   ├── login/
-│   └── register/
-├── (app)/           # /dashboard, /settings — authenticated routes
-│   ├── dashboard/
-│   └── settings/
-└── layout.tsx       # Root layout wraps everything
+apps/app/app/
+├── (authenticated)/     # /, /search, /webhooks (no "(authenticated)" in URL)
+│   ├── page.tsx
+│   ├── search/
+│   └── webhooks/
+└── (unauthenticated)/   # /sign-in, /sign-up
+    ├── sign-in/
+    └── sign-up/
 ```
 
-Each group can have its own `layout.tsx` for shared UI like sidebars or navigation within that group.
+Each group has its own `layout.tsx` for shared UI: the authenticated layout renders the sidebar and providers, the unauthenticated layout wraps the auth forms.
 
 ## Server and Client Boundaries
 
-Keep `"use client"` at the leaf level. Page files and layouts run as Server Components by default. Push client interactivity (state, events, hooks) into the `_components/` folder:
+Keep `"use client"` at the leaf level. Page files and layouts run as Server Components by default. Push client interactivity (state, events, hooks) into the `components/` folder:
 
-```tsx title="apps/app/src/app/dashboard/page.tsx"
-import { StatsCard } from "./_components/stats-card";
+```tsx title="apps/app/app/(authenticated)/page.tsx"
+import { Header } from "./components/header";
 
-export default async function DashboardPage() {
-  const stats = await getStats(); // Server: fetch data
-  return <StatsCard data={stats} />; // Client: render interactive UI
+export default async function App() {
+  const { orgId } = await auth(); // Server: fetch data
+  return <Header page="Home" pages={[]} />; // Client: render interactive UI
 }
 ```
 
-```tsx title="apps/app/src/app/dashboard/_components/stats-card.tsx"
+```tsx title="apps/app/app/(authenticated)/components/search.tsx"
 "use client";
 
-export function StatsCard({ data }: { data: Stats }) {
-  const [expanded, setExpanded] = useState(false);
+export function Search() {
+  const [query, setQuery] = useState("");
   // Client-side interactivity lives here
 }
 ```
 
 ## Colocating Non-Component Files
 
-Routes can colocate more than components. Schema validation, types, and constants that belong to a single route live in the same folder:
+Routes can colocate more than components. Server actions and route handlers live inside the same `app/` tree:
 
 ```
-apps/app/src/app/settings/
-├── page.tsx
-├── _components/
-│   └── settings-form.tsx
-├── _lib/
-│   └── schema.ts            # Zod schema for settings form
-└── _hooks/
-    └── use-settings.ts       # Hook for settings state
+apps/app/app/
+├── actions/
+│   └── users/
+│       ├── get.ts            # Server actions for user data
+│       └── search.ts
+└── api/
+    └── collaboration/
+        └── auth/
+            └── route.ts      # Liveblocks auth endpoint
 ```
 
-When a schema or hook is reused across multiple routes, move it to `src/lib/` or `src/hooks/` in the app, or to a shared package.
+When a helper is reused across multiple routes, move it up to the app root or to a shared package.
 
 ## In a Monorepo
 
 mf² splits shared code into packages. The colocation hierarchy extends across the monorepo:
 
-1. **Route folder**: used by one page
-2. **Route group `_components/`**: shared within a group
-3. **App-level `src/components/`**: shared across routes in one app
-4. **`@repo/design-system`**: shared across all apps
-5. **Other `@repo/*` packages**: shared utilities, hooks, configs
+1. **Route group `components/`**: shared by routes in one group
+2. **App-level `components/`**: shared across routes in one app
+3. **`@repo/design-system`**: shared across all apps
+4. **Other `@repo/*` packages**: shared utilities, hooks, configs
 
-This keeps each layer focused. A component in `@repo/design-system` serves every app. A component in `dashboard/_components/` serves one page.
+This keeps each layer focused. A component in `@repo/design-system` serves every app. A component in `(authenticated)/components/` serves one route group.
 
-The hierarchy tells an agent where to put new code. Route-specific component: `_components/` in the route folder. Shared across apps: `@repo/design-system`. Convention replaces guesswork.
+The hierarchy tells an agent where to put new code. Route-specific component: the route group's `components/` folder. Shared across apps: `@repo/design-system`. Convention replaces guesswork.

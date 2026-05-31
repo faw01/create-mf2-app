@@ -9,13 +9,13 @@ description: Shared TypeScript configurations for all apps and packages.
 
 | Config | Extends | Used by |
 |--------|---------|---------|
-| `base.json` | — | Library packages |
+| `base.json` | n/a | Library packages |
 | `nextjs.json` | `base.json` | Next.js apps (`app`, `web`, `api`) |
 | `react-library.json` | `base.json` | React component packages (`design-system`) |
-| `convex.json` | — | Convex backend (`packages/backend/convex/`) |
+| `convex.json` | n/a | Convex backend (`packages/backend/convex/`) |
 | `electron.json` | `base.json` | Electron main process and preload scripts (`apps/desktop`) |
 | `electron-renderer.json` | `base.json` | Electron renderer with Vite + React (`apps/desktop`) |
-| `expo.json` | — | Expo mobile app (`apps/mobile`) |
+| `expo.json` | n/a | Expo mobile app (`apps/mobile`) |
 
 ## Usage
 
@@ -59,7 +59,7 @@ For Convex functions:
 
 All presets enable `strict` mode and `strictNullChecks`. The base config targets ES2022 with `NodeNext` module resolution. The Next.js preset switches to `Bundler` resolution and adds the `next` plugin.
 
-Changes to `packages/typescript-config/` affect every app and package. Run `bun run typecheck` across the monorepo after modifying it.
+Changes to `packages/typescript-config/` affect every app and package. Run `bun run typecheck` in the affected apps and packages after modifying it.
 
 ## Learn More
 

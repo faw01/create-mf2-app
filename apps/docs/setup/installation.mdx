@@ -10,8 +10,9 @@ Complete the [Prerequisites](/setup/prerequisites) first.
 ```bash
 bunx create-mf2-app my-app
 cd my-app
-bun install
 ```
+
+The CLI installs dependencies for you.
 
 ## Initialize Convex
 
@@ -23,12 +24,12 @@ Follow the prompts to create or link a Convex project. This watches your backend
 
 ## Configure environment variables
 
-Fill in your API keys. Copy `.env.example` to `.env.local` and add your values. See [Environment Variables](/setup/env).
+The CLI already created `.env.local` and `.env.production` from each `.env.example` when it scaffolded the project. Fill in API keys as you need them; a blank value simply disables that integration. Run `bun run env:check` to see which keys are still blank. See [Environment Variables](/setup/env).
 
 ## Start development
 
 <Tip>
-Don't worry about configuring all environment variables right away. Most integrations (Stripe, PostHog, email, CMS, etc.) gracefully degrade when not configured — you can add them later as needed.
+No keys are required to start. Integrations (Stripe, PostHog, email, CMS, etc.) gracefully degrade when not configured, so you can add them later as needed.
 </Tip>
 
 ```bash

@@ -9,13 +9,13 @@ description: The startup-in-a-command monorepo built for the agent era.
 bunx create-mf2-app
 ```
 
-Or use the [template repository](https://github.com/faw01/mf2) directly — click **Use this template** on GitHub.
+Or use the [template repository](https://github.com/faw01/mf2) directly: click **Use this template** on GitHub.
 
 The monorepo splits into **apps** (eight deployable applications across web, mobile, and desktop) and **packages** (shared libraries that wrap one concern each). Agents navigate the codebase the same way you do: follow the types, read the package, make the change. The type checker catches mistakes before anything ships.
 
 ## Built for agents
 
-mf² treats AI agents as first-class contributors. `CLAUDE.md`, `AGENTS.md`, and [agent skills](/skills) ship pre-configured. [Colocation](/colocation) keeps related files together so agents find what they need immediately. [Typed packages](/structure) give agents clear boundaries and fast feedback from the compiler.
+mf² treats AI agents as first-class contributors. `CLAUDE.md`, [agent skills](/skills), and MCP server config (`.mcp.json`) ship pre-configured. [Colocation](/colocation) keeps related files together so agents find what they need immediately. [Typed packages](/structure) give agents clear boundaries and fast feedback from the compiler.
 
 Read [Why This Stack?](/philosophy) for the reasoning behind each choice.
 

@@ -1,3 +1,18 @@
-<svg width="160" height="36" viewBox="0 0 160 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-<text x="0" y="28" font-family="Geist, system-ui, sans-serif" font-size="34" font-weight="700" fill="#000">⏭ mf²</text>
+<svg
+  fill="none"
+  height="36"
+  viewBox="0 0 160 36"
+  width="160"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <text
+    fill="#000"
+    font-family="Geist, system-ui, sans-serif"
+    font-size="34"
+    font-weight="700"
+    x="0"
+    y="28"
+  >
+    ⏭ mf²
+  </text>
 </svg>

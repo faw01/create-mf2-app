@@ -1,18 +1,18 @@
 ---
 title: AI
-description: Multi-model AI gateway, agents, and RAG pipelines with the Vercel AI SDK.
+description: Multi-model AI gateway and agents with the Vercel AI SDK.
 ---
 
-`@repo/ai` connects your app to multiple AI providers through the [Vercel AI SDK](https://ai-sdk.dev/docs/introduction) and [AI Gateway](https://vercel.com/docs/ai-gateway). It includes model routing, agent creation, prompt management, RAG pipelines, and cost tracking.
+`@repo/ai` connects your app to multiple AI providers through the [Vercel AI SDK](https://ai-sdk.dev/docs/introduction) and [AI Gateway](https://vercel.com/docs/ai-gateway). It includes model routing, agent creation, prompt management, and cost tracking.
 
 ## Usage
 
 Create a chat agent with tools:
 
-```ts title="packages/backend/convex/chat/streaming.ts"
+```ts title="packages/ai/agent/chat.ts"
 import { createChatAgent, tool, z } from "@repo/ai/agent";
 
-const agent = createChatAgent(token, {
+const agent = createChatAgent({ token }, {
   weather: tool({
     description: "Get the weather for a location",
     parameters: z.object({ city: z.string() }),
@@ -25,7 +25,7 @@ const agent = createChatAgent(token, {
 
 The gateway routes requests to Anthropic, OpenAI, Google, and other providers through a single API:
 
-```ts title="apps/app/api/chat/route.ts"
+```ts title="packages/ai/gateway/index.ts"
 import { gateway } from "@repo/ai/gateway";
 import { generateText } from "ai";
 
@@ -39,7 +39,7 @@ const { text } = await generateText({
 
 Pre-configured model constants and provider options:
 
-```ts title="packages/backend/convex/chat/streaming.ts"
+```ts title="packages/ai/models/index.ts"
 import { CLAUDE_SONNET, GEMINI_FLASH, CHAT_MODELS } from "@repo/ai/models";
 ```
 
@@ -47,35 +47,20 @@ Available models include Claude Sonnet 4.6, Claude Haiku 4.5, GPT-4o, GPT-4o Min
 
 ## Prompts
 
-Shared system prompts for chat, title generation, and RAG:
+Shared system prompts for chat and title generation:
 
-```ts title="packages/backend/convex/chat/streaming.ts"
+```ts title="packages/backend/convex/chat/api/title.ts"
 import { SYSTEM_PROMPT } from "@repo/ai/prompts";
 import { generateChatTitle } from "@repo/ai/prompts/title";
 
 const title = await generateChatTitle("How do I deploy to Vercel?");
 ```
 
-## RAG
-
-Build retrieval-augmented generation pipelines with query preprocessing, retrieval, and reranking:
-
-```ts title="packages/backend/convex/rag/ragAsTools.ts"
-import { createPipeline } from "@repo/ai/rag";
-
-const pipeline = createPipeline({
-  stages: ["rewrite", "stepback"],
-  retriever: myRetriever,
-});
-
-const results = await pipeline.run("How does auth work?");
-```
-
 ## Web Search
 
 Add Perplexity-powered web search as a tool (requires `PERPLEXITY_API_KEY`):
 
-```ts title="packages/backend/convex/agents/weather.ts"
+```ts title="packages/ai/tools/search.ts"
 import { getSearchTool } from "@repo/ai/tools/search";
 
 const search = getSearchTool();
@@ -87,7 +72,6 @@ const search = getSearchTool();
 |----------|-------------|
 | `AI_GATEWAY_API_KEY` | Vercel AI Gateway API key |
 | `AI_GATEWAY_URL` | Gateway endpoint (defaults to `https://ai-gateway.vercel.sh/v3`) |
-| `COHERE_API_KEY` | Cohere API key for reranking (optional) |
 | `PERPLEXITY_API_KEY` | Perplexity API key for web search (optional) |
 
 ## Learn More

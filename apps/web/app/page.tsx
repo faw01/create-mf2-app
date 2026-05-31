@@ -31,7 +31,7 @@ const Home = () => (
           </p>
         </div>
         <div className="flex flex-col items-center gap-3">
-          <CopyCommand command="npx create-mf2-app@latest" />
+          <CopyCommand command="bunx create-mf2-app" />
           <div className="flex items-center gap-2">
             <Button asChild className="font-mono" variant="ghost">
               <Link href="https://mf2.dev/docs">Docs</Link>

@@ -17,7 +17,7 @@ SQL excels at analytics, data warehousing, and reporting. But stuffing SQL into 
 
 We need better primitives: ones that don't force you to wire the database directly to the client, manage migrations by hand, or juggle six tools to move data from server to screen.
 
-The team that built and scaled Dropbox created Convex to solve application data problems: add new data types easily, handle queries and mutations between app and database, keep everything in sync, and provide TypeScript patterns that orchestrate how your app works. You deploy it all with one command. No dashboards to configure, no pieces to link.
+The team that built and scaled Dropbox created Convex to solve application data problems: add new data types, handle queries and mutations between app and database, keep everything in sync, and provide TypeScript patterns that orchestrate how your app works. You deploy it all with one command. No dashboards to configure, no pieces to link.
 
 In the most practical sense, Convex is React for your backend. React replaced `getElementById` with components. Convex replaces database migrations and SQL strings with TypeScript. You write queries and mutations as functions. Those functions are the only way data gets in or out. The schema, the access layer, the sync engine, the real-time subscriptions all live in one `convex/` folder. Change the file, it deploys. Change the data, the UI updates. No extra wiring.
 
@@ -33,7 +33,7 @@ Traditional stacks split your backend across dashboards, config files, ORMs, and
 
 Convex collapses all of that into TypeScript files in a folder. Any agent (Claude Code, Cursor, Codex) can read your schema, understand the access patterns, write a new query, and get a type error if it's wrong. No MCP server to talk to a dashboard. No special tooling. The agent opens the `convex/` folder and sees everything your backend does, just as it reads any other part of your codebase.
 
-Teams using Convex report that AI agents write correct backend code on the first try far more often than with traditional stacks. The agent reads typed source code; the type checker validates it.
+The agent reads typed source code, and the type checker validates it.
 
 ### Real-time by default
 
