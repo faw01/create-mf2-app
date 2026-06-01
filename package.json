@@ -17,7 +17,7 @@
     "ci:publish": "cd apps/cli && npm publish --access public --provenance || exit 0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.11",
+    "@biomejs/biome": "2.4.16",
     "@changesets/cli": "^2.30.0",
     "turbo": "^2.9.6",
     "typescript": "^6.0.2",
