@@ -4,41 +4,46 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
-    "dev": "turbo dev",
+    "dev": "turbo dev --continue=dependencies-successful",
     "check": "ultracite check",
     "fix": "ultracite fix",
     "test": "turbo test",
+    "typecheck": "turbo typecheck",
     "analyze": "turbo analyze",
     "translate": "turbo translate",
     "boundaries": "turbo boundaries",
     "bump-deps": "bunx npm-check-updates --deep -u -p bun && bun install",
-    "bump-ui": "bunx shadcn@latest add --all --overwrite -c packages/design-system",
+    "bump-ui": "bunx shadcn@latest add --all --overwrite -c packages/design-system && bun run generate-stories",
     "bump-ui-native": "bunx --bun @react-native-reusables/cli@latest add --all --overwrite -c apps/mobile",
     "clean": "git clean -xdf node_modules",
     "convex-lint": "turbo convex-lint",
-    "env:init": "bun scripts/env.ts init",
     "env:check": "bun scripts/env.ts check",
     "env:push": "bun scripts/env.ts push",
+    "generate-stories": "bun scripts/generate-stories.ts",
     "prepare": "lefthook install"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.11",
+    "@biomejs/biome": "2.5.2",
     "@repo/typescript-config": "workspace:*",
-    "@turbo/gen": "^2.9.6",
-    "@types/node": "^25.6.0",
-    "lefthook": "^2.1.5",
-    "lint-staged": "^16.4.0",
-    "turbo": "^2.9.6",
-    "typescript": "^6.0.2",
-    "ultracite": "7.4.4",
-    "vitest": "^4.1.4"
+    "@turbo/gen": "^2.10.2",
+    "@types/node": "^25.7.0",
+    "@typescript/native-preview": "^7.0.0-dev.20260702.3",
+    "lefthook": "^2.1.9",
+    "lint-staged": "^17.0.8",
+    "turbo": "^2.10.2",
+    "typescript": "^6.0.3",
+    "ultracite": "7.8.3",
+    "vitest": "^4.1.9"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22.12.0"
   },
-  "packageManager": "bun@1.3.12",
+  "packageManager": "bun@1.3.14",
   "overrides": {
-    "parse5": "^7.2.1"
+    "lightningcss": "1.30.1",
+    "parse5": "^7.2.1",
+    "qs": "^6.15.2",
+    "tar": "^7.5.16"
   },
   "type": "module",
   "workspaces": [
