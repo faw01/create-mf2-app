@@ -3,7 +3,11 @@
   "vcs": {
     "enabled": false
   },
-  "extends": ["ultracite/core", "ultracite/react", "ultracite/next"],
+  "extends": [
+    "ultracite/biome/core",
+    "ultracite/biome/react",
+    "ultracite/biome/next"
+  ],
   "javascript": {
     "globals": ["Liveblocks", "Bun"]
   },
@@ -26,6 +30,8 @@
   "files": {
     "includes": [
       "**/*",
+      "!.agents/skills",
+      "!.claude/skills",
       "!packages/design-system/components/ui",
       "!packages/design-system/lib",
       "!packages/design-system/hooks",
@@ -35,15 +41,32 @@
       "!docs/lib",
       "!docs/hooks",
       "!apps/docs/**/*.json",
+      "!apps/docs/**/*.svg",
       "!apps/email/.react-email",
       "!packages/cms/basehub-types.d.ts",
       "!**/convex/_generated",
       "!apps/mobile/ios",
       "!apps/mobile/android",
       "!apps/mobile/.expo",
+      // Toolchain-generated type shims whose generators own the formatting:
+      // Expo rewrites expo-env.d.ts on every `expo start` and react-native-css
+      // recreates nativewind-env.d.ts when missing, both without a trailing
+      // newline, so linting them fails a pristine project. next-env.d.ts is
+      // written by `next dev`/`next build` in each Next app.
+      "!apps/mobile/expo-env.d.ts",
+      "!apps/mobile/nativewind-env.d.ts",
+      "!**/next-env.d.ts",
+      // Machine-managed credential stores, written as single-line JSON by
+      // Clerk keyless mode (.clerk/.tmp/keyless.json) and Convex local
+      // deployments (.convex/local/*/config.json). Never lint them: `check`
+      // would fail on a pristine project and print their contents, echoing
+      // the Clerk secretKey and Convex adminKey/instanceSecret in plain text.
+      "!**/.clerk",
+      "!**/.convex",
       "!packages/design-system-native/components/ui",
       "!.turbo",
-      "!apps/desktop/out"
+      "!apps/desktop/out",
+      "!**/.next"
     ]
   }
 }
