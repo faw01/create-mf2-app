@@ -2,6 +2,8 @@ node_modules/
 
 dist/
 
+.repos/
+
 apps/cli/template/node_modules/
 apps/cli/template/apps/*/node_modules/
 apps/cli/template/packages/*/node_modules/
@@ -17,8 +19,20 @@ apps/cli/template/bun.lock
 
 .env.*
 
+.claude/settings.local.json
+apps/cli/template/.claude/settings.local.json
+
 *.tsbuildinfo
 .next/
 .vercel
 .react-email/
 storybook-static/
+
+# Template app gitignores are stored un-dotted (npm pack drops .gitignore
+# files), so they do not apply to this repo. Mirror their dev-artifact rules
+# here to keep template development clean.
+apps/cli/template/apps/app/.clerk/
+apps/cli/template/apps/desktop/out/
+apps/cli/template/apps/desktop/release/
+apps/cli/template/apps/mobile/.expo/
+apps/cli/template/apps/mobile/expo-env.d.ts
