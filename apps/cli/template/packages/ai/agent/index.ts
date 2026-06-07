@@ -2,6 +2,7 @@ export type { Tool, ToolSet } from "ai";
 export {
   createAgentUIStreamResponse,
   hasToolCall,
+  isStepCount,
   stepCountIs,
   ToolLoopAgent,
   tool,

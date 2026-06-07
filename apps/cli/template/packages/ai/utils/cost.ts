@@ -1,4 +1,4 @@
-import { AI_GATEWAY_URL } from "../gateway";
+import { getGatewayUrl } from "../gateway";
 
 const BACKOFF_MULTIPLIER = 1.5;
 
@@ -42,7 +42,7 @@ const fetchGenerationCost = async (
 
   try {
     const response = await fetch(
-      `${AI_GATEWAY_URL}/generation?id=${encodeURIComponent(generationId)}`,
+      `${getGatewayUrl()}/generation?id=${encodeURIComponent(generationId)}`,
       {
         headers: {
           Authorization: `Bearer ${apiKey}`,
@@ -69,7 +69,7 @@ const fetchCredits = async (): Promise<CreditsData | null> => {
   }
 
   try {
-    const response = await fetch(`${AI_GATEWAY_URL}/credits`, {
+    const response = await fetch(`${getGatewayUrl()}/credits`, {
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",

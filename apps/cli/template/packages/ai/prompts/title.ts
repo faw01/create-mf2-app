@@ -7,7 +7,7 @@ const TITLE_SYSTEM_PROMPT = `You are a concise title generator. Given a user's f
 export async function generateChatTitle(message: string): Promise<string> {
   const { text } = await generateText({
     model: gateway(GEMINI_FLASH),
-    system: TITLE_SYSTEM_PROMPT,
+    instructions: TITLE_SYSTEM_PROMPT,
     prompt: message,
   });
 

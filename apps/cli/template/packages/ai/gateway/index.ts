@@ -1,5 +1,5 @@
 import { createGateway, type GatewayProvider } from "@ai-sdk/gateway";
-import type { EmbeddingModelV3, LanguageModelV3 } from "@ai-sdk/provider";
+import type { LanguageModelV4 } from "@ai-sdk/provider";
 import { keys } from "../keys";
 
 let _env: ReturnType<typeof keys> | null = null;
@@ -16,8 +16,6 @@ export function getGatewayUrl(): string {
   return getEnv().AI_GATEWAY_URL;
 }
 
-export const AI_GATEWAY_URL = "https://ai-gateway.vercel.sh/v1";
-
 function getGateway() {
   if (!_gateway) {
     const env = getEnv();
@@ -30,10 +28,6 @@ function getGateway() {
   return _gateway;
 }
 
-export function gateway(model: string): LanguageModelV3 {
+export function gateway(model: string): LanguageModelV4 {
   return getGateway()(model);
-}
-
-export function textEmbeddingModel(model: string): EmbeddingModelV3 {
-  return getGateway().textEmbeddingModel(model);
 }

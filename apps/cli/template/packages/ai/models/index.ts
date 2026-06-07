@@ -9,9 +9,6 @@ export const GPT_4O_MINI = "openai/gpt-4o-mini";
 
 export const GEMINI_FLASH = "google/gemini-3-flash";
 export const GEMINI_PRO = "google/gemini-3-pro-preview";
-export const GEMINI_EMBEDDING = "google/gemini-embedding-001";
-
-export const COHERE_RERANK = "rerank-v4.0-pro";
 
 export const defaultGatewayOptions = {
   zeroDataRetention: true,

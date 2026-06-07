@@ -9,34 +9,29 @@
     "./agent": "./agent/index.ts",
     "./prompts": "./prompts/system.ts",
     "./prompts/title": "./prompts/title.ts",
-    "./prompts/rag": "./prompts/rag.ts",
     "./utils/cost": "./utils/cost.ts",
     "./keys": "./keys.ts",
-    "./rag": "./rag/index.ts",
-    "./rag/metrics": "./rag/metrics.ts",
-    "./rag/retrieval/rrf": "./rag/retrieval/rrf.ts",
-    "./rag/retrieval/rerank": "./rag/retrieval/rerank.ts",
+    "./tools/hello": "./tools/hello.ts",
     "./tools/search": "./tools/search.ts"
   },
   "scripts": {
     "clean": "git clean -xdf .cache .turbo dist node_modules",
-    "typecheck": "tsgo --noEmit",
-    "test": "bun test || true"
+    "typecheck": "tsgo --noEmit"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^3.0.69",
-    "@ai-sdk/cohere": "^3.0.30",
-    "@ai-sdk/devtools": "^0.0.15",
-    "@ai-sdk/gateway": "^3.0.95",
-    "@perplexity-ai/ai-sdk": "^0.1.2",
+    "@ai-sdk/devtools": "^1.0.1",
+    "@ai-sdk/gateway": "^4.0.8",
+    "@ai-sdk/provider": "^4.0.1",
+    "@ai-sdk/provider-utils": "^5.0.3",
+    "@perplexity-ai/ai-sdk": "^0.1.3",
     "@t3-oss/env-nextjs": "^0.13.11",
-    "ai": "^6.0.158",
-    "zod": "^4.3.6"
+    "ai": "^7.0.11",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "@types/node": "25.6.0",
-    "@types/react": "19.2.14",
+    "@types/node": "25.7.0",
+    "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3"
   }
 }

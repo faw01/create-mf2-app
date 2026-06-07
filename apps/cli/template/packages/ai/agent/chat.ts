@@ -1,5 +1,9 @@
-import type { ProviderOptions } from "@ai-sdk/provider-utils";
-import type { ToolSet } from "ai";
+import type {
+  HasRequiredKey,
+  InferToolSetContext,
+  ProviderOptions,
+} from "@ai-sdk/provider-utils";
+import type { ToolLoopAgentSettings, ToolSet } from "ai";
 import { ToolLoopAgent } from "ai";
 import { gateway } from "../gateway";
 import {
@@ -28,18 +32,47 @@ function getProviderOptions(modelId: string): ProviderOptions {
   return { gateway: gatewayOptions };
 }
 
-export const createChatAgent = (
-  context: string | { token: string; orgId?: string },
-  tools: ToolSet,
-  modelId?: string,
-  promptParams?: PromptParams
+type ChatAgentOptions<TOOLS extends ToolSet> = {
+  /** Overrides DEFAULT_CHAT_MODEL. */
+  modelId?: string;
+  promptParams?: PromptParams;
+  /**
+   * Per-tool context, nested by tool name, e.g. `{ hello: { step: 1 } }`.
+   *
+   * In AI SDK 7 this is an agent construction setting, not a `generate()`
+   * argument. Any tool that declares a `contextSchema` receives its slice of
+   * this object as `context` inside `execute`. See `tools/hello.ts` for a
+   * worked example.
+   */
+  toolsContext?: InferToolSetContext<TOOLS>;
+};
+
+export const createChatAgent = <TOOLS extends ToolSet>(
+  context: { token: string; orgId?: string },
+  tools: TOOLS,
+  // Mirrors ai@7's ToolLoopAgentSettings contract: as soon as a tool declares
+  // a non-optional contextSchema, forgetting toolsContext is a compile error
+  // instead of an undefined context at runtime.
+  ...rest: HasRequiredKey<InferToolSetContext<TOOLS>> extends true
+    ? [
+        options: ChatAgentOptions<TOOLS> & {
+          toolsContext: InferToolSetContext<TOOLS>;
+        },
+      ]
+    : [options?: ChatAgentOptions<TOOLS>]
 ) => {
-  const model = modelId ?? DEFAULT_CHAT_MODEL;
-  return new ToolLoopAgent({
+  const options = rest[0];
+  const model = options?.modelId ?? DEFAULT_CHAT_MODEL;
+  // ToolLoopAgentSettings types toolsContext with a conditional on TOOLS that
+  // TypeScript cannot resolve for an unbound generic, so the settings object
+  // is asserted once here; call sites stay fully typed via the rest parameter.
+  const settings = {
     model: gateway(model),
-    instructions: SYSTEM_PROMPT(promptParams),
+    instructions: SYSTEM_PROMPT(options?.promptParams),
     tools,
-    experimental_context: context,
+    toolsContext: options?.toolsContext,
+    runtimeContext: context,
     providerOptions: getProviderOptions(model),
-  });
+  } as ToolLoopAgentSettings<never, TOOLS, { token: string; orgId?: string }>;
+  return new ToolLoopAgent(settings);
 };

@@ -1,30 +1,15 @@
 /**
- * Hello World Tool
- *
- * A simple example tool demonstrating the tool creation pattern.
- * Use this as a reference when creating your own tools.
- *
- * Tool Pattern:
- * 1. Import `tool` from "ai" and `z` from "zod"
- * 2. Define input schema with Zod
- * 3. Implement execute function
- * 4. Access state via experimental_context if needed
+ * Example tool demonstrating the tool creation pattern; use it as a
+ * reference when creating your own tools.
  */
-
-type BaseState = {
-  step?: number;
-};
 
 import { tool } from "ai";
 import { z } from "zod";
+import { createChatAgent } from "../agent/chat";
 
-/**
- * Demonstrates:
- * - Basic tool structure
- * - Zod input validation
- * - Accessing state via experimental_context
- * - Returning structured output
- */
+// Per-tool context arrives at agent construction via the `toolsContext`
+// setting, keyed by tool name; it is NOT a `generate()` argument and is
+// separate from `runtimeContext`.
 const helloTool = tool({
   description:
     "A simple hello world tool. Use this to greet someone and see the current simulation step.",
@@ -36,10 +21,12 @@ const helloTool = tool({
       .default(false)
       .describe("Add extra enthusiasm to the greeting"),
   }),
+  contextSchema: z.object({
+    step: z.number().optional(),
+  }),
   strict: true,
-  execute: ({ name, enthusiastic }, { experimental_context }) => {
-    const state = experimental_context as BaseState | undefined;
-    const currentStep = state?.step ?? "unknown";
+  execute: ({ name, enthusiastic }, { context }) => {
+    const currentStep = context?.step ?? "unknown";
 
     const greeting = enthusiastic
       ? `Hello, ${name}! Great to meet you!`
@@ -53,4 +40,22 @@ const helloTool = tool({
   },
 });
 
-export { helloTool };
+/**
+ * Worked example: wiring a context-ful tool through createChatAgent.
+ * Declaring a contextSchema makes the `hello` key required at agent
+ * construction, even when all of its fields are optional (pass an empty
+ * object in that case).
+ */
+const createHelloAgent = (
+  context: { token: string; orgId?: string },
+  step: number
+) =>
+  createChatAgent(
+    context,
+    { hello: helloTool },
+    {
+      toolsContext: { hello: { step } },
+    }
+  );
+
+export { createHelloAgent, helloTool };
