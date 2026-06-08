@@ -17,35 +17,36 @@
     }
   },
   "scripts": {
-    "dev": "convex dev",
+    "dev": "if [ -n \"$CONVEX_DEPLOYMENT\" ] || grep -qs '^CONVEX_DEPLOYMENT=[A-Za-z0-9]' .env.local; then node scripts/sync-convex-url.mjs; convex dev; else echo 'Skipping Convex: run `bunx convex dev` in packages/backend once to set up a deployment'; fi",
     "deploy": "convex deploy",
-    "setup": "convex dev --until-success",
+    "setup": "convex dev --until-success && node scripts/sync-convex-url.mjs",
     "codegen": "convex codegen || echo 'skipping: Convex codegen failed or not configured'",
     "typecheck": "tsgo --noEmit",
-    "test": "[ -f convex/_generated/api.js ] && vitest || echo 'skipping: Convex codegen required'",
+    "test": "vitest",
     "test:once": "vitest run",
     "convex-lint": "eslint convex/"
   },
   "dependencies": {
-    "@ai-sdk/gateway": "^3.0.95",
-    "@convex-dev/action-retrier": "^0.3.0",
+    "@ai-sdk/gateway": "^4.0.8",
+    "@clerk/backend": "^3.10.0",
+    "@convex-dev/action-retrier": "^0.3.1",
     "@convex-dev/expo-push-notifications": "0.3.1",
-    "@convex-dev/migrations": "^0.3.3",
-    "@convex-dev/resend": "^0.2.3",
+    "@convex-dev/migrations": "^0.3.5",
+    "@convex-dev/resend": "^0.2.5",
     "@convex-dev/stripe": "^0.1.4",
-    "@convex-dev/workflow": "^0.3.9",
+    "@convex-dev/workflow": "^0.4.4",
     "@repo/ai": "workspace:*",
-    "convex": "^1.35.1",
-    "convex-env": "^2.5.0",
-    "svix": "^1.90.0"
+    "convex": "^1.42.1",
+    "convex-env": "^3.0.0"
   },
   "devDependencies": {
-    "@clerk/backend": "^3.2.8",
     "@convex-dev/eslint-plugin": "^2.0.0",
     "@edge-runtime/vm": "^5.0.0",
     "@repo/typescript-config": "workspace:*",
-    "convex-test": "^0.0.47",
-    "typescript": "^6.0.2",
-    "vitest": "^4.1.4"
+    "convex-test": "^0.0.54",
+    "eslint": "^10.6.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.62.1",
+    "vitest": "^4.1.9"
   }
 }
