@@ -1,12 +1,13 @@
-import { ThemeProvider } from "@react-navigation/native";
 import { AnalyticsProvider } from "@repo/analytics/provider.native";
 import { useAuth } from "@repo/auth/client.native";
 import { AuthProvider } from "@repo/auth/provider.native";
 import { ConvexClientProvider } from "@repo/convex/provider.native";
 import { DesignSystemNativeProvider } from "@repo/design-system-native";
 import { initSentry, wrapWithSentry } from "@repo/observability/native";
+import { initRevenueCat } from "@repo/payments/native";
 import { PortalHost } from "@rn-primitives/portal";
 import { Stack } from "expo-router";
+import { ThemeProvider } from "expo-router/react-navigation";
 import { hideAsync, preventAutoHideAsync } from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
@@ -21,6 +22,15 @@ preventAutoHideAsync();
 const clerkPublishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY ?? "";
 
 initSentry();
+
+const hasRevenueCatKeys = Boolean(
+  process.env.EXPO_PUBLIC_REVENUECAT_APPLE_KEY ||
+    process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_KEY
+);
+
+if (hasRevenueCatKeys) {
+  initRevenueCat();
+}
 
 const ConvexProviderWithAuth = ({
   children,

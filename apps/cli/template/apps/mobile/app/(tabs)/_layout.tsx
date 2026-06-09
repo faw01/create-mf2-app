@@ -1,30 +1,54 @@
-import { Tabs } from "expo-router";
+import { useAuth } from "@repo/auth/client.native";
+import { useNotificationListeners } from "@repo/notifications/native";
+import { Redirect, Tabs } from "expo-router";
 import { Home, Settings } from "lucide-react-native";
+import { useColorScheme } from "react-native";
+import { THEME } from "@/lib/theme";
+
+const NotificationListeners = () => {
+  useNotificationListeners();
+  return null;
+};
 
 export default function TabLayout() {
+  const { isLoaded, isSignedIn } = useAuth();
+  const colorScheme = useColorScheme();
+  const theme = THEME[colorScheme === "dark" ? "dark" : "light"];
+
+  if (!isLoaded) {
+    return null;
+  }
+
+  if (!isSignedIn) {
+    return <Redirect href="/(auth)/sign-in" />;
+  }
+
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: "#000",
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Home",
-          tabBarIcon: ({ color, size }) => <Home color={color} size={size} />,
+    <>
+      <NotificationListeners />
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarActiveTintColor: theme.primary,
         }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: "Settings",
-          tabBarIcon: ({ color, size }) => (
-            <Settings color={color} size={size} />
-          ),
-        }}
-      />
-    </Tabs>
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: "Home",
+            tabBarIcon: ({ color, size }) => <Home color={color} size={size} />,
+          }}
+        />
+        <Tabs.Screen
+          name="settings"
+          options={{
+            title: "Settings",
+            tabBarIcon: ({ color, size }) => (
+              <Settings color={color} size={size} />
+            ),
+          }}
+        />
+      </Tabs>
+    </>
   );
 }
