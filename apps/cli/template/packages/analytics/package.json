@@ -7,20 +7,21 @@
     "typecheck": "tsgo --noEmit"
   },
   "dependencies": {
-    "@next/third-parties": "16.2.3",
+    "@next/third-parties": "16.2.10",
     "@t3-oss/env-nextjs": "^0.13.11",
     "@vercel/analytics": "^2.0.1",
-    "posthog-js": "^1.367.0",
-    "posthog-react-native": "^4.41.1",
-    "posthog-node": "^5.29.2",
-    "react": "19.2.5",
+    "posthog-js": "^1.396.4",
+    "posthog-react-native": "^4.54.0",
+    "posthog-node": "^5.39.2",
+    "react": "19.2.7",
     "server-only": "^0.0.1",
-    "zod": "^4.3.6"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "@types/node": "25.6.0",
-    "@types/react": "19.2.14",
-    "@types/react-dom": "19.2.3"
+    "@types/node": "25.7.0",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "next": "16.2.10"
   }
 }

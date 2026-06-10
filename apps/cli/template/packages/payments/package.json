@@ -9,14 +9,22 @@
   "dependencies": {
     "@stripe/agent-toolkit": "^0.9.0",
     "@t3-oss/env-nextjs": "^0.13.11",
-    "react-native-purchases": "^9.15.2",
-    "react-native-purchases-ui": "^9.15.2",
+    "react-native-purchases": "^10.4.1",
+    "react-native-purchases-ui": "^10.4.1",
     "server-only": "^0.0.1",
-    "stripe": "^22.0.1",
-    "zod": "^4.3.6"
+    "stripe": "^22.3.0",
+    "zod": "^4.4.3"
+  },
+  "peerDependencies": {
+    "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-native": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "typescript": "^6.0.2"
+    "typescript": "^6.0.3"
   }
 }

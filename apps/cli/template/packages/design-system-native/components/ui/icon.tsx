@@ -1,6 +1,6 @@
 import { cn } from '@repo/design-system-native/lib/utils';
 import type { LucideIcon, LucideProps } from 'lucide-react-native';
-import { cssInterop } from 'nativewind';
+import { styled } from 'react-native-css';
 
 type IconProps = LucideProps & {
   as: LucideIcon;
@@ -10,9 +10,10 @@ function IconImpl({ as: IconComponent, ...props }: IconProps) {
   return <IconComponent {...props} />;
 }
 
-cssInterop(IconImpl, {
+const StyledIconImpl = styled(IconImpl, {
   className: {
     target: 'style',
+    // @ts-expect-error
     nativeStyleToProp: {
       height: 'size',
       width: 'size',
@@ -42,7 +43,7 @@ cssInterop(IconImpl, {
  */
 function Icon({ as: IconComponent, className, size = 14, ...props }: IconProps) {
   return (
-    <IconImpl
+    <StyledIconImpl
       as={IconComponent}
       className={cn('text-foreground', className)}
       size={size}
