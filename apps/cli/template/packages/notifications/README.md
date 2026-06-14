@@ -5,7 +5,14 @@ In-app notification feeds using Knock.
 ## Usage
 
 ```ts
-import { notify } from "@repo/notifications";
+import { notifications } from "@repo/notifications";
+
+// undefined until KNOCK_SECRET_API_KEY is set; no-op with a skip log
+if (notifications) {
+  await notifications.workflows.trigger("welcome", { recipients: [userId] });
+} else {
+  console.warn("Skipping notification: set KNOCK_SECRET_API_KEY to enable");
+}
 ```
 
 ## Environment Variables

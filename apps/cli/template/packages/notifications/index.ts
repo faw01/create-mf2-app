@@ -3,4 +3,6 @@ import { keys } from "./keys";
 
 const key = keys().KNOCK_SECRET_API_KEY;
 
-export const notifications = new Knock(key);
+// Undefined when Knock is unconfigured; guard call sites with a skip log,
+// e.g. `console.warn("Skipping notification: set KNOCK_SECRET_API_KEY to enable")`.
+export const notifications = key ? new Knock({ apiKey: key }) : undefined;
