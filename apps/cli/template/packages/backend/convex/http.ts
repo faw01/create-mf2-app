@@ -1,42 +1,11 @@
 import type { WebhookEvent } from "@clerk/backend";
+import { verifyWebhook } from "@clerk/backend/webhooks";
 import { registerRoutes } from "@convex-dev/stripe";
 import { httpRouter } from "convex/server";
-import { Webhook } from "svix";
 import { components, internal } from "./_generated/api";
 import { httpAction } from "./_generated/server";
 import { env } from "./convex.env";
 import { resend } from "./email/index";
-
-async function validateClerkWebhook(
-  request: Request
-): Promise<WebhookEvent | undefined> {
-  const svixHeaders = {
-    "svix-id": request.headers.get("svix-id"),
-    "svix-timestamp": request.headers.get("svix-timestamp"),
-    "svix-signature": request.headers.get("svix-signature"),
-  };
-
-  if (
-    !(
-      svixHeaders["svix-id"] &&
-      svixHeaders["svix-timestamp"] &&
-      svixHeaders["svix-signature"]
-    )
-  ) {
-    return;
-  }
-
-  try {
-    const payload = await request.text();
-    const wh = new Webhook(env.CLERK_WEBHOOK_SECRET);
-    return wh.verify(
-      payload,
-      svixHeaders as Record<string, string>
-    ) as WebhookEvent;
-  } catch {
-    return;
-  }
-}
 
 const http = httpRouter();
 
@@ -44,8 +13,20 @@ http.route({
   path: "/webhooks/clerk",
   method: "POST",
   handler: httpAction(async (ctx, request) => {
-    const event = await validateClerkWebhook(request);
-    if (!event) {
+    // Without the signing secret no event can be verified, so the route
+    // reports itself unconfigured instead of failing verification.
+    const signingSecret = env.CLERK_WEBHOOK_SECRET;
+    if (!signingSecret) {
+      console.warn(
+        "Skipping Clerk webhook: set CLERK_WEBHOOK_SECRET to enable"
+      );
+      return new Response("Clerk webhook is not configured", { status: 503 });
+    }
+
+    let event: WebhookEvent;
+    try {
+      event = await verifyWebhook(request, { signingSecret });
+    } catch {
       return new Response("Invalid webhook", { status: 400 });
     }
 
@@ -75,6 +56,13 @@ http.route({
   path: "/webhooks/resend",
   method: "POST",
   handler: httpAction(async (ctx, req) => {
+    // The resend component throws on a missing secret; answer 503 instead.
+    if (!env.RESEND_WEBHOOK_SECRET) {
+      console.warn(
+        "Skipping Resend webhook: set RESEND_WEBHOOK_SECRET to enable"
+      );
+      return new Response("Resend webhook is not configured", { status: 503 });
+    }
     return await resend.handleResendEventWebhook(ctx, req);
   }),
 });
