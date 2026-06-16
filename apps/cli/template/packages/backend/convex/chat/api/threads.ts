@@ -48,7 +48,15 @@ export const get = query({
     v.null()
   ),
   handler: async (ctx, args) => {
-    return await ctx.db.get("threads", args.threadId);
+    const user = await mustGetCurrentUser(ctx);
+    const thread = await ctx.db.get("threads", args.threadId);
+    if (!thread) {
+      return null;
+    }
+    if (thread.userId !== user._id) {
+      throw new Error("Unauthorized");
+    }
+    return thread;
   },
 });
 

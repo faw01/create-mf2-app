@@ -2,15 +2,17 @@ import { PushNotifications } from "@convex-dev/expo-push-notifications";
 import { v } from "convex/values";
 import { components } from "./_generated/api";
 import { mutation, query } from "./_generated/server";
+import { mustGetCurrentUser } from "./auth/users";
 
 const pushNotifications = new PushNotifications(components.pushNotifications);
 
 export const recordToken = mutation({
-  args: { userId: v.id("users"), pushToken: v.string() },
+  args: { pushToken: v.string() },
   returns: v.null(),
   handler: async (ctx, args) => {
+    const user = await mustGetCurrentUser(ctx);
     await pushNotifications.recordToken(ctx, {
-      userId: args.userId,
+      userId: user._id,
       pushToken: args.pushToken,
     });
     return null;
@@ -19,14 +21,14 @@ export const recordToken = mutation({
 
 export const send = mutation({
   args: {
-    userId: v.id("users"),
     title: v.string(),
     body: v.optional(v.string()),
   },
   returns: v.union(v.string(), v.null()),
   handler: async (ctx, args) => {
+    const user = await mustGetCurrentUser(ctx);
     return await pushNotifications.sendPushNotification(ctx, {
-      userId: args.userId,
+      userId: user._id,
       notification: {
         title: args.title,
         body: args.body,
@@ -36,15 +38,17 @@ export const send = mutation({
 });
 
 export const getStatus = query({
-  args: { userId: v.id("users") },
+  args: {},
   returns: v.object({
     hasToken: v.boolean(),
     isPaused: v.boolean(),
   }),
-  handler: async (ctx, args) => {
-    return await pushNotifications.getStatusForUser(ctx, {
-      userId: args.userId,
+  handler: async (ctx) => {
+    const user = await mustGetCurrentUser(ctx);
+    const status = await pushNotifications.getStatusForUser(ctx, {
+      userId: user._id,
     });
+    return { hasToken: status.hasToken, isPaused: status.paused };
   },
 });
 
@@ -57,6 +61,7 @@ export const getNotification = query({
     v.null()
   ),
   handler: async (ctx, args) => {
+    await mustGetCurrentUser(ctx);
     const notification = await pushNotifications.getNotification(ctx, args);
     if (!notification) {
       return null;

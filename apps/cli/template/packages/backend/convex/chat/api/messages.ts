@@ -58,6 +58,15 @@ export const list = query({
     })
   ),
   handler: async (ctx, args) => {
+    const user = await mustGetCurrentUser(ctx);
+    const thread = await ctx.db.get("threads", args.threadId);
+    if (!thread) {
+      throw new Error("Thread not found");
+    }
+    if (thread.userId !== user._id) {
+      throw new Error("Unauthorized");
+    }
+
     return await ctx.db
       .query("messages")
       .withIndex("by_thread", (q) => q.eq("threadId", args.threadId))
