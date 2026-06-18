@@ -1,8 +1,27 @@
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { electronApp, is, optimizer } from "@electron-toolkit/utils";
 import { app, BrowserWindow, ipcMain, shell } from "electron";
 import { autoUpdater } from "electron-updater";
 import icon from "../../resources/icon.png?asset";
+
+function openExternalUrl(url: string): void {
+  if (URL.canParse(url) && new URL(url).protocol === "https:") {
+    shell.openExternal(url);
+  }
+}
+
+function hasRealUpdateFeed(): boolean {
+  if (!app.isPackaged) {
+    return false;
+  }
+  const feedConfigPath = join(process.resourcesPath, "app-update.yml");
+  if (!existsSync(feedConfigPath)) {
+    return false;
+  }
+  const feedConfig = readFileSync(feedConfigPath, "utf8");
+  return !feedConfig.includes("your-github-username");
+}
 
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
@@ -13,7 +32,7 @@ function createWindow(): void {
     ...(process.platform === "linux" ? { icon } : {}),
     webPreferences: {
       preload: join(import.meta.dirname, "../preload/index.js"),
-      sandbox: false,
+      sandbox: true,
     },
   });
 
@@ -22,7 +41,7 @@ function createWindow(): void {
   });
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url);
+    openExternalUrl(details.url);
     return { action: "deny" };
   });
 
@@ -40,12 +59,16 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window);
   });
 
-  ipcMain.on("ping", () => console.log("pong"));
+  ipcMain.handle("open-external", (_event, url: string) => {
+    openExternalUrl(url);
+  });
 
   createWindow();
 
-  if (!is.dev) {
-    autoUpdater.checkForUpdatesAndNotify();
+  if (hasRealUpdateFeed()) {
+    autoUpdater.checkForUpdatesAndNotify().catch((error) => {
+      console.error("Update check failed", error);
+    });
   }
 
   app.on("activate", () => {
