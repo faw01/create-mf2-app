@@ -43,7 +43,7 @@ linux:
       arch:
         - x64
         - arm64
-  maintainer: ocarinalabs
+  maintainer: your-email@example.com
   category: Office
 dmg:
   artifactName: ${name}-${version}.${ext}
@@ -52,5 +52,5 @@ appImage:
 npmRebuild: false
 publish:
   provider: github
-  owner: ocarinalabs
-  repo: mf2-desktop
+  owner: your-github-username
+  repo: your-app-desktop
