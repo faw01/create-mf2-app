@@ -9,14 +9,27 @@ import { NextResponse } from "next/server";
 import { env } from "@/env";
 
 const getUserFromCustomerId = async (customerId: string) => {
+  if (!stripe) {
+    return;
+  }
+
+  const customer = await stripe.customers.retrieve(customerId);
+  if (customer.deleted) {
+    return;
+  }
+
   const clerk = await clerkClient();
-  const users = await clerk.users.getUserList();
 
-  const user = users.data.find(
-    (currentUser) => currentUser.privateMetadata.stripeCustomerId === customerId
-  );
+  if (typeof customer.metadata.userId === "string") {
+    return await clerk.users.getUser(customer.metadata.userId);
+  }
 
-  return user;
+  if (customer.email) {
+    const { data } = await clerk.users.getUserList({
+      emailAddress: [customer.email],
+    });
+    return data.at(0);
+  }
 };
 
 const handleCheckoutSessionCompleted = async (

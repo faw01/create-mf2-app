@@ -1,3 +1,4 @@
+import { verifyWebhook } from "@clerk/nextjs/webhooks";
 import { analytics } from "@repo/analytics/server";
 import type {
   DeletedObjectJSON,
@@ -7,9 +8,7 @@ import type {
   WebhookEvent,
 } from "@repo/auth/server";
 import { log } from "@repo/observability/log";
-import { headers } from "next/headers";
-import { NextResponse } from "next/server";
-import { Webhook } from "svix";
+import { type NextRequest, NextResponse } from "next/server";
 import { env } from "@/env";
 
 const handleUserCreated = (data: UserJSON) => {
@@ -134,8 +133,6 @@ const handleOrganizationMembershipCreated = (
 const handleOrganizationMembershipDeleted = (
   data: OrganizationMembershipJSON
 ) => {
-  // Need to unlink the user from the group
-
   analytics?.capture({
     event: "Organization Member Deleted",
     distinctId: data.public_user_data.user_id,
@@ -144,52 +141,28 @@ const handleOrganizationMembershipDeleted = (
   return new Response("Organization membership deleted", { status: 201 });
 };
 
-export const POST = async (request: Request): Promise<Response> => {
+export const POST = async (request: NextRequest): Promise<Response> => {
   if (!env.CLERK_WEBHOOK_SECRET) {
     return NextResponse.json({ message: "Not configured", ok: false });
   }
 
-  // Get the headers
-  const headerPayload = await headers();
-  const svixId = headerPayload.get("svix-id");
-  const svixTimestamp = headerPayload.get("svix-timestamp");
-  const svixSignature = headerPayload.get("svix-signature");
+  let event: WebhookEvent;
 
-  // If there are no headers, error out
-  if (!(svixId && svixTimestamp && svixSignature)) {
-    return new Response("Error occured -- no svix headers", {
-      status: 400,
-    });
-  }
-
-  // Get the body
-  const payload = (await request.json()) as object;
-  const body = JSON.stringify(payload);
-
-  // Create a new SVIX instance with your secret.
-  const webhook = new Webhook(env.CLERK_WEBHOOK_SECRET);
-
-  let event: WebhookEvent | undefined;
-
-  // Verify the payload with the headers
   try {
-    event = webhook.verify(body, {
-      "svix-id": svixId,
-      "svix-timestamp": svixTimestamp,
-      "svix-signature": svixSignature,
-    }) as WebhookEvent;
+    event = await verifyWebhook(request, {
+      signingSecret: env.CLERK_WEBHOOK_SECRET,
+    });
   } catch (error) {
     log.error("Error verifying webhook:", { error });
-    return new Response("Error occured", {
+    return new Response("Webhook verification failed", {
       status: 400,
     });
   }
 
-  // Get the ID and type
   const { id } = event.data;
   const eventType = event.type;
 
-  log.info("Webhook", { id, eventType, body });
+  log.info("Webhook", { id, eventType });
 
   let response: Response = new Response("", { status: 201 });
 

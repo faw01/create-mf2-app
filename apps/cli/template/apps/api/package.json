@@ -8,35 +8,35 @@
     "start": "bun --bun next start",
     "analyze": "ANALYZE=true npm run build",
     "test": "NODE_ENV=test vitest run",
-    "stripe": "stripe listen --forward-to localhost:3002/webhooks/payments",
+    "stripe": "bun scripts/stripe-dev.ts",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "typecheck": "tsgo --noEmit"
   },
   "dependencies": {
+    "@clerk/nextjs": "^7.5.12",
     "@repo/analytics": "workspace:*",
     "@repo/auth": "workspace:*",
     "@repo/design-system": "workspace:*",
     "@repo/next-config": "workspace:*",
     "@repo/observability": "workspace:*",
     "@repo/payments": "workspace:*",
-    "@sentry/nextjs": "^10.48.0",
+    "@sentry/nextjs": "^10.63.0",
     "@t3-oss/env-nextjs": "^0.13.11",
-    "import-in-the-middle": "^3.0.1",
-    "next": "16.2.3",
-    "react": "19.2.5",
-    "react-dom": "19.2.5",
+    "import-in-the-middle": "^3.2.0",
+    "next": "16.2.10",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
     "require-in-the-middle": "8.0.1",
-    "svix": "^1.90.0",
-    "zod": "^4.3.6"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "@types/node": "25.6.0",
-    "@types/react": "19.2.14",
+    "@types/node": "25.7.0",
+    "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
-    "@vitejs/plugin-react": "^6.0.1",
-    "concurrently": "^9.2.1",
-    "typescript": "^6.0.2",
-    "vitest": "^4.1.4"
+    "@vitejs/plugin-react": "^6.0.3",
+    "concurrently": "^10.0.3",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
   }
 }

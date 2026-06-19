@@ -8,11 +8,7 @@ Webhooks, cron jobs, and external integrations. Runs on port 3002.
 turbo dev --filter=api
 ```
 
-For local Stripe webhooks, also run:
-
-```bash
-stripe listen --forward-to localhost:3002/webhooks/payments
-```
+The dev task also starts `stripe listen` to forward webhooks to `localhost:3002/webhooks/payments`. It needs `STRIPE_SECRET_KEY` in `apps/api/.env.local` (or the shell environment) and the [Stripe CLI](https://docs.stripe.com/stripe-cli); when unset, it prints a skip line instead of starting.
 
 ## Key Features
 
