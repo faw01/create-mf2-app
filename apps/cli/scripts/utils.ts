@@ -1,10 +1,18 @@
 import { type SpawnOptions, spawn } from "node:child_process";
-import { cp, readdir, readFile, stat, writeFile } from "node:fs/promises";
+import {
+  copyFile,
+  mkdir,
+  readdir,
+  readFile,
+  rm,
+  stat,
+  writeFile,
+} from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-export const run = (command: string, options?: SpawnOptions): Promise<void> => {
-  return new Promise((resolve, reject) => {
+export const run = (command: string, options?: SpawnOptions): Promise<void> =>
+  new Promise((resolve, reject) => {
     const child = spawn(command, {
       stdio: "ignore",
       shell: true,
@@ -19,11 +27,10 @@ export const run = (command: string, options?: SpawnOptions): Promise<void> => {
     });
     child.on("error", reject);
   });
-};
 
 export const supportedPackageManagers = ["bun", "npm", "yarn", "pnpm"];
 
-export const devOnlyFiles = ["CLAUDE.md", ".mcp.json", ".claude"];
+export const devOnlyFiles = [join(".claude", "settings.local.json")];
 
 export const copyExclusions = new Set([
   "node_modules",
@@ -37,8 +44,21 @@ export const copyExclusions = new Set([
   "yarn.lock",
   "package-lock.json",
   ".git",
+  ".next",
+  ".cache",
+  ".vercel",
+  ".react-email",
+  "dist",
+  "out",
+  "storybook-static",
+  ".env",
+  ".env.local",
+  ".env.production",
 ]);
 
+// npm pack unconditionally drops files named .gitignore, so the template
+// stores these un-dotted and the CLI renames them at scaffold time. Nested
+// gitignores must be listed here or published scaffolds silently lose them.
 export const dotfileRenames = [
   { dir: join("apps", "api"), from: "env.example", to: ".env.example" },
   { dir: join("apps", "app"), from: "env.example", to: ".env.example" },
@@ -50,6 +70,11 @@ export const dotfileRenames = [
     to: ".env.example",
   },
   { dir: join("apps", "mobile"), from: "env.example", to: ".env.example" },
+  { dir: join("apps", "api"), from: "gitignore", to: ".gitignore" },
+  { dir: join("apps", "app"), from: "gitignore", to: ".gitignore" },
+  { dir: join("apps", "desktop"), from: "gitignore", to: ".gitignore" },
+  { dir: join("apps", "mobile"), from: "gitignore", to: ".gitignore" },
+  { dir: join("apps", "web"), from: "gitignore", to: ".gitignore" },
 ];
 
 export const getTemplatePath = (): string => {
@@ -61,6 +86,7 @@ export const copyDirectory = async (
   source: string,
   destination: string
 ): Promise<void> => {
+  await mkdir(destination, { recursive: true });
   const entries = await readdir(source, { withFileTypes: true });
 
   for (const entry of entries) {
@@ -72,17 +98,25 @@ export const copyDirectory = async (
     const destPath = join(destination, entry.name);
 
     if (entry.isDirectory()) {
-      await cp(srcPath, destPath, {
-        recursive: true,
-        filter: (src) => {
-          const name = src.split("/").pop() ?? "";
-          return !copyExclusions.has(name);
-        },
-      });
-    } else {
-      await cp(srcPath, destPath);
+      await copyDirectory(srcPath, destPath);
+    } else if (entry.isFile()) {
+      await copyFile(srcPath, destPath);
     }
   }
+};
+
+export const materializeSkills = async (projectDir: string): Promise<void> => {
+  const skillsSourceDir = join(projectDir, ".agents", "skills");
+  const skillsDestDir = join(projectDir, ".claude", "skills");
+
+  try {
+    await stat(skillsSourceDir);
+  } catch {
+    return;
+  }
+
+  await rm(skillsDestDir, { recursive: true, force: true });
+  await copyDirectory(skillsSourceDir, skillsDestDir);
 };
 
 export const updatePackageJson = async (
@@ -107,10 +141,9 @@ export const updatePackageManager = async (
   const packageJson = JSON.parse(content);
 
   const versions: Record<string, string> = {
-    bun: "bun@1.3.9",
-    npm: "npm@10.8.1",
+    npm: "npm@11.18.0",
     yarn: "yarn@1.22.22",
-    pnpm: "pnpm@9.15.0",
+    pnpm: "pnpm@11.9.0",
   };
 
   if (versions[packageManager]) {
@@ -140,29 +173,285 @@ export const convertWorkspaceDeps = async (filePath: string): Promise<void> => {
   await writeFile(filePath, `${JSON.stringify(packageJson, null, 2)}\n`);
 };
 
-export const convertAllWorkspaceDeps = async (
-  projectDir: string
-): Promise<void> => {
-  await convertWorkspaceDeps(join(projectDir, "package.json"));
+const listPackageJsonPaths = async (projectDir: string): Promise<string[]> => {
+  const paths = [join(projectDir, "package.json")];
 
   for (const dir of ["apps", "packages"]) {
     const dirPath = join(projectDir, dir);
 
+    let packages: string[];
     try {
-      const packages = await readdir(dirPath);
-      for (const pkg of packages) {
-        const pkgJsonPath = join(dirPath, pkg, "package.json");
-        try {
-          await stat(pkgJsonPath);
-          await convertWorkspaceDeps(pkgJsonPath);
-        } catch {
-          // noop
-        }
-      }
+      packages = await readdir(dirPath);
     } catch {
-      // noop
+      continue;
+    }
+
+    for (const pkg of packages) {
+      const pkgJsonPath = join(dirPath, pkg, "package.json");
+      try {
+        await stat(pkgJsonPath);
+        paths.push(pkgJsonPath);
+      } catch {
+        // noop
+      }
     }
   }
+
+  return paths;
+};
+
+export const convertAllWorkspaceDeps = async (
+  projectDir: string
+): Promise<void> => {
+  for (const path of await listPackageJsonPaths(projectDir)) {
+    await convertWorkspaceDeps(path);
+  }
+};
+
+// Non-bun scaffolds need tsx to run the TS scripts bun executes natively;
+// a real devDependency makes npx/pnpm use the lockfile-pinned binary.
+export const tsxVersion = "^4.23.0";
+
+const bunScriptReplacements: Record<string, [string, string][]> = {
+  npm: [
+    ["bunx --bun ", "npx "],
+    ["bunx ", "npx "],
+    ["bun --bun ", ""],
+    ["bun install", "npm install"],
+    ["bun scripts/", "npx tsx scripts/"],
+    ["-p bun", "-p npm"],
+  ],
+  yarn: [
+    ["bunx --bun ", "npx "],
+    ["bunx ", "npx "],
+    ["bun --bun ", ""],
+    ["bun install", "yarn install"],
+    ["bun scripts/", "npx tsx scripts/"],
+    ["-p bun", "-p yarn"],
+  ],
+  pnpm: [
+    ["bunx --bun ", "pnpm dlx "],
+    ["bunx ", "pnpm dlx "],
+    ["bun --bun ", ""],
+    ["bun install", "pnpm install"],
+    ["bun scripts/", "pnpm exec tsx scripts/"],
+    ["-p bun", "-p pnpm"],
+  ],
+};
+
+export const rewriteBunTokens = (
+  content: string,
+  packageManager: string
+): string => {
+  const replacements = bunScriptReplacements[packageManager];
+  if (!replacements) {
+    return content;
+  }
+
+  let next = content;
+  for (const [from, to] of replacements) {
+    next = next.replaceAll(from, to);
+  }
+
+  return next;
+};
+
+export const rewriteBunScripts = (
+  scripts: Record<string, string>,
+  packageManager: string
+): Record<string, string> => {
+  if (!bunScriptReplacements[packageManager]) {
+    return scripts;
+  }
+
+  const rewritten: Record<string, string> = {};
+  for (const [name, command] of Object.entries(scripts)) {
+    rewritten[name] = rewriteBunTokens(command, packageManager);
+  }
+
+  return rewritten;
+};
+
+export const addTsxDevDependency = async (
+  projectDir: string
+): Promise<void> => {
+  const packageJsonPath = join(projectDir, "package.json");
+  const content = await readFile(packageJsonPath, "utf8");
+  const packageJson = JSON.parse(content);
+
+  packageJson.devDependencies = {
+    ...packageJson.devDependencies,
+    tsx: tsxVersion,
+  };
+
+  await writeFile(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
+};
+
+export const rewriteEnvScript = async (
+  projectDir: string,
+  packageManager: string
+): Promise<void> => {
+  const path = join(projectDir, "scripts", "env.ts");
+
+  let content: string;
+  try {
+    content = await readFile(path, "utf8");
+  } catch {
+    return;
+  }
+
+  await writeFile(path, rewriteBunTokens(content, packageManager));
+};
+
+export const rewriteAllBunScripts = async (
+  projectDir: string,
+  packageManager: string
+): Promise<void> => {
+  for (const path of await listPackageJsonPaths(projectDir)) {
+    const content = await readFile(path, "utf8");
+    const packageJson = JSON.parse(content);
+
+    if (!packageJson.scripts) {
+      continue;
+    }
+
+    packageJson.scripts = rewriteBunScripts(
+      packageJson.scripts,
+      packageManager
+    );
+
+    await writeFile(path, `${JSON.stringify(packageJson, null, 2)}\n`);
+  }
+};
+
+const packageManagerLinks: Record<string, string> = {
+  npm: "[npm](https://www.npmjs.com)",
+  yarn: "[Yarn](https://yarnpkg.com)",
+  pnpm: "[pnpm](https://pnpm.io)",
+};
+
+export const rewriteBunProse = (
+  content: string,
+  packageManager: string
+): string => {
+  const bunLink = packageManagerLinks[packageManager];
+  if (!bunLink) {
+    return content;
+  }
+
+  const exec = packageManager === "pnpm" ? "pnpm dlx " : "npx ";
+  const replacements: [string, string][] = [
+    ["bunx --bun ", exec],
+    ["bunx ", exec],
+    ["bun install", `${packageManager} install`],
+    ["bun run ", `${packageManager} run `],
+    [
+      "Use `bun` for all package management (not npm/yarn/pnpm)",
+      `Use \`${packageManager}\` for all package management`,
+    ],
+    [
+      "Use `bun` for all package management",
+      `Use \`${packageManager}\` for all package management`,
+    ],
+    [
+      "managed with **bun** as the package manager",
+      `managed with **${packageManager}** as the package manager`,
+    ],
+    ["[Bun](https://bun.sh)", bunLink],
+  ];
+
+  let next = content;
+  for (const [from, to] of replacements) {
+    next = next.replaceAll(from, to);
+  }
+
+  return next;
+};
+
+export const rewriteScaffoldDocs = async (
+  projectDir: string,
+  packageManager: string
+): Promise<void> => {
+  // Root CLAUDE.md and AGENTS.md just import .agents/AGENTS.md, which is
+  // where the bun prose actually lives.
+  for (const file of [join(".agents", "AGENTS.md"), "README.md"]) {
+    const path = join(projectDir, file);
+
+    let content: string;
+    try {
+      content = await readFile(path, "utf8");
+    } catch {
+      continue;
+    }
+
+    await writeFile(path, rewriteBunProse(content, packageManager));
+  }
+};
+
+export const rewriteBunHooks = (
+  content: string,
+  packageManager: string
+): string => {
+  // Hooks run a locally pinned devDependency. npx resolves node_modules/.bin
+  // first; pnpm needs `exec`, not `dlx`, which always fetches registry-latest
+  // and ignores the pinned version.
+  const execs: Record<string, string> = {
+    npm: "npx ",
+    yarn: "npx ",
+    pnpm: "pnpm exec ",
+  };
+
+  const exec = execs[packageManager];
+  if (!exec) {
+    return content;
+  }
+
+  let next = content;
+  for (const from of ["bun x ", "bunx --bun ", "bunx "]) {
+    next = next.replaceAll(from, exec);
+  }
+
+  return next;
+};
+
+export const rewriteClaudeSettings = async (
+  projectDir: string,
+  packageManager: string
+): Promise<void> => {
+  const path = join(projectDir, ".claude", "settings.json");
+
+  let content: string;
+  try {
+    content = await readFile(path, "utf8");
+  } catch {
+    return;
+  }
+
+  await writeFile(path, rewriteBunHooks(content, packageManager));
+};
+
+export const writePnpmWorkspace = async (projectDir: string): Promise<void> => {
+  const contents = `packages:
+  - "apps/*"
+  - "packages/*"
+
+strictDepBuilds: false
+
+allowBuilds:
+  "@sentry/cli": true
+  "@tailwindcss/oxide": true
+  bufferutil: true
+  electron: true
+  electron-winstaller: true
+  esbuild: true
+  keytar: true
+  lefthook: true
+  puppeteer: true
+  sharp: true
+  utf-8-validate: true
+`;
+
+  await writeFile(join(projectDir, "pnpm-workspace.yaml"), contents);
 };
 
 export const addWorkspacesField = async (projectDir: string): Promise<void> => {
@@ -173,4 +462,34 @@ export const addWorkspacesField = async (projectDir: string): Promise<void> => {
   packageJson.workspaces = ["apps/*", "packages/*"];
 
   await writeFile(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
+};
+
+// The scaffold ships ready-to-fill env files so no manual env command is
+// needed before `dev`. Blank values are safe: every env schema treats empty
+// strings as undefined, which just disables that integration.
+export const createEnvFiles = async (projectDir: string): Promise<void> => {
+  for (const dir of ["apps", "packages"]) {
+    const base = join(projectDir, dir);
+
+    let entries: string[];
+    try {
+      entries = await readdir(base);
+    } catch {
+      continue;
+    }
+
+    for (const entry of entries) {
+      const examplePath = join(base, entry, ".env.example");
+
+      try {
+        await stat(examplePath);
+      } catch {
+        continue;
+      }
+
+      for (const target of [".env.local", ".env.production"]) {
+        await copyFile(examplePath, join(base, entry, target));
+      }
+    }
+  }
 };

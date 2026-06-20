@@ -1,28 +1,79 @@
-import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { mkdir, readFile, rm } from "node:fs/promises";
-import { join } from "node:path";
 import {
+  afterAll,
+  beforeEach,
+  describe,
+  expect,
+  setDefaultTimeout,
+  test,
+} from "bun:test";
+import {
+  existsSync,
+  lstatSync,
+  readdirSync,
+  readFileSync,
+  statSync,
+} from "node:fs";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { dirname, join } from "node:path";
+import {
+  addTsxDevDependency,
   addWorkspacesField,
   convertWorkspaceDeps,
   copyDirectory,
   copyExclusions,
+  createEnvFiles,
   devOnlyFiles,
   dotfileRenames,
   getTemplatePath,
+  materializeSkills,
+  rewriteAllBunScripts,
+  rewriteBunHooks,
+  rewriteBunProse,
+  rewriteBunScripts,
+  rewriteClaudeSettings,
+  rewriteEnvScript,
+  rewriteScaffoldDocs,
   supportedPackageManagers,
+  tsxVersion,
   updatePackageJson,
   updatePackageManager,
+  writePnpmWorkspace,
 } from "./utils.js";
 
 const templatePath = getTemplatePath();
 const tmpDir = join(import.meta.dirname, "..", ".tmp-test");
+const exactVersionRe = /^\d+\.\d+\.\d+$/;
+const expoEnvIgnoreLineRe = /^expo-env\.d\.ts$/m;
+
+// Walks with copyDirectory's exclusions so matches reflect what ships.
+const findTemplateFiles = (fileName: string): string[] => {
+  const matches: string[] = [];
+
+  const walk = (dir: string, rel: string) => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      if (copyExclusions.has(entry.name)) {
+        continue;
+      }
+      const entryRel = rel ? join(rel, entry.name) : entry.name;
+      if (entry.isDirectory()) {
+        walk(join(dir, entry.name), entryRel);
+      } else if (entry.name === fileName) {
+        matches.push(entryRel);
+      }
+    }
+  };
+
+  walk(templatePath, "");
+  return matches;
+};
+
+setDefaultTimeout(60_000);
 
 beforeEach(async () => {
   await mkdir(tmpDir, { recursive: true });
 });
 
-afterEach(async () => {
+afterAll(async () => {
   await rm(tmpDir, { recursive: true, force: true });
 });
 
@@ -34,6 +85,13 @@ describe("template integrity", () => {
   test("gitignore file exists (without dot)", () => {
     expect(existsSync(join(templatePath, "gitignore"))).toBe(true);
     expect(existsSync(join(templatePath, ".gitignore"))).toBe(false);
+  });
+
+  test("no .gitignore anywhere in the template (npm pack drops them)", () => {
+    // npm pack unconditionally excludes files named .gitignore, so a dotted
+    // gitignore in the template silently vanishes from the published package.
+    // Store them un-dotted and rename at scaffold time instead.
+    expect(findTemplateFiles(".gitignore")).toEqual([]);
   });
 
   test("env files exist without leading dot", () => {
@@ -94,10 +152,30 @@ describe("template integrity", () => {
     }
   });
 
-  test("dev-only files exist in template", () => {
-    for (const file of devOnlyFiles) {
-      expect(existsSync(join(templatePath, file))).toBe(true);
-    }
+  test("template ships the agent files", () => {
+    expect(existsSync(join(templatePath, "CLAUDE.md"))).toBe(true);
+    expect(existsSync(join(templatePath, "AGENTS.md"))).toBe(true);
+    expect(existsSync(join(templatePath, ".mcp.json"))).toBe(true);
+    expect(existsSync(join(templatePath, ".claude", "CLAUDE.md"))).toBe(true);
+    expect(existsSync(join(templatePath, ".agents", "AGENTS.md"))).toBe(true);
+    expect(existsSync(join(templatePath, ".claude", "settings.json"))).toBe(
+      true
+    );
+    expect(existsSync(join(templatePath, ".claude", "skills"))).toBe(true);
+    expect(existsSync(join(templatePath, ".agents", "skills"))).toBe(true);
+  });
+
+  test("agent anchor files resolve to the canonical .agents/AGENTS.md", () => {
+    const rootClaude = readFileSync(join(templatePath, "CLAUDE.md"), "utf8");
+    const rootAgents = readFileSync(join(templatePath, "AGENTS.md"), "utf8");
+    const claudeDir = readFileSync(
+      join(templatePath, ".claude", "CLAUDE.md"),
+      "utf8"
+    );
+
+    expect(rootClaude.trim()).toBe("@.claude/CLAUDE.md");
+    expect(rootAgents.trim()).toBe("@.agents/AGENTS.md");
+    expect(claudeDir.trim()).toBe("@../.agents/AGENTS.md");
   });
 });
 
@@ -187,6 +265,46 @@ describe("dotfileRenames", () => {
     for (const dir of dirsWithEnvExample) {
       expect(renameDirs.has(dir)).toBe(true);
     }
+  });
+
+  test("covers every un-dotted gitignore in the template", () => {
+    // The root gitignore is renamed by a dedicated step in init.ts; every
+    // nested one must have a dotfileRenames entry or scaffolds lose it.
+    const nestedGitignores = findTemplateFiles("gitignore")
+      .filter((rel) => rel !== "gitignore")
+      .map((rel) => dirname(rel))
+      .sort();
+
+    const renameDirs = dotfileRenames
+      .filter((r) => r.from === "gitignore")
+      .map((r) => r.dir)
+      .sort();
+
+    expect(nestedGitignores.length).toBeGreaterThan(0);
+    expect(renameDirs).toEqual(nestedGitignores);
+  });
+
+  test("every gitignore rename source exists and has content", () => {
+    for (const { dir, from, to } of dotfileRenames.filter(
+      (r) => r.from === "gitignore"
+    )) {
+      expect(to).toBe(".gitignore");
+      const content = readFileSync(join(templatePath, dir, from), "utf8");
+      expect(content.trim().length).toBeGreaterThan(0);
+    }
+  });
+
+  test("mobile gitignore covers expo generated files", () => {
+    // expo start (typed routes) upserts expo-env.d.ts into apps/mobile's
+    // .gitignore, creating the file when missing; that showed up as an
+    // untracked file right after scaffolding. Keeping the rule in the
+    // template means expo leaves the file untouched.
+    const content = readFileSync(
+      join(templatePath, "apps", "mobile", "gitignore"),
+      "utf8"
+    );
+    expect(content).toContain("expo-env.d.ts");
+    expect(content).toContain(".expo/");
   });
 });
 
@@ -299,6 +417,557 @@ describe("addWorkspacesField", () => {
   });
 });
 
+describe("rewriteBunScripts", () => {
+  const templateRootScripts = {
+    "bump-deps": "bunx npm-check-updates --deep -u -p bun && bun install",
+    "bump-ui":
+      "bunx shadcn@latest add --all --overwrite -c packages/design-system",
+    "bump-ui-native":
+      "bunx --bun @react-native-reusables/cli@latest add --all --overwrite -c apps/mobile",
+    "env:check": "bun scripts/env.ts check",
+    dev: "turbo dev",
+  };
+
+  test("strips the bun runtime prefix from next scripts", () => {
+    const scripts = { dev: "bun --bun next dev -p 3000" };
+
+    for (const pm of ["npm", "yarn", "pnpm"]) {
+      expect(rewriteBunScripts(scripts, pm).dev).toBe("next dev -p 3000");
+    }
+  });
+
+  test("rewrites bunx and bun install for npm", () => {
+    const result = rewriteBunScripts(templateRootScripts, "npm");
+
+    expect(result["bump-deps"]).toBe(
+      "npx npm-check-updates --deep -u -p npm && npm install"
+    );
+    expect(result["bump-ui"]).toBe(
+      "npx shadcn@latest add --all --overwrite -c packages/design-system"
+    );
+    expect(result["bump-ui-native"]).toBe(
+      "npx @react-native-reusables/cli@latest add --all --overwrite -c apps/mobile"
+    );
+  });
+
+  test("rewrites bunx and bun install for pnpm", () => {
+    const result = rewriteBunScripts(templateRootScripts, "pnpm");
+
+    expect(result["bump-deps"]).toBe(
+      "pnpm dlx npm-check-updates --deep -u -p pnpm && pnpm install"
+    );
+    expect(result["bump-ui"]).toBe(
+      "pnpm dlx shadcn@latest add --all --overwrite -c packages/design-system"
+    );
+    expect(result["bump-ui-native"]).toBe(
+      "pnpm dlx @react-native-reusables/cli@latest add --all --overwrite -c apps/mobile"
+    );
+  });
+
+  test("rewrites bunx to npx for yarn classic (no dlx)", () => {
+    const result = rewriteBunScripts(templateRootScripts, "yarn");
+
+    expect(result["bump-deps"]).toBe(
+      "npx npm-check-updates --deep -u -p yarn && yarn install"
+    );
+    expect(result["bump-ui"]).toStartWith("npx shadcn@latest");
+    expect(result["bump-ui-native"]).toStartWith(
+      "npx @react-native-reusables/cli@latest"
+    );
+  });
+
+  test("rewrites bun script-file invocations to a local tsx runner", () => {
+    expect(rewriteBunScripts(templateRootScripts, "npm")["env:check"]).toBe(
+      "npx tsx scripts/env.ts check"
+    );
+    expect(rewriteBunScripts(templateRootScripts, "yarn")["env:check"]).toBe(
+      "npx tsx scripts/env.ts check"
+    );
+    expect(rewriteBunScripts(templateRootScripts, "pnpm")["env:check"]).toBe(
+      "pnpm exec tsx scripts/env.ts check"
+    );
+  });
+
+  test("leaves non-bun scripts untouched", () => {
+    for (const pm of ["npm", "yarn", "pnpm"]) {
+      expect(rewriteBunScripts(templateRootScripts, pm).dev).toBe("turbo dev");
+    }
+  });
+
+  test("is a no-op for bun", () => {
+    expect(rewriteBunScripts(templateRootScripts, "bun")).toEqual(
+      templateRootScripts
+    );
+  });
+});
+
+describe("rewriteAllBunScripts", () => {
+  const collectScripts = (projectDir: string): Map<string, string> => {
+    const scripts = new Map<string, string>();
+    const paths = [join(projectDir, "package.json")];
+
+    for (const dir of ["apps", "packages"]) {
+      const base = join(projectDir, dir);
+      if (!existsSync(base)) {
+        continue;
+      }
+      for (const entry of readdirSync(base)) {
+        const pkgJson = join(base, entry, "package.json");
+        if (existsSync(pkgJson)) {
+          paths.push(pkgJson);
+        }
+      }
+    }
+
+    for (const path of paths) {
+      const pkg = JSON.parse(readFileSync(path, "utf8"));
+      for (const [name, command] of Object.entries(pkg.scripts ?? {})) {
+        scripts.set(`${path}#${name}`, command as string);
+      }
+    }
+
+    return scripts;
+  };
+
+  test("no rewritten token remains in any workspace package.json", async () => {
+    const dest = join(tmpDir, "rewrite-all-test");
+    await mkdir(dest, { recursive: true });
+    await copyDirectory(templatePath, dest);
+
+    await rewriteAllBunScripts(dest, "npm");
+
+    const ownedTokens = [
+      "bun --bun ",
+      "bunx ",
+      "bun install",
+      "bun scripts/",
+      "-p bun",
+    ];
+
+    for (const [key, command] of collectScripts(dest)) {
+      for (const token of ownedTokens) {
+        expect(`${key} => ${command}`).not.toContain(token);
+      }
+    }
+  });
+
+  test("rewrites app dev scripts so they run without bun", async () => {
+    const dest = join(tmpDir, "rewrite-apps-test");
+    await mkdir(dest, { recursive: true });
+    await copyDirectory(templatePath, dest);
+
+    await rewriteAllBunScripts(dest, "pnpm");
+
+    const app = JSON.parse(
+      readFileSync(join(dest, "apps", "app", "package.json"), "utf8")
+    );
+    expect(app.scripts.dev).toBe("next dev -p 3000");
+    expect(app.scripts.build).toBe("next build");
+
+    const web = JSON.parse(
+      readFileSync(join(dest, "apps", "web", "package.json"), "utf8")
+    );
+    expect(web.scripts.dev).toBe("next dev -p 3001");
+
+    const api = JSON.parse(
+      readFileSync(join(dest, "apps", "api", "package.json"), "utf8")
+    );
+    expect(api.scripts["next-dev"]).toBe("next dev -p 3002");
+  });
+
+  test("leaves the template untouched for bun", async () => {
+    const dest = join(tmpDir, "rewrite-bun-noop-test");
+    await mkdir(dest, { recursive: true });
+    await copyDirectory(templatePath, dest);
+
+    const before = collectScripts(dest);
+    await rewriteAllBunScripts(dest, "bun");
+    const after = collectScripts(dest);
+
+    expect(after).toEqual(before);
+  });
+});
+
+describe("addTsxDevDependency", () => {
+  test("template does not declare tsx (bun runs scripts natively)", () => {
+    const template = JSON.parse(
+      readFileSync(join(templatePath, "package.json"), "utf8")
+    );
+    expect(template.devDependencies.tsx).toBeUndefined();
+    expect(template.dependencies?.tsx).toBeUndefined();
+  });
+
+  test("adds a pinned tsx devDependency for non-bun scaffolds", async () => {
+    const dest = join(tmpDir, "tsx-dep-test");
+    await mkdir(dest, { recursive: true });
+    await copyDirectory(templatePath, dest);
+
+    await addTsxDevDependency(dest);
+
+    const content = JSON.parse(
+      await readFile(join(dest, "package.json"), "utf8")
+    );
+    expect(content.devDependencies.tsx).toBe(tsxVersion);
+  });
+
+  test("preserves the existing devDependencies", async () => {
+    const dest = join(tmpDir, "tsx-preserve-test");
+    await mkdir(dest, { recursive: true });
+    await copyDirectory(templatePath, dest);
+
+    const before = JSON.parse(
+      await readFile(join(dest, "package.json"), "utf8")
+    );
+    await addTsxDevDependency(dest);
+    const after = JSON.parse(
+      await readFile(join(dest, "package.json"), "utf8")
+    );
+
+    for (const [dep, version] of Object.entries(before.devDependencies)) {
+      expect(after.devDependencies[dep]).toBe(version as string);
+    }
+  });
+});
+
+describe("rewriteEnvScript", () => {
+  test("template env.ts invokes convex through bunx", () => {
+    const content = readFileSync(
+      join(templatePath, "scripts", "env.ts"),
+      "utf8"
+    );
+    expect(content).toContain("bunx convex ");
+  });
+
+  test("rewrites bunx to npx for npm and yarn", async () => {
+    for (const pm of ["npm", "yarn"]) {
+      const dest = join(tmpDir, `env-script-${pm}-test`);
+      await mkdir(dest, { recursive: true });
+      await copyDirectory(templatePath, dest);
+
+      await rewriteEnvScript(dest, pm);
+
+      const content = readFileSync(join(dest, "scripts", "env.ts"), "utf8");
+      expect(content).toContain("npx convex ");
+      expect(content).not.toContain("bunx ");
+      expect(content).not.toContain("bun scripts/");
+    }
+  });
+
+  test("rewrites bunx to pnpm dlx for pnpm", async () => {
+    const dest = join(tmpDir, "env-script-pnpm-test");
+    await mkdir(dest, { recursive: true });
+    await copyDirectory(templatePath, dest);
+
+    await rewriteEnvScript(dest, "pnpm");
+
+    const content = readFileSync(join(dest, "scripts", "env.ts"), "utf8");
+    expect(content).toContain("pnpm dlx convex ");
+    expect(content).not.toContain("bunx ");
+    expect(content).not.toContain("bun scripts/");
+  });
+
+  test("is a no-op for bun", async () => {
+    const dest = join(tmpDir, "env-script-bun-test");
+    await mkdir(dest, { recursive: true });
+    await copyDirectory(templatePath, dest);
+
+    await rewriteEnvScript(dest, "bun");
+
+    const scaffolded = readFileSync(join(dest, "scripts", "env.ts"), "utf8");
+    const template = readFileSync(
+      join(templatePath, "scripts", "env.ts"),
+      "utf8"
+    );
+    expect(scaffolded).toBe(template);
+  });
+
+  test("does nothing when scripts/env.ts is absent", async () => {
+    const dest = join(tmpDir, "env-script-missing-test");
+    await mkdir(dest, { recursive: true });
+
+    await rewriteEnvScript(dest, "npm");
+
+    expect(existsSync(join(dest, "scripts", "env.ts"))).toBe(false);
+  });
+});
+
+describe("backend convex url sync", () => {
+  const backendPackageJson = () =>
+    JSON.parse(
+      readFileSync(
+        join(templatePath, "packages", "backend", "package.json"),
+        "utf8"
+      )
+    );
+
+  test("sync script exists in the template", () => {
+    expect(
+      existsSync(
+        join(
+          templatePath,
+          "packages",
+          "backend",
+          "scripts",
+          "sync-convex-url.mjs"
+        )
+      )
+    ).toBe(true);
+  });
+
+  test("backend dev and setup scripts run the sync", () => {
+    const { scripts } = backendPackageJson();
+    // The sync must run before `convex dev` so the app env files carry the
+    // deployment URL by the time the app dev servers read them.
+    expect(scripts.dev).toContain(
+      "node scripts/sync-convex-url.mjs; convex dev"
+    );
+    expect(scripts.setup).toContain("node scripts/sync-convex-url.mjs");
+  });
+
+  test("sync invocation survives package manager rewrites", () => {
+    const { scripts } = backendPackageJson();
+    // The script runs via plain `node` precisely so no bun-token rewrite
+    // pair can mangle it; guard against a future pair matching it anyway.
+    for (const pm of ["npm", "yarn", "pnpm"]) {
+      const rewritten = rewriteBunScripts(scripts, pm);
+      expect(rewritten.dev).toContain("node scripts/sync-convex-url.mjs");
+      expect(rewritten.setup).toContain("node scripts/sync-convex-url.mjs");
+    }
+  });
+});
+
+describe("template desktop app", () => {
+  test("pins electron to an exact version for electron-builder", () => {
+    const desktop = JSON.parse(
+      readFileSync(
+        join(templatePath, "apps", "desktop", "package.json"),
+        "utf8"
+      )
+    );
+    // electron-builder install-app-deps (postinstall) requires an exact
+    // version; a range aborts the whole install on npm/yarn/pnpm.
+    expect(desktop.devDependencies.electron).toMatch(exactVersionRe);
+    expect(desktop.scripts.postinstall).toContain("install-app-deps");
+  });
+
+  test("postinstall fails soft so it cannot abort a repair install", () => {
+    const desktop = JSON.parse(
+      readFileSync(
+        join(templatePath, "apps", "desktop", "package.json"),
+        "utf8"
+      )
+    );
+    // install-app-deps crashes when node_modules is mid-repair (broken store
+    // symlinks). A hard failure makes bun abort the rest of the install and
+    // skip remaining lifecycle scripts, so the script must swallow the error
+    // and explain itself instead.
+    expect(desktop.scripts.postinstall).toContain("install-app-deps || echo ");
+  });
+});
+
+describe("rewriteBunProse", () => {
+  const prose = [
+    "This is a Turborepo monorepo managed with **bun** as the package manager.",
+    "Run `bun run dev` after `bun install`, or `bunx convex dev`.",
+    "- Use `bun` for all package management (not npm/yarn/pnpm)",
+    "| Monorepo | [Turborepo](https://turbo.build) + [Bun](https://bun.sh) |",
+  ].join("\n");
+
+  test("rewrites commands and package-manager prose for npm", () => {
+    const result = rewriteBunProse(prose, "npm");
+
+    expect(result).toContain("managed with **npm** as the package manager");
+    expect(result).toContain("`npm run dev`");
+    expect(result).toContain("`npm install`");
+    expect(result).toContain("`npx convex dev`");
+    expect(result).toContain("Use `npm` for all package management");
+    expect(result).not.toContain("(not npm/yarn/pnpm)");
+    expect(result).toContain("[npm](https://www.npmjs.com)");
+    expect(result).not.toContain("bun");
+  });
+
+  test("rewrites bunx to pnpm dlx for pnpm", () => {
+    const result = rewriteBunProse(prose, "pnpm");
+
+    expect(result).toContain("`pnpm dlx convex dev`");
+    expect(result).toContain("`pnpm run dev`");
+    expect(result).toContain("[pnpm](https://pnpm.io)");
+    expect(result).not.toContain("bun");
+  });
+
+  test("rewrites bunx to npx for yarn classic", () => {
+    const result = rewriteBunProse(prose, "yarn");
+
+    expect(result).toContain("`npx convex dev`");
+    expect(result).toContain("`yarn run dev`");
+    expect(result).toContain("[Yarn](https://yarnpkg.com)");
+    expect(result).not.toContain("bun");
+  });
+
+  test("is a no-op for bun", () => {
+    expect(rewriteBunProse(prose, "bun")).toBe(prose);
+  });
+});
+
+describe("rewriteScaffoldDocs", () => {
+  test("rewrites bun commands in the copied agent guide and README.md", async () => {
+    const dest = join(tmpDir, "docs-rewrite-test");
+    await mkdir(dest, { recursive: true });
+    await copyDirectory(templatePath, dest);
+
+    await rewriteScaffoldDocs(dest, "npm");
+
+    for (const file of [join(".agents", "AGENTS.md"), "README.md"]) {
+      const content = readFileSync(join(dest, file), "utf8");
+      expect(content).not.toContain("bun run ");
+      expect(content).not.toContain("bun install");
+      expect(content).not.toContain("bunx ");
+    }
+  });
+
+  test("leaves the docs untouched for bun", async () => {
+    const dest = join(tmpDir, "docs-noop-test");
+    await mkdir(dest, { recursive: true });
+    await copyDirectory(templatePath, dest);
+
+    await rewriteScaffoldDocs(dest, "bun");
+
+    for (const file of [join(".agents", "AGENTS.md"), "README.md"]) {
+      const scaffolded = readFileSync(join(dest, file), "utf8");
+      const template = readFileSync(join(templatePath, file), "utf8");
+      expect(scaffolded).toBe(template);
+    }
+  });
+});
+
+describe("rewriteBunHooks", () => {
+  const hooks = JSON.stringify({
+    hooks: {
+      PostToolUse: [
+        {
+          matcher: "Write|Edit",
+          hooks: [{ type: "command", command: "bun x ultracite fix" }],
+        },
+      ],
+    },
+  });
+
+  test("rewrites bun x to npx for npm and yarn", () => {
+    for (const pm of ["npm", "yarn"]) {
+      const result = rewriteBunHooks(hooks, pm);
+      expect(result).toContain("npx ultracite fix");
+      expect(result).not.toContain("bun x ");
+    }
+  });
+
+  test("rewrites bun x to pnpm exec for pnpm", () => {
+    const result = rewriteBunHooks(hooks, "pnpm");
+    expect(result).toContain("pnpm exec ultracite fix");
+    expect(result).not.toContain("bun x ");
+    expect(result).not.toContain("pnpm dlx ");
+  });
+
+  test("is a no-op for bun", () => {
+    expect(rewriteBunHooks(hooks, "bun")).toBe(hooks);
+  });
+
+  test("output stays valid JSON", () => {
+    const result = JSON.parse(rewriteBunHooks(hooks, "pnpm"));
+    expect(result.hooks.PostToolUse[0].hooks[0].command).toBe(
+      "pnpm exec ultracite fix"
+    );
+  });
+});
+
+describe("rewriteClaudeSettings", () => {
+  test("rewrites the hook command in the scaffolded settings.json", async () => {
+    const dest = join(tmpDir, "settings-rewrite-test");
+    await mkdir(dest, { recursive: true });
+    await copyDirectory(templatePath, dest);
+
+    await rewriteClaudeSettings(dest, "pnpm");
+
+    const settings = JSON.parse(
+      readFileSync(join(dest, ".claude", "settings.json"), "utf8")
+    );
+    const commands = JSON.stringify(settings);
+    expect(commands).toContain("pnpm exec biome format --write .");
+    expect(commands).not.toContain("bun x ");
+  });
+
+  test("leaves settings.json untouched for bun", async () => {
+    const dest = join(tmpDir, "settings-noop-test");
+    await mkdir(dest, { recursive: true });
+    await copyDirectory(templatePath, dest);
+
+    await rewriteClaudeSettings(dest, "bun");
+
+    const scaffolded = readFileSync(
+      join(dest, ".claude", "settings.json"),
+      "utf8"
+    );
+    const template = readFileSync(
+      join(templatePath, ".claude", "settings.json"),
+      "utf8"
+    );
+    expect(scaffolded).toBe(template);
+  });
+
+  test("does nothing when settings.json is absent", async () => {
+    const dest = join(tmpDir, "settings-missing-test");
+    await mkdir(dest, { recursive: true });
+
+    await rewriteClaudeSettings(dest, "npm");
+
+    expect(existsSync(join(dest, ".claude", "settings.json"))).toBe(false);
+  });
+});
+
+describe("writePnpmWorkspace", () => {
+  test("workspace globs match the template workspaces field", async () => {
+    const dest = join(tmpDir, "pnpm-ws-test");
+    await mkdir(dest, { recursive: true });
+
+    await writePnpmWorkspace(dest);
+
+    const yaml = readFileSync(join(dest, "pnpm-workspace.yaml"), "utf8");
+    const template = JSON.parse(
+      readFileSync(join(templatePath, "package.json"), "utf8")
+    );
+
+    for (const glob of template.workspaces) {
+      expect(yaml).toContain(`- "${glob}"`);
+    }
+  });
+
+  test("allows the install scripts bun trusts for this tree", async () => {
+    const dest = join(tmpDir, "pnpm-scripts-test");
+    await mkdir(dest, { recursive: true });
+
+    await writePnpmWorkspace(dest);
+
+    const yaml = readFileSync(join(dest, "pnpm-workspace.yaml"), "utf8");
+    expect(yaml).toContain("allowBuilds:");
+    expect(yaml).toContain('"@sentry/cli": true');
+
+    const expected = ["esbuild", "keytar", "lefthook", "puppeteer", "sharp"];
+    for (const pkg of expected) {
+      expect(yaml).toContain(`${pkg}: true`);
+    }
+  });
+
+  test("skips unreviewed build scripts instead of failing (pnpm 11)", async () => {
+    const dest = join(tmpDir, "pnpm-strict-test");
+    await mkdir(dest, { recursive: true });
+
+    await writePnpmWorkspace(dest);
+
+    const yaml = readFileSync(join(dest, "pnpm-workspace.yaml"), "utf8");
+    expect(yaml).toContain("strictDepBuilds: false");
+    expect(yaml).not.toContain("onlyBuiltDependencies");
+  });
+});
+
 describe("supportedPackageManagers", () => {
   test("includes bun, npm, yarn, pnpm", () => {
     expect(supportedPackageManagers).toContain("bun");
@@ -318,6 +987,7 @@ describe("scaffolding simulation", () => {
     const projectDir = join(tmpDir, name);
     await mkdir(projectDir, { recursive: true });
     await copyDirectory(templatePath, projectDir);
+    await materializeSkills(projectDir);
 
     const { rename } = await import("node:fs/promises");
     await rename(join(projectDir, "gitignore"), join(projectDir, ".gitignore"));
@@ -325,6 +995,8 @@ describe("scaffolding simulation", () => {
     for (const { dir, from, to } of dotfileRenames) {
       await rename(join(projectDir, dir, from), join(projectDir, dir, to));
     }
+
+    await createEnvFiles(projectDir);
 
     return projectDir;
   };
@@ -344,6 +1016,32 @@ describe("scaffolding simulation", () => {
     expect(content).toContain("node_modules");
   });
 
+  test("nested app .gitignore files land dotted, with content", async () => {
+    const projectDir = await scaffold("nested-gitignore-test");
+
+    const gitignoreRenames = dotfileRenames.filter(
+      (r) => r.from === "gitignore"
+    );
+    expect(gitignoreRenames.length).toBeGreaterThan(0);
+
+    for (const { dir } of gitignoreRenames) {
+      const dotted = join(projectDir, dir, ".gitignore");
+      expect(existsSync(dotted)).toBe(true);
+      expect(existsSync(join(projectDir, dir, "gitignore"))).toBe(false);
+      expect(readFileSync(dotted, "utf8").trim().length).toBeGreaterThan(0);
+    }
+  });
+
+  test("scaffolded mobile .gitignore already ignores expo-env.d.ts", async () => {
+    const projectDir = await scaffold("mobile-gitignore-test");
+
+    const content = readFileSync(
+      join(projectDir, "apps", "mobile", ".gitignore"),
+      "utf8"
+    );
+    expect(content).toMatch(expoEnvIgnoreLineRe);
+  });
+
   test("all .env.example files exist after rename", async () => {
     const projectDir = await scaffold("env-example-test");
 
@@ -355,14 +1053,19 @@ describe("scaffolding simulation", () => {
     }
   });
 
-  test("no .env.local files exist after scaffold", async () => {
+  test(".env.local files are created from .env.example", async () => {
     const projectDir = await scaffold("env-local-test");
 
     const envExampleDirs = dotfileRenames.filter(
       (r) => r.to === ".env.example"
     );
     for (const { dir } of envExampleDirs) {
-      expect(existsSync(join(projectDir, dir, ".env.local"))).toBe(false);
+      const local = readFileSync(join(projectDir, dir, ".env.local"), "utf8");
+      const example = readFileSync(
+        join(projectDir, dir, ".env.example"),
+        "utf8"
+      );
+      expect(local).toBe(example);
     }
   });
 
@@ -389,7 +1092,7 @@ describe("scaffolding simulation", () => {
     }
   });
 
-  test("no .env.production files created (envFiles is empty)", async () => {
+  test(".env.production files are created from .env.example", async () => {
     const projectDir = await scaffold("env-setup-test");
 
     const envExampleDirs = dotfileRenames
@@ -397,15 +1100,19 @@ describe("scaffolding simulation", () => {
       .map((r) => r.dir);
 
     for (const dir of envExampleDirs) {
-      expect(existsSync(join(projectDir, dir, ".env.production"))).toBe(false);
+      expect(existsSync(join(projectDir, dir, ".env.production"))).toBe(true);
     }
   });
 
   test("dev-only files can be stripped", async () => {
     const projectDir = await scaffold("dev-strip-test");
 
+    // devOnlyFiles are gitignored, so fresh checkouts (like CI) do not have
+    // them. Recreate the local-only state a dev machine would have, then
+    // verify the strip removes it.
     for (const file of devOnlyFiles) {
-      expect(existsSync(join(projectDir, file))).toBe(true);
+      await mkdir(join(projectDir, dirname(file)), { recursive: true });
+      await writeFile(join(projectDir, file), "{}\n");
     }
 
     for (const file of devOnlyFiles) {
@@ -415,6 +1122,45 @@ describe("scaffolding simulation", () => {
     for (const file of devOnlyFiles) {
       expect(existsSync(join(projectDir, file))).toBe(false);
     }
+  });
+
+  test("agent files land in the scaffold, local settings stripped", async () => {
+    const projectDir = await scaffold("agent-files-test");
+
+    for (const file of devOnlyFiles) {
+      await rm(join(projectDir, file), { recursive: true, force: true });
+    }
+
+    expect(existsSync(join(projectDir, "CLAUDE.md"))).toBe(true);
+    expect(existsSync(join(projectDir, "AGENTS.md"))).toBe(true);
+    expect(existsSync(join(projectDir, ".mcp.json"))).toBe(true);
+    expect(existsSync(join(projectDir, ".claude", "CLAUDE.md"))).toBe(true);
+    expect(existsSync(join(projectDir, ".agents", "AGENTS.md"))).toBe(true);
+    expect(existsSync(join(projectDir, ".claude", "settings.json"))).toBe(true);
+    expect(existsSync(join(projectDir, ".claude", "settings.local.json"))).toBe(
+      false
+    );
+  });
+
+  test("skills are materialized as real directories in .claude/skills", async () => {
+    const projectDir = await scaffold("skills-test");
+    const skillsSourceDir = join(projectDir, ".agents", "skills");
+    const skillsDestDir = join(projectDir, ".claude", "skills");
+
+    const sourceSkills = readdirSync(skillsSourceDir).sort();
+    const materializedSkills = readdirSync(skillsDestDir).sort();
+    expect(materializedSkills).toEqual(sourceSkills);
+    expect(materializedSkills.length).toBeGreaterThan(0);
+
+    for (const skill of materializedSkills) {
+      const skillPath = join(skillsDestDir, skill);
+      expect(lstatSync(skillPath).isSymbolicLink()).toBe(false);
+      expect(statSync(skillPath).isDirectory()).toBe(true);
+    }
+
+    expect(
+      existsSync(join(skillsDestDir, materializedSkills[0], "SKILL.md"))
+    ).toBe(true);
   });
 
   test("project has expected top-level structure", async () => {
@@ -506,8 +1252,108 @@ describe("edge cases", () => {
     const content = JSON.parse(
       readFileSync(join(templatePath, "package.json"), "utf8")
     );
-    expect(content.scripts["env:init"]).toBeDefined();
+    // env:init is gone: the CLI creates env files at scaffold time.
+    expect(content.scripts["env:init"]).toBeUndefined();
     expect(content.scripts["env:check"]).toBeDefined();
     expect(content.scripts["env:push"]).toBeDefined();
+  });
+});
+
+describe("name prompt", () => {
+  // The prompt is interactive (clack under a TTY), so guard it at the source
+  // level like the ordering suite below. The regression: a placeholder-only
+  // prompt renders "my-app" as if prefilled, but Enter submits an empty
+  // value. clack only applies defaultValue at finalize, after validate has
+  // run, so the prompt needs a real defaultValue and no required-name
+  // validator for Enter to accept what the prompt displays.
+  const source = readFileSync(join(import.meta.dirname, "init.ts"), "utf8");
+  const getNameSource = source.slice(
+    source.indexOf("const getName"),
+    source.indexOf("const getPackageManager")
+  );
+
+  test("Enter accepts the rendered my-app default", () => {
+    expect(getNameSource).toContain('defaultValue: "my-app"');
+  });
+
+  test("placeholder matches the default so the display is honest", () => {
+    expect(getNameSource).toContain('placeholder: "my-app"');
+  });
+
+  test("no validator rejects the empty input the default exists for", () => {
+    expect(getNameSource).not.toContain("validate(");
+    expect(getNameSource).not.toContain("validate:");
+  });
+});
+
+describe("init step ordering", () => {
+  // The initial commit must capture the fully settled tree: the lockfile
+  // written by install and anything generated by the Convex build. Running
+  // the real flow needs a network install, so guard the ordering at the
+  // source level instead.
+  const source = readFileSync(join(import.meta.dirname, "init.ts"), "utf8");
+
+  const orderOf = (marker: string): number => {
+    const index = source.indexOf(marker);
+    expect(`${marker} @ ${index}`).not.toBe(`${marker} @ -1`);
+    return index;
+  };
+
+  test("git init runs before install so hooks can register", () => {
+    expect(orderOf("await initGitRepo()")).toBeLessThan(
+      orderOf("await installDependencies(")
+    );
+  });
+
+  test("renames and env files happen before the commit", () => {
+    const commit = orderOf('await run("git add .")');
+    expect(orderOf("of dotfileRenames")).toBeLessThan(commit);
+    expect(orderOf("await createEnvFiles(")).toBeLessThan(commit);
+  });
+
+  test("lockfile convergence reinstall sits between install and commit", () => {
+    // bun's lockfile serializer only converges from the second save onward
+    // (the fresh-resolve save and the next load-and-resave disagree on
+    // hoisted slots), so the committed bun.lock must come from a re-install
+    // after the first one, and before the commit captures it.
+    const converge = orderOf('await run("bun install")');
+
+    expect(orderOf("await installDependencies(")).toBeLessThan(converge);
+    expect(converge).toBeLessThan(orderOf('await run("git add .")'));
+  });
+
+  test("convergence reinstall is guarded to bun", () => {
+    // The drift is in bun's serializer; npm, yarn, and pnpm lockfiles showed
+    // none, and their no-op installs are slow enough to hurt scaffold time.
+    const between = source.slice(
+      orderOf("await setupConvex("),
+      orderOf('await run("git add .")')
+    );
+
+    expect(between).toContain('if (packageManager === "bun")');
+    expect(between).toContain('await run("bun install")');
+  });
+
+  test("commit is the last side-effecting step", () => {
+    const add = orderOf('await run("git add .")');
+    const commit = orderOf("commit --no-verify");
+
+    expect(orderOf("await installDependencies(")).toBeLessThan(add);
+    expect(orderOf("await setupConvex(")).toBeLessThan(add);
+    expect(add).toBeLessThan(commit);
+
+    // Nothing after the commit may touch the project tree; only user-facing
+    // output is allowed to follow.
+    const tail = source.slice(commit);
+    for (const sideEffect of [
+      "await run(",
+      "await rename(",
+      "await rm(",
+      "await writeFile(",
+      "installDependencies(",
+      "setupConvex(",
+    ]) {
+      expect(tail.indexOf(sideEffect)).toBe(-1);
+    }
   });
 });
