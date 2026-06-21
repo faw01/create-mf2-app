@@ -6,6 +6,7 @@ import {
   devOnlyFiles,
   dotfileRenames,
   getTemplatePath,
+  materializeSkills,
   updatePackageJson,
 } from "./utils";
 
@@ -16,6 +17,7 @@ console.log(`Scaffolding project to ${projectDir}...`);
 
 await mkdir(projectDir, { recursive: true });
 await copyDirectory(templatePath, projectDir);
+await materializeSkills(projectDir);
 
 await rename(join(projectDir, "gitignore"), join(projectDir, ".gitignore"));
 

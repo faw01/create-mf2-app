@@ -11,27 +11,35 @@ import {
   text,
 } from "@clack/prompts";
 import {
+  addTsxDevDependency,
   addWorkspacesField,
   convertAllWorkspaceDeps,
   copyDirectory,
+  createEnvFiles,
   devOnlyFiles,
   dotfileRenames,
   getTemplatePath,
+  materializeSkills,
+  rewriteAllBunScripts,
+  rewriteClaudeSettings,
+  rewriteEnvScript,
+  rewriteScaffoldDocs,
   run,
   supportedPackageManagers,
   updatePackageJson,
   updatePackageManager,
+  writePnpmWorkspace,
 } from "./utils.js";
 
 const getName = async (): Promise<string> => {
+  // placeholder is just a greyed hint; defaultValue is what an empty Enter
+  // submits. Keep them identical so the prompt delivers what it shows.
+  // No required-name check here: clack runs validation before applying
+  // defaultValue, so it would reject the Enter press the default exists for.
   const value = await text({
     message: "What is your project named?",
     placeholder: "my-app",
-    validate(value) {
-      if (!value || value.length === 0) {
-        return "Please enter a project name.";
-      }
-    },
+    defaultValue: "my-app",
   });
 
   if (isCancel(value)) {
@@ -98,7 +106,7 @@ export const initialize = async (options: {
   disableGit?: boolean;
 }): Promise<void> => {
   try {
-    intro("Let's move fawking fast");
+    intro("create-mf2-app init - Let's move fawking fast");
 
     const cwd = process.cwd();
     const name = options.name ?? (await getName());
@@ -118,6 +126,7 @@ export const initialize = async (options: {
     s.start("Copying template...");
     await mkdir(projectDir, { recursive: true });
     await copyDirectory(templatePath, projectDir);
+    await materializeSkills(projectDir);
 
     await rename(join(projectDir, "gitignore"), join(projectDir, ".gitignore"));
 
@@ -129,6 +138,9 @@ export const initialize = async (options: {
       }
     }
 
+    s.message("Creating env files...");
+    await createEnvFiles(projectDir);
+
     s.message("Configuring project...");
     await updatePackageJson(projectDir, name);
 
@@ -137,21 +149,23 @@ export const initialize = async (options: {
     if (packageManager !== "bun") {
       s.message("Updating package manager configuration...");
       await updatePackageManager(projectDir, packageManager);
-      await convertAllWorkspaceDeps(projectDir);
+      await rewriteAllBunScripts(projectDir, packageManager);
+      await addTsxDevDependency(projectDir);
+      await rewriteEnvScript(projectDir, packageManager);
+      await rewriteScaffoldDocs(projectDir, packageManager);
+      await rewriteClaudeSettings(projectDir, packageManager);
 
-      if (packageManager !== "pnpm") {
+      if (packageManager === "pnpm") {
+        await writePnpmWorkspace(projectDir);
+      } else {
+        await convertAllWorkspaceDeps(projectDir);
         await addWorkspacesField(projectDir);
       }
 
       await rm(join(projectDir, "bunfig.toml"), { force: true });
     }
 
-    if (packageManager !== "pnpm") {
-      await rm(join(projectDir, "pnpm-lock.yaml"), { force: true });
-      await rm(join(projectDir, "pnpm-workspace.yaml"), { force: true });
-    }
-
-    s.message("Removing dev-only files...");
+    s.message("Removing local-only files...");
     await stripDevOnlyFiles(projectDir);
 
     s.message("Initializing Git repository...");
@@ -163,6 +177,17 @@ export const initialize = async (options: {
 
     s.start("Setting up Convex...");
     await setupConvex(packageManager);
+
+    if (packageManager === "bun") {
+      // bun 1.3.14's lockfile save is not idempotent: the fresh-resolve save
+      // and the next load-and-resave disagree on hoisted slots, converging
+      // from the second save onward. Re-running install (a ~1s warm no-op)
+      // commits the converged bun.lock so the user's first install stays
+      // clean. npm/yarn/pnpm showed no drift and their no-op installs are
+      // slow, so this stays bun-only.
+      s.message("Converging lockfile...");
+      await run("bun install");
+    }
 
     if (options.disableGit) {
       await rm(join(projectDir, ".git"), { recursive: true, force: true });
@@ -180,8 +205,14 @@ export const initialize = async (options: {
     const pm = packageManager === "bun" ? "bun" : packageManager;
     log.info(`Next steps:
   cd ${name}
-  Fill in your .env.local files with your API keys
   ${pm} run dev
+
+Everything boots with zero keys. Your .env.local files are ready to
+fill in; a blank value just disables that integration. Run
+${pm} run env:check to see what is still blank.
+
+Tell your coding agent to "use the mf2 skill" with your product idea
+to turn it into a build plan.
 
 When ready to deploy:
   Fill in .env.production files with production keys
