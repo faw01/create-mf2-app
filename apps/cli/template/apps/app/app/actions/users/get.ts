@@ -1,53 +1,12 @@
 "use server";
 
-import {
-  auth,
-  clerkClient,
-  type OrganizationMembership,
-} from "@repo/auth/server";
-
-const getName = (user: OrganizationMembership): string | undefined => {
-  let name = user.publicUserData?.firstName;
-
-  if (name && user.publicUserData?.lastName) {
-    name = `${name} ${user.publicUserData.lastName}`;
-  } else if (!name) {
-    name = user.publicUserData?.identifier;
-  }
-
-  return name;
-};
-
-const colors = [
-  "var(--color-red-500)",
-  "var(--color-orange-500)",
-  "var(--color-amber-500)",
-  "var(--color-yellow-500)",
-  "var(--color-lime-500)",
-  "var(--color-green-500)",
-  "var(--color-emerald-500)",
-  "var(--color-teal-500)",
-  "var(--color-cyan-500)",
-  "var(--color-sky-500)",
-  "var(--color-blue-500)",
-  "var(--color-indigo-500)",
-  "var(--color-violet-500)",
-  "var(--color-purple-500)",
-  "var(--color-fuchsia-500)",
-  "var(--color-pink-500)",
-  "var(--color-rose-500)",
-];
+import { auth, clerkClient } from "@repo/auth/server";
+import { parseError } from "@repo/observability/error";
+import { getMemberName, getUserColor } from "@/lib/collaboration-user";
 
 export const getUsers = async (
   userIds: string[]
-): Promise<
-  | {
-      data: Liveblocks["UserMeta"]["info"][];
-    }
-  | {
-      error: unknown;
-    }
-> => {
+): Promise<{ data: Liveblocks["UserMeta"]["info"][] } | { error: string }> => {
   try {
     const { orgId } = await auth();
 
@@ -62,20 +21,25 @@ export const getUsers = async (
       limit: 100,
     });
 
-    const data: Liveblocks["UserMeta"]["info"][] = members.data
-      .filter(
-        (user) =>
-          user.publicUserData?.userId &&
-          userIds.includes(user.publicUserData.userId)
-      )
-      .map((user) => ({
-        name: getName(user) ?? "Unknown user",
-        picture: user.publicUserData?.imageUrl ?? "",
-        color: colors[Math.floor(Math.random() * colors.length)],
-      }));
+    const membersByUserId = new Map(
+      members.data.flatMap((member) => {
+        const userId = member.publicUserData?.userId;
+        return userId ? [[userId, member] as const] : [];
+      })
+    );
+
+    // Liveblocks expects one info entry per requested ID, in order.
+    const data: Liveblocks["UserMeta"]["info"][] = userIds.map((userId) => {
+      const member = membersByUserId.get(userId);
+      return {
+        name: member ? getMemberName(member) : undefined,
+        avatar: member?.publicUserData?.imageUrl,
+        color: getUserColor(userId),
+      };
+    });
 
     return { data };
   } catch (error) {
-    return { error };
+    return { error: parseError(error) };
   }
 };

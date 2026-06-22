@@ -1,34 +1,13 @@
 "use server";
 
-import {
-  auth,
-  clerkClient,
-  type OrganizationMembership,
-} from "@repo/auth/server";
+import { auth, clerkClient } from "@repo/auth/server";
+import { parseError } from "@repo/observability/error";
 import Fuse from "fuse.js";
-
-const getName = (user: OrganizationMembership): string | undefined => {
-  let name = user.publicUserData?.firstName;
-
-  if (name && user.publicUserData?.lastName) {
-    name = `${name} ${user.publicUserData.lastName}`;
-  } else if (!name) {
-    name = user.publicUserData?.identifier;
-  }
-
-  return name;
-};
+import { getMemberName } from "@/lib/collaboration-user";
 
 export const searchUsers = async (
   query: string
-): Promise<
-  | {
-      data: string[];
-    }
-  | {
-      error: unknown;
-    }
-> => {
+): Promise<{ data: string[] } | { error: string }> => {
   try {
     const { orgId } = await auth();
 
@@ -43,11 +22,19 @@ export const searchUsers = async (
       limit: 100,
     });
 
-    const users = members.data.map((user) => ({
-      id: user.id,
-      name: getName(user) ?? user.publicUserData?.identifier,
-      imageUrl: user.publicUserData?.imageUrl,
-    }));
+    // Liveblocks resolves mentions by Clerk user ID, not membership ID.
+    const users = members.data.flatMap((member) => {
+      const userId = member.publicUserData?.userId;
+      if (!userId) {
+        return [];
+      }
+      return [
+        {
+          id: userId,
+          name: getMemberName(member),
+        },
+      ];
+    });
 
     const fuse = new Fuse(users, {
       keys: ["name"],
@@ -60,6 +47,6 @@ export const searchUsers = async (
 
     return { data };
   } catch (error) {
-    return { error };
+    return { error: parseError(error) };
   }
 };
