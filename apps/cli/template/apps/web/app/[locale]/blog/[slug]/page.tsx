@@ -5,18 +5,15 @@ import { CodeBlock } from "@repo/cms/components/code-block";
 import { Feed } from "@repo/cms/components/feed";
 import { Image } from "@repo/cms/components/image";
 import { TableOfContents } from "@repo/cms/components/toc";
+import { getBaseUrl } from "@repo/seo/base-url";
 import { JsonLd } from "@repo/seo/json-ld";
 import { createMetadata } from "@repo/seo/metadata";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Sidebar } from "@/components/sidebar";
-import { env } from "@/env";
 
-const protocol = env.VERCEL_PROJECT_PRODUCTION_URL?.startsWith("https")
-  ? "https"
-  : "http";
-const url = new URL(`${protocol}://${env.VERCEL_PROJECT_PRODUCTION_URL}`);
+const url = getBaseUrl();
 
 type BlogPostProperties = {
   readonly params: Promise<{

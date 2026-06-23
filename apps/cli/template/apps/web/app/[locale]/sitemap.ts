@@ -1,20 +1,12 @@
-import fs from "node:fs";
 import { blog, legal } from "@repo/cms";
+import { getBaseUrl } from "@repo/seo/base-url";
 import type { MetadataRoute } from "next";
-import { env } from "@/env";
 
-const appFolders = fs.readdirSync("app", { withFileTypes: true });
-const pages = appFolders
-  .filter((file) => file.isDirectory())
-  .filter((folder) => !folder.name.startsWith("_"))
-  .filter((folder) => !folder.name.startsWith("("))
-  .map((folder) => folder.name);
+const pages = ["blog", "contact", "pricing"];
+
 const blogs = (await blog.getPosts()).map((post) => post._slug);
 const legals = (await legal.getPosts()).map((post) => post._slug);
-const protocol = env.VERCEL_PROJECT_PRODUCTION_URL?.startsWith("https")
-  ? "https"
-  : "http";
-const url = new URL(`${protocol}://${env.VERCEL_PROJECT_PRODUCTION_URL}`);
+const url = getBaseUrl();
 
 const sitemap = async (): Promise<MetadataRoute.Sitemap> => [
   {
@@ -25,12 +17,12 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => [
     url: new URL(page, url).href,
     lastModified: new Date(),
   })),
-  ...blogs.map((blog) => ({
-    url: new URL(`blog/${blog}`, url).href,
+  ...blogs.map((slug) => ({
+    url: new URL(`blog/${slug}`, url).href,
     lastModified: new Date(),
   })),
-  ...legals.map((legal) => ({
-    url: new URL(`legal/${legal}`, url).href,
+  ...legals.map((slug) => ({
+    url: new URL(`legal/${slug}`, url).href,
     lastModified: new Date(),
   })),
 ];
