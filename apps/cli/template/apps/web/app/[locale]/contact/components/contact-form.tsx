@@ -1,26 +1,23 @@
 "use client";
 
 import { Button } from "@repo/design-system/components/ui/button";
-import { Calendar } from "@repo/design-system/components/ui/calendar";
 import { Input } from "@repo/design-system/components/ui/input";
 import { Label } from "@repo/design-system/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@repo/design-system/components/ui/popover";
-import { cn } from "@repo/design-system/lib/utils";
+import { Textarea } from "@repo/design-system/components/ui/textarea";
 import type { Dictionary } from "@repo/internationalization";
-import { format } from "date-fns";
-import { CalendarIcon, Check, MoveRight } from "lucide-react";
-import { useState } from "react";
+import { Check, MoveRight } from "lucide-react";
+import { useActionState } from "react";
+import { type ContactFormState, contact } from "../actions/contact";
 
 type ContactFormProps = {
   dictionary: Dictionary;
 };
 
+const initialState: ContactFormState = { status: "idle" };
+
 export const ContactForm = ({ dictionary }: ContactFormProps) => {
-  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [state, formAction, isPending] = useActionState(contact, initialState);
+  const form = dictionary.web.contact.hero.form;
 
   return (
     <div className="w-full py-20 lg:py-40">
@@ -54,63 +51,35 @@ export const ContactForm = ({ dictionary }: ContactFormProps) => {
           </div>
 
           <div className="flex items-center justify-center">
-            <div className="flex max-w-sm flex-col gap-4 rounded-md border p-8">
-              <p>{dictionary.web.contact.hero.form.title}</p>
+            <form
+              action={formAction}
+              className="flex w-full max-w-sm flex-col gap-4 rounded-md border p-8"
+            >
+              <p>{form.title}</p>
               <div className="grid w-full max-w-sm items-center gap-1">
-                <Label htmlFor="picture">
-                  {dictionary.web.contact.hero.form.date}
-                </Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      className={cn(
-                        "w-full max-w-sm justify-start text-left font-normal",
-                        !date && "text-muted-foreground"
-                      )}
-                      variant="outline"
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {date ? (
-                        format(date, "PPP")
-                      ) : (
-                        <span>{dictionary.web.contact.hero.form.date}</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      initialFocus
-                      mode="single"
-                      onSelect={setDate}
-                      selected={date}
-                    />
-                  </PopoverContent>
-                </Popover>
+                <Label htmlFor="name">{form.name}</Label>
+                <Input id="name" name="name" required type="text" />
               </div>
               <div className="grid w-full max-w-sm items-center gap-1">
-                <Label htmlFor="firstname">
-                  {dictionary.web.contact.hero.form.firstName}
-                </Label>
-                <Input id="firstname" type="text" />
+                <Label htmlFor="email">{form.email}</Label>
+                <Input id="email" name="email" required type="email" />
               </div>
               <div className="grid w-full max-w-sm items-center gap-1">
-                <Label htmlFor="lastname">
-                  {dictionary.web.contact.hero.form.lastName}
-                </Label>
-                <Input id="lastname" type="text" />
-              </div>
-              <div className="grid w-full max-w-sm items-center gap-1">
-                <Label htmlFor="picture">
-                  {dictionary.web.contact.hero.form.resume}
-                </Label>
-                <Input id="picture" type="file" />
+                <Label htmlFor="message">{form.message}</Label>
+                <Textarea id="message" name="message" required rows={4} />
               </div>
 
-              <Button className="w-full gap-4">
-                {dictionary.web.contact.hero.form.cta}{" "}
-                <MoveRight className="h-4 w-4" />
+              {state.status === "error" ? (
+                <p className="text-destructive text-sm">{state.error}</p>
+              ) : null}
+              {state.status === "success" ? (
+                <p className="text-muted-foreground text-sm">{form.success}</p>
+              ) : null}
+
+              <Button className="w-full gap-4" disabled={isPending}>
+                {form.cta} <MoveRight className="h-4 w-4" />
               </Button>
-            </div>
+            </form>
           </div>
         </div>
       </div>

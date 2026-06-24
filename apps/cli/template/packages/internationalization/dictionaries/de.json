@@ -176,12 +176,12 @@
           }
         ],
         "form": {
-          "title": "Vereinbaren Sie ein Treffen",
-          "date": "Datum",
-          "firstName": "Vorname",
-          "lastName": "Nachname",
-          "resume": "Lebenslauf hochladen",
-          "cta": "Buchen Sie das Treffen"
+          "title": "Schreiben Sie uns",
+          "name": "Name",
+          "email": "E-Mail",
+          "message": "Nachricht",
+          "cta": "Nachricht senden",
+          "success": "Nachricht gesendet. Wir melden uns in Kürze."
         }
       }
     }

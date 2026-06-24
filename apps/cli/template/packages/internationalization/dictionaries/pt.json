@@ -176,12 +176,12 @@
           }
         ],
         "form": {
-          "title": "Agende uma reunião",
-          "date": "Data",
-          "firstName": "Primeiro nome",
-          "lastName": "Último nome",
-          "resume": "Carregar currículo",
-          "cta": "Agende a reunião"
+          "title": "Envie-nos uma mensagem",
+          "name": "Nome",
+          "email": "E-mail",
+          "message": "Mensagem",
+          "cta": "Enviar mensagem",
+          "success": "Mensagem enviada. Retornaremos em breve."
         }
       }
     }

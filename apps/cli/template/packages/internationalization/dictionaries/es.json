@@ -176,12 +176,12 @@
           }
         ],
         "form": {
-          "title": "Reservar una reunión",
-          "date": "Fecha",
-          "firstName": "Nombre",
-          "lastName": "Apellido",
-          "resume": "Subir currículum",
-          "cta": "Reservar la reunión"
+          "title": "Envíanos un mensaje",
+          "name": "Nombre",
+          "email": "Correo electrónico",
+          "message": "Mensaje",
+          "cta": "Enviar mensaje",
+          "success": "Mensaje enviado. Te responderemos pronto."
         }
       }
     }
