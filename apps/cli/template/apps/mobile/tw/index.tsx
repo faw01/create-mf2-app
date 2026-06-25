@@ -5,9 +5,7 @@ import {
   ScrollView as RNScrollView,
   Text as RNText,
   TextInput as RNTextInput,
-  TouchableHighlight as RNTouchableHighlight,
   View as RNView,
-  StyleSheet,
 } from "react-native";
 import {
   useCssElement,
@@ -17,9 +15,9 @@ import Animated from "react-native-reanimated";
 
 export const Link = (
   props: React.ComponentProps<typeof RouterLink> & { className?: string }
-) => {
-  return useCssElement(RouterLink, props, { className: "style" });
-};
+) =>
+  // @ts-expect-error TS2590
+  useCssElement(RouterLink, props, { className: "style" });
 
 Link.Trigger = RouterLink.Trigger;
 Link.Menu = RouterLink.Menu;
@@ -35,16 +33,13 @@ export type ViewProps = React.ComponentProps<typeof RNView> & {
   className?: string;
 };
 
-export const View = (props: ViewProps) => {
-  return useCssElement(RNView, props, { className: "style" });
-};
+export const View = (props: ViewProps) =>
+  useCssElement(RNView, props, { className: "style" });
 View.displayName = "CSS(View)";
 
 export const Text = (
   props: React.ComponentProps<typeof RNText> & { className?: string }
-) => {
-  return useCssElement(RNText, props, { className: "style" });
-};
+) => useCssElement(RNText, props, { className: "style" });
 Text.displayName = "CSS(Text)";
 
 export const ScrollView = (
@@ -52,58 +47,32 @@ export const ScrollView = (
     className?: string;
     contentContainerClassName?: string;
   }
-) => {
-  return useCssElement(RNScrollView, props, {
+) =>
+  // @ts-expect-error TS2590
+  useCssElement(RNScrollView, props, {
     className: "style",
     contentContainerClassName: "contentContainerStyle",
   });
-};
 ScrollView.displayName = "CSS(ScrollView)";
 
 export const Pressable = (
   props: React.ComponentProps<typeof RNPressable> & { className?: string }
-) => {
-  return useCssElement(RNPressable, props, { className: "style" });
-};
+) => useCssElement(RNPressable, props, { className: "style" });
 Pressable.displayName = "CSS(Pressable)";
 
 export const TextInput = (
   props: React.ComponentProps<typeof RNTextInput> & { className?: string }
-) => {
-  return useCssElement(RNTextInput, props, { className: "style" });
-};
+) => useCssElement(RNTextInput, props, { className: "style" });
 TextInput.displayName = "CSS(TextInput)";
 
 export const AnimatedScrollView = (
   props: React.ComponentProps<typeof Animated.ScrollView> & {
     className?: string;
-    contentClassName?: string;
     contentContainerClassName?: string;
   }
-) => {
-  return useCssElement(Animated.ScrollView, props, {
+) =>
+  // @ts-expect-error TS2590
+  useCssElement(Animated.ScrollView, props, {
     className: "style",
-    contentClassName: "contentContainerStyle",
     contentContainerClassName: "contentContainerStyle",
   });
-};
-
-function XXTouchableHighlight(
-  props: React.ComponentProps<typeof RNTouchableHighlight>
-) {
-  const { underlayColor, ...style } = StyleSheet.flatten(props.style) || {};
-  return (
-    <RNTouchableHighlight
-      underlayColor={underlayColor}
-      {...props}
-      style={style}
-    />
-  );
-}
-
-export const TouchableHighlight = (
-  props: React.ComponentProps<typeof RNTouchableHighlight>
-) => {
-  return useCssElement(XXTouchableHighlight, props, { className: "style" });
-};
-TouchableHighlight.displayName = "CSS(TouchableHighlight)";

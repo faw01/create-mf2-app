@@ -23,7 +23,10 @@
   }
 }
 
-/* RNR / shadcn theme variables */
+/* RNR / shadcn theme variables.
+   KEEP IN SYNC WITH lib/theme.ts: THEME duplicates these hsl tokens for
+   native navigation APIs that cannot read CSS variables. Change both files
+   together. */
 @layer base {
   :root {
     --background: 0 0% 100%;
