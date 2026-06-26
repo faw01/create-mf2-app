@@ -1,6 +1,7 @@
 import { env } from "@/env";
 import "./styles.css";
 import { AnalyticsProvider } from "@repo/analytics/provider";
+import { AuthProvider } from "@repo/auth/provider";
 import { DesignSystemProvider } from "@repo/design-system";
 import { fonts } from "@repo/design-system/lib/fonts";
 import { Toolbar } from "@repo/feature-flags/components/toolbar";
@@ -11,25 +12,24 @@ type RootLayoutProperties = {
   readonly children: ReactNode;
 };
 
+const legalUrl = (path: string): string | undefined =>
+  env.NEXT_PUBLIC_WEB_URL
+    ? new URL(path, env.NEXT_PUBLIC_WEB_URL).toString()
+    : undefined;
+
 const RootLayout = ({ children }: RootLayoutProperties) => (
   <html className={fonts} lang="en" suppressHydrationWarning>
     <body>
       <AnalyticsProvider>
-        <AppConvexProvider>
-          <DesignSystemProvider
+        <DesignSystemProvider>
+          <AuthProvider
             helpUrl={env.NEXT_PUBLIC_DOCS_URL}
-            privacyUrl={new URL(
-              "/legal/privacy",
-              env.NEXT_PUBLIC_WEB_URL
-            ).toString()}
-            termsUrl={new URL(
-              "/legal/terms",
-              env.NEXT_PUBLIC_WEB_URL
-            ).toString()}
+            privacyUrl={legalUrl("/legal/privacy")}
+            termsUrl={legalUrl("/legal/terms")}
           >
-            {children}
-          </DesignSystemProvider>
-        </AppConvexProvider>
+            <AppConvexProvider>{children}</AppConvexProvider>
+          </AuthProvider>
+        </DesignSystemProvider>
       </AnalyticsProvider>
       <Toolbar />
     </body>

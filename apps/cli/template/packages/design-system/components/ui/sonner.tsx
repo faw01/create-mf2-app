@@ -37,4 +37,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
   )
 }
 
+// Re-export toast so apps share this module's sonner instance; importing
+// "sonner" directly from an app would be a second copy that the mounted
+// <Toaster /> never renders.
+export { toast } from "sonner"
 export { Toaster }
