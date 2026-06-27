@@ -9,6 +9,6 @@ export const initializeAnalytics = () => {
 
   posthog.init(NEXT_PUBLIC_POSTHOG_KEY, {
     api_host: NEXT_PUBLIC_POSTHOG_HOST,
-    defaults: "2025-05-24",
+    defaults: "2026-05-30",
   });
 };

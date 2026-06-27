@@ -2,10 +2,10 @@ import { analytics } from "@repo/analytics/server";
 import { auth } from "@repo/auth/server";
 import { flag } from "flags/next";
 
-export const createFlag = (key: string) =>
+export const createFlag = (key: string, defaultValue = false) =>
   flag({
     key,
-    defaultValue: false,
+    defaultValue,
     async decide() {
       const { userId } = await auth();
 
@@ -17,8 +17,10 @@ export const createFlag = (key: string) =>
         return this.defaultValue as boolean;
       }
 
-      const isEnabled = await analytics.isFeatureEnabled(key, userId);
+      const flags = await analytics.evaluateFlags(userId, {
+        flagKeys: [key],
+      });
 
-      return isEnabled ?? (this.defaultValue as boolean);
+      return flags.isEnabled(key) ?? (this.defaultValue as boolean);
     },
   });

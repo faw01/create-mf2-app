@@ -22,4 +22,5 @@ export const keys = () =>
       SENTRY_PROJECT: process.env.SENTRY_PROJECT,
       NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
     },
+    emptyStringAsUndefined: true,
   });

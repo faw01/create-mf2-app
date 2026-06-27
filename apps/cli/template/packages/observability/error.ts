@@ -2,6 +2,8 @@
 import * as Sentry from "@sentry/nextjs";
 import { log } from "./log";
 
+export { captureException } from "@sentry/nextjs";
+
 export const parseError = (error: unknown): string => {
   let message = "An error occurred";
 

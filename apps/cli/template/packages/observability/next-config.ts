@@ -1,18 +1,13 @@
 import { withLogtail } from "@logtail/next";
 import { withSentryConfig } from "@sentry/nextjs";
+import type { NextConfig } from "next";
 import { keys } from "./keys";
 
 export const sentryConfig: Parameters<typeof withSentryConfig>[1] = {
   org: keys().SENTRY_ORG,
   project: keys().SENTRY_PROJECT,
 
-  // Only print logs for uploading source maps in CI
   silent: !process.env.CI,
-
-  /*
-   * For all available options, see:
-   * https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
-   */
 
   // Upload a larger set of source maps for prettier stack traces (increases build time)
   widenClientFileUpload: true,
@@ -26,28 +21,53 @@ export const sentryConfig: Parameters<typeof withSentryConfig>[1] = {
   tunnelRoute: "/monitoring",
 
   webpack: {
-    // Automatically tree-shake Sentry logger statements to reduce bundle size
     treeshake: {
       removeDebugLogging: true,
     },
 
-    /*
-     * Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
-     * See the following for more information:
-     * https://docs.sentry.io/product/crons/
-     * https://vercel.com/docs/cron-jobs
-     */
+    // Automatic instrumentation of Vercel Cron Monitors; does not yet work
+    // with App Router route handlers.
     automaticVercelMonitors: true,
   },
 };
 
-export const withSentry = (sourceConfig: object): object => {
+export const withSentry = (sourceConfig: NextConfig): NextConfig => {
   const configWithTranspile = {
     ...sourceConfig,
-    transpilePackages: ["@sentry/nextjs"],
+    transpilePackages: [
+      ...(sourceConfig.transpilePackages ?? []),
+      "@sentry/nextjs",
+    ],
   };
 
   return withSentryConfig(configWithTranspile, sentryConfig);
 };
 
-export const withLogging = (config: object): object => withLogtail(config);
+// Every env var @logtail/next reads for its ingestion config (see its
+// platform/generic.ts and config.ts), including the legacy Logtail spellings
+// and the Vercel marketplace integration endpoint.
+const betterStackEnvVars = [
+  "NEXT_PUBLIC_BETTER_STACK_INGESTING_URL",
+  "BETTER_STACK_INGESTING_URL",
+  "BETTER_STACK_INGEST_ENDPOINT",
+  "NEXT_PUBLIC_BETTER_STACK_SOURCE_TOKEN",
+  "BETTER_STACK_SOURCE_TOKEN",
+  "NEXT_PUBLIC_BETTER_STACK_CUSTOM_ENDPOINT",
+  "NEXT_PUBLIC_LOGTAIL_URL",
+  "LOGTAIL_URL",
+  "NEXT_PUBLIC_LOGTAIL_SOURCE_TOKEN",
+  "LOGTAIL_SOURCE_TOKEN",
+];
+
+/*
+ * When none of BetterStack's env vars are set, withLogtail's injected
+ * rewrites() warns "Envvars not detected" on every dev compile and then does
+ * nothing (logs fall back to console anyway). Skip the wrapper entirely in
+ * that case, mirroring how withToolbar skips without FLAGS_SECRET. With any
+ * of the vars set, behavior is unchanged, including @logtail/next's own
+ * warning about a half-configured setup.
+ */
+export const withLogging = (config: NextConfig): NextConfig =>
+  betterStackEnvVars.some((name) => process.env[name])
+    ? withLogtail(config)
+    : config;
