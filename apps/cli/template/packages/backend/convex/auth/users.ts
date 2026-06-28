@@ -11,14 +11,16 @@ import {
   type QueryCtx,
   query,
 } from "../_generated/server";
+import { env } from "../convex.env";
 
 function getClerkClient() {
-  if (!process.env.CLERK_SECRET_KEY) {
-    throw new Error("Missing CLERK_SECRET_KEY");
+  const secretKey = env.CLERK_SECRET_KEY;
+  if (!secretKey) {
+    throw new Error(
+      "Clerk admin API is not configured: set CLERK_SECRET_KEY to enable"
+    );
   }
-  return createClerkClient({
-    secretKey: process.env.CLERK_SECRET_KEY,
-  });
+  return createClerkClient({ secretKey });
 }
 
 export const userLoginStatus = query({
@@ -84,14 +86,6 @@ async function cascadeDeleteUserData(
       await ctx.db.delete("messages", message._id);
     }
     await ctx.db.delete("threads", thread._id);
-  }
-
-  const userSettings = await ctx.db
-    .query("userSettings")
-    .withIndex("by_user", (q) => q.eq("userId", userId))
-    .unique();
-  if (userSettings) {
-    await ctx.db.delete("userSettings", userSettings._id);
   }
 }
 
@@ -168,8 +162,14 @@ export async function getOrgContext(ctx: QueryCtx): Promise<{
 export const deleteUser = action({
   args: {},
   returns: v.object({ success: v.boolean() }),
-  handler: async (ctx) => {
-    const user = await ctx.runQuery(api.auth.users.currentUser);
+  handler: async (ctx): Promise<{ success: boolean }> => {
+    // The return annotation above and the type here break a circular type
+    // inference: an action that calls its own deployment's functions through
+    // `api` (or `internal`) otherwise collapses the whole generated api type
+    // to `any` for every consumer.
+    const user: Doc<"users"> | null = await ctx.runQuery(
+      api.auth.users.currentUser
+    );
     if (!user) {
       throw new Error("Not authenticated");
     }
