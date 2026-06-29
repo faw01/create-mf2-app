@@ -3,6 +3,7 @@
   "globalDependencies": ["**/.env.*local"],
   "ui": "tui",
   "envMode": "loose",
+  "concurrency": "16",
   "tasks": {
     "build": {
       "dependsOn": ["^build", "test"],
@@ -21,6 +22,7 @@
     "test": {
       "dependsOn": ["^test", "codegen"]
     },
+    "typecheck": {},
     "convex-lint": {
       "dependsOn": ["codegen"]
     },

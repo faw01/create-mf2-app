@@ -10,6 +10,9 @@
       "cache": false,
       "persistent": true
     },
+    "typecheck": {
+      "dependsOn": ["^typecheck"]
+    },
     "//#check": {},
     "//#fix": {
       "cache": false
