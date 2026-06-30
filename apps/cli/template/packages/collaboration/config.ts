@@ -32,6 +32,7 @@ declare global {
 
     // Custom metadata set on threads, for useThreads, useCreateThread, etc.
     ThreadMetadata: {
+      // Add fields here to scope or filter threads, e.g. taskId: string;
       // Example, attaching coordinates to a thread
       // x: number;
       // y: number;

@@ -14,7 +14,7 @@ const posts = await blog.getPosts();
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `BASEHUB_TOKEN` | No | BaseHub API token (returns empty results if not set) |
+| `BASEHUB_TOKEN` | No | BaseHub API token (queries return empty results and the Feed/Toolbar components render nothing if not set) |
 
 ## Docs
 

@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
 
-// This file is a stub for modifying the Next.js configuration.
-// It's handy for supplementing the default CMS configuration.
+// Stub for supplementing the Next.js config with CMS-specific settings.
 export const withCMS = (config: NextConfig) => config;

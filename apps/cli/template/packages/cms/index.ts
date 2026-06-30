@@ -1,4 +1,5 @@
 /// <reference path="./basehub-types.d.ts" />
+import { log } from "@repo/observability/log";
 import type { QueryGenqlSelection } from "basehub";
 import { basehub as basehubClient, fragmentOn } from "basehub";
 import { keys } from "./keys";
@@ -10,9 +11,9 @@ const basehub = BASEHUB_TOKEN
   ? basehubClient({ token: BASEHUB_TOKEN })
   : undefined;
 
-/* -------------------------------------------------------------------------------------------------
- * Common Fragments
- * -----------------------------------------------------------------------------------------------*/
+if (!basehub) {
+  log.info("Skipping CMS: set BASEHUB_TOKEN to enable");
+}
 
 const imageFragment = fragmentOn("BlockImage", {
   url: true,
@@ -21,10 +22,6 @@ const imageFragment = fragmentOn("BlockImage", {
   alt: true,
   blurDataURL: true,
 });
-
-/* -------------------------------------------------------------------------------------------------
- * Blog Fragments & Queries
- * -----------------------------------------------------------------------------------------------*/
 
 const postMetaFragment = fragmentOn("PostsItem", {
   _slug: true,
@@ -98,7 +95,8 @@ export const blog = {
     try {
       const data = await basehub.query(blog.postsQuery);
       return data.blog.posts.items;
-    } catch {
+    } catch (error) {
+      log.error(`Failed to fetch blog posts from BaseHub: ${error}`);
       return [];
     }
   },
@@ -111,7 +109,8 @@ export const blog = {
     try {
       const data = await basehub.query(blog.latestPostQuery);
       return data.blog.posts.item;
-    } catch {
+    } catch (error) {
+      log.error(`Failed to fetch latest blog post from BaseHub: ${error}`);
       return null;
     }
   },
@@ -125,15 +124,12 @@ export const blog = {
       const query = blog.postQuery(slug);
       const data = await basehub.query(query);
       return data.blog.posts.item;
-    } catch {
+    } catch (error) {
+      log.error(`Failed to fetch blog post from BaseHub: ${error}`);
       return null;
     }
   },
 };
-
-/* -------------------------------------------------------------------------------------------------
- * Legal Fragments & Queries
- * -----------------------------------------------------------------------------------------------*/
 
 const legalPostMetaFragment = fragmentOn("LegalPagesItem", {
   _slug: true,
@@ -197,7 +193,8 @@ export const legal = {
     try {
       const data = await basehub.query(legal.postsMetaQuery);
       return data.legalPages.items;
-    } catch {
+    } catch (error) {
+      log.error(`Failed to fetch legal page metadata from BaseHub: ${error}`);
       return [];
     }
   },
@@ -210,7 +207,8 @@ export const legal = {
     try {
       const data = await basehub.query(legal.postsQuery);
       return data.legalPages.items;
-    } catch {
+    } catch (error) {
+      log.error(`Failed to fetch legal pages from BaseHub: ${error}`);
       return [];
     }
   },
@@ -223,7 +221,8 @@ export const legal = {
     try {
       const data = await basehub.query(legal.latestPostQuery);
       return data.legalPages.item;
-    } catch {
+    } catch (error) {
+      log.error(`Failed to fetch latest legal page from BaseHub: ${error}`);
       return null;
     }
   },
@@ -237,7 +236,8 @@ export const legal = {
       const query = legal.postQuery(slug);
       const data = await basehub.query(query);
       return data.legalPages.item;
-    } catch {
+    } catch (error) {
+      log.error(`Failed to fetch legal page from BaseHub: ${error}`);
       return null;
     }
   },

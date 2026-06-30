@@ -21,14 +21,11 @@ export const authenticate = async ({
 
   const liveblocks = new LiveblocksNode({ secret });
 
-  // Start an auth session inside your endpoint
   const session = liveblocks.prepareSession(userId, { userInfo });
 
-  // Use a naming pattern to allow access to rooms with wildcards
-  // Giving the user write access on their organization
-  session.allow(`${orgId}:*`, session.FULL_ACCESS);
+  // Write access to every room in the user's organization.
+  session.allow(`${orgId}:*`, ["*:write"]);
 
-  // Authorize the user and return the result
   const { status, body } = await session.authorize();
 
   return new Response(body, { status });

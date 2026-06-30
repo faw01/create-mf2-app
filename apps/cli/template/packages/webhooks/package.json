@@ -8,13 +8,14 @@
   },
   "dependencies": {
     "@repo/auth": "workspace:*",
+    "@repo/observability": "workspace:*",
     "@t3-oss/env-nextjs": "^0.13.11",
     "server-only": "^0.0.1",
-    "svix": "^1.90.0",
-    "zod": "^4.3.6"
+    "svix": "^1.96.1",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "typescript": "^6.0.2"
+    "typescript": "^6.0.3"
   }
 }
