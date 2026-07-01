@@ -8,14 +8,11 @@
 mint dev
 ```
 
-## Key Features
+## Structure
 
-- MDX pages with Mintlify components
-- API reference with OpenAPI support
-- AI tools guides (Claude Code, Cursor, Windsurf)
-- Configuration via `docs.json`
-
-Pages live in the root of this directory. Add new pages to `docs.json` navigation.
+- Pages live in the root of this directory as MDX files
+- Configuration (name, colors, navigation) lives in `docs.json`
+- The shipped pages are placeholders: replace them with your product's docs
 
 ## Publishing
 

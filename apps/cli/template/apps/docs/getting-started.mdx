@@ -1,0 +1,37 @@
+---
+title: "Getting started"
+description: "How this project is laid out and how to run it locally"
+---
+
+This project is a Turborepo monorepo scaffolded with [create-mf2-app](https://mf2.dev). The root `README.md` covers environment setup in detail.
+
+## Run everything
+
+```bash
+bun run dev
+```
+
+Services that are not configured yet (Stripe, Convex, CMS, and so on) print a one line skip message telling you which key or setup step enables them.
+
+## Apps and ports
+
+| App | Port | What it is |
+| --- | --- | --- |
+| `apps/app` | 3000 | Main application |
+| `apps/web` | 3001 | Marketing site |
+| `apps/api` | 3002 | Webhooks and integrations |
+| `apps/email` | 3003 | Email template preview |
+| `apps/docs` | 3004 | This documentation site |
+| `apps/storybook` | 6006 | Component library viewer |
+
+The Convex backend lives in `packages/backend/convex/`. Shared code lives in `packages/`.
+
+## Work on the docs
+
+Run only this site with:
+
+```bash
+turbo dev --filter=docs
+```
+
+Add a page by creating an MDX file in `apps/docs/` and listing it under `navigation` in `docs.json`.
