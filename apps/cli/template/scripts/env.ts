@@ -1,5 +1,5 @@
 import { execSync } from "node:child_process";
-import { copyFileSync, existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 
 const ROOT = join(import.meta.dirname, "..");
@@ -104,34 +104,6 @@ const shouldSkipForConvex = (key: string, value: string): boolean => {
   return false;
 };
 
-const init = (): void => {
-  const apps = discoverApps();
-
-  if (apps.length === 0) {
-    console.log("No apps with .env.example found.");
-    return;
-  }
-
-  for (const app of apps) {
-    const appDir = join(ROOT, app);
-    const examplePath = join(appDir, ".env.example");
-
-    for (const target of [".env.local", ".env.production"]) {
-      const targetPath = join(appDir, target);
-
-      if (existsSync(targetPath)) {
-        console.log(`  skip  ${app}/${target} (already exists)`);
-        continue;
-      }
-
-      copyFileSync(examplePath, targetPath);
-      console.log(`  create  ${app}/${target}`);
-    }
-  }
-
-  console.log("\nDone. Fill in your API keys before running dev or deploying.");
-};
-
 const checkEnvTarget = (
   app: string,
   appDir: string,
@@ -141,7 +113,9 @@ const checkEnvTarget = (
   const targetPath = join(appDir, target);
 
   if (!existsSync(targetPath)) {
-    console.log(`\n${app}/${target}: file missing (run \`bun run env:init\`)`);
+    console.log(
+      `\n${app}/${target}: file missing (copy ${app}/.env.example to ${app}/${target})`
+    );
     return true;
   }
 
@@ -290,9 +264,6 @@ const push = (): void => {
 const command = process.argv[2];
 
 switch (command) {
-  case "init":
-    init();
-    break;
   case "check":
     check();
     break;
@@ -300,12 +271,9 @@ switch (command) {
     push();
     break;
   default:
-    console.log("Usage: bun scripts/env.ts <init|check|push>");
+    console.log("Usage: bun scripts/env.ts <check|push>");
     console.log("");
     console.log("Commands:");
-    console.log(
-      "  init   Create .env.local and .env.production from .env.example"
-    );
     console.log("  check  Validate all env files have required keys filled in");
     console.log("  push   Sync env vars to Vercel and Convex");
     process.exit(1);

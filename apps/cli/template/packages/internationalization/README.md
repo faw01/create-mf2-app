@@ -8,6 +8,8 @@ Multi-language support with next-international.
 import { useTranslation } from "@repo/internationalization";
 ```
 
+`internationalizationMiddleware` skips the locale rewrite for paths outside the `[locale]` segment (`/.well-known` by default; pass more prefixes as the second argument) so non-localized route handlers do not 404.
+
 ## Environment Variables
 
 | Variable | Required | Description |

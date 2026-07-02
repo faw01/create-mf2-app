@@ -5,5 +5,7 @@ export default defineConfig({
     environment: "edge-runtime",
     server: { deps: { inline: ["convex-test"] } },
     dangerouslyIgnoreUnhandledErrors: true,
+    // The template ships no backend tests; scaffolds add their own.
+    passWithNoTests: true,
   },
 });

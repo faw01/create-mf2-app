@@ -3,6 +3,7 @@ import { Resend, vOnEmailEventArgs } from "@convex-dev/resend";
 import { v } from "convex/values";
 import { components, internal } from "../_generated/api";
 import { internalMutation } from "../_generated/server";
+import { env } from "../convex.env";
 
 export const resend: Resend = new Resend(components.resend, {
   onEmailEvent: internal.email.index.handleEmailEvent,
@@ -28,6 +29,10 @@ export const send = internalMutation({
   },
   returns: v.string(),
   handler: async (ctx, args): Promise<EmailId> => {
+    // The resend component throws a bare "API key is not set" otherwise.
+    if (!env.RESEND_API_KEY) {
+      throw new Error("Email is not configured: set RESEND_API_KEY to enable");
+    }
     return await resend.sendEmail(ctx, {
       from: args.from,
       to: args.to,

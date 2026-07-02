@@ -35,4 +35,5 @@ export const keys = () =>
       NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL:
         process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL,
     },
+    emptyStringAsUndefined: true,
   });

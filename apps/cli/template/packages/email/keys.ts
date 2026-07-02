@@ -11,4 +11,5 @@ export const keys = () =>
       RESEND_FROM: process.env.RESEND_FROM,
       RESEND_TOKEN: process.env.RESEND_TOKEN,
     },
+    emptyStringAsUndefined: true,
   });

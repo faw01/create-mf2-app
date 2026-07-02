@@ -55,11 +55,12 @@ export const myFunction = mutation({
 
 ## Environment Variables
 
-Set in Convex dashboard:
-- `CLERK_JWT_ISSUER_DOMAIN` - Clerk issuer URL
+Set in Convex dashboard. All optional; blank or missing disables that integration:
+- `CLERK_JWT_ISSUER_DOMAIN` - Clerk issuer URL (JWT template named `convex`)
 - `CLERK_SECRET_KEY` - Clerk secret
 - `CLERK_WEBHOOK_SECRET` - Clerk webhook signing
 - `RESEND_API_KEY` - Resend email API key
+- `RESEND_WEBHOOK_SECRET` - Resend webhook signing
 - `AI_GATEWAY_API_KEY` - Vercel AI Gateway key
 - `AI_GATEWAY_URL` - Gateway URL
 - `SITE_URL` - App URL for Stripe redirects

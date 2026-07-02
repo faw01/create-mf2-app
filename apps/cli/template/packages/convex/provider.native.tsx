@@ -26,3 +26,19 @@ export function ConvexClientProvider({
     </ConvexProviderWithClerk>
   );
 }
+
+// When EXPO_PUBLIC_CONVEX_URL is unset the provider renders children without
+// a Convex context, so any useQuery/useMutation/useAction descendant throws
+// at runtime. These let UI degrade instead of crashing.
+export function useConvexConfigured(): boolean {
+  return convex !== null;
+}
+
+type ConvexGateProps = {
+  children: ReactNode;
+  fallback?: ReactNode;
+};
+
+export function ConvexGate({ children, fallback = null }: ConvexGateProps) {
+  return convex ? children : fallback;
+}

@@ -9,7 +9,11 @@ import {
   View,
 } from "react-native";
 
-export const SignUp = () => {
+type SignUpProps = {
+  redirectPath?: string;
+};
+
+export const SignUp = ({ redirectPath = "/(tabs)" }: SignUpProps) => {
   const { signUp, setActive, isLoaded } = useSignUp();
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -56,7 +60,7 @@ export const SignUp = () => {
             if (session?.currentTask) {
               return;
             }
-            router.replace("/(tabs)");
+            router.replace(redirectPath);
           },
         });
       }
@@ -67,7 +71,7 @@ export const SignUp = () => {
     } finally {
       setLoading(false);
     }
-  }, [isLoaded, signUp, code, setActive, router]);
+  }, [isLoaded, signUp, code, setActive, router, redirectPath]);
 
   if (pendingVerification) {
     return (

@@ -9,4 +9,5 @@ export const keys = () =>
     runtimeEnv: {
       NEXT_PUBLIC_CONVEX_URL: process.env.NEXT_PUBLIC_CONVEX_URL,
     },
+    emptyStringAsUndefined: true,
   });

@@ -10,7 +10,11 @@ import {
   View,
 } from "react-native";
 
-export const SignIn = () => {
+type SignInProps = {
+  redirectPath?: string;
+};
+
+export const SignIn = ({ redirectPath = "/(tabs)" }: SignInProps) => {
   const { signIn, setActive, isLoaded } = useSignIn();
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -40,7 +44,7 @@ export const SignIn = () => {
             if (session?.currentTask) {
               return;
             }
-            router.replace("/(tabs)");
+            router.replace(redirectPath);
           },
         });
       } else if (result.status === "needs_second_factor") {
@@ -64,7 +68,7 @@ export const SignIn = () => {
     } finally {
       setLoading(false);
     }
-  }, [isLoaded, signIn, email, password, setActive, router]);
+  }, [isLoaded, signIn, email, password, setActive, router, redirectPath]);
 
   const handleVerify = useCallback(async () => {
     if (!isLoaded) {
@@ -86,7 +90,7 @@ export const SignIn = () => {
             if (session?.currentTask) {
               return;
             }
-            router.replace("/(tabs)");
+            router.replace(redirectPath);
           },
         });
       }
@@ -97,7 +101,7 @@ export const SignIn = () => {
     } finally {
       setLoading(false);
     }
-  }, [isLoaded, signIn, code, setActive, router]);
+  }, [isLoaded, signIn, code, setActive, router, redirectPath]);
 
   if (showEmailCode) {
     return (

@@ -21,14 +21,15 @@ export const myFunction = mutation({
 
 ## Environment Variables
 
-Set in Convex dashboard:
+Set in Convex dashboard. All are optional: a blank or missing value disables that integration.
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `CLERK_JWT_ISSUER_DOMAIN` | Yes | Clerk issuer URL |
-| `CLERK_SECRET_KEY` | Yes | Clerk secret key |
-| `CLERK_WEBHOOK_SECRET` | Yes | Clerk webhook signing secret |
+| `CLERK_JWT_ISSUER_DOMAIN` | No | Clerk issuer URL from the JWT template named `convex` ([guide](https://clerk.com/docs/integrations/databases/convex)) |
+| `CLERK_SECRET_KEY` | No | Clerk secret key |
+| `CLERK_WEBHOOK_SECRET` | No | Clerk webhook signing secret |
 | `RESEND_API_KEY` | No | Resend email API key |
+| `RESEND_WEBHOOK_SECRET` | No | Resend webhook signing secret ([webhook settings](https://resend.com/webhooks)) |
 | `AI_GATEWAY_API_KEY` | No | Vercel AI Gateway key |
 | `AI_GATEWAY_URL` | No | Gateway URL |
 | `SITE_URL` | No | App URL for Stripe redirects |
