@@ -1,7 +1,28 @@
 import { Button } from "@repo/design-system/components/ui/button";
+import { getDictionary } from "@repo/internationalization";
+import { createMetadata } from "@repo/seo/metadata";
 import { Check, Minus, MoveRight, PhoneCall } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { env } from "@/env";
+
+type PricingProps = {
+  params: Promise<{
+    locale: string;
+  }>;
+};
+
+export const generateMetadata = async ({
+  params,
+}: PricingProps): Promise<Metadata> => {
+  const { locale } = await params;
+  const dictionary = await getDictionary(locale);
+
+  return createMetadata({
+    title: dictionary.web.header.product.pricing,
+    description: dictionary.web.header.product.description,
+  });
+};
 
 const Pricing = () => (
   <div className="w-full py-20 lg:py-40">
@@ -28,7 +49,7 @@ const Pricing = () => (
               <span className="text-muted-foreground text-sm"> / month</span>
             </p>
             <Button asChild className="mt-8 gap-4" variant="outline">
-              <Link href={env.NEXT_PUBLIC_APP_URL}>
+              <Link href={env.NEXT_PUBLIC_APP_URL ?? "/"}>
                 Try it <MoveRight className="h-4 w-4" />
               </Link>
             </Button>
@@ -44,7 +65,7 @@ const Pricing = () => (
               <span className="text-muted-foreground text-sm"> / month</span>
             </p>
             <Button asChild className="mt-8 gap-4">
-              <Link href={env.NEXT_PUBLIC_APP_URL}>
+              <Link href={env.NEXT_PUBLIC_APP_URL ?? "/"}>
                 Try it <MoveRight className="h-4 w-4" />
               </Link>
             </Button>

@@ -2,7 +2,7 @@
 
 import { Button } from "@repo/design-system/components/ui/button";
 import { fonts } from "@repo/design-system/lib/fonts";
-import { captureException } from "@sentry/nextjs";
+import { captureException } from "@repo/observability/error";
 import type NextError from "next/error";
 import { useEffect } from "react";
 

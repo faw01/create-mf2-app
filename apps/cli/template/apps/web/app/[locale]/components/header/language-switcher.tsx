@@ -28,16 +28,15 @@ export const LanguageSwitcher = () => {
     const defaultLocale = "en";
     let newPathname = pathname;
 
-    // Case 1: If current locale is default and missing from the URL
+    // The default locale is omitted from URLs; prefix it so the replace
+    // below has a locale segment to swap.
     if (
       !pathname.startsWith(`/${params.locale}`) &&
       params.locale === defaultLocale
     ) {
-      // Add the default locale to the beginning to normalize
       newPathname = `/${params.locale}${pathname}`;
     }
 
-    // Replace current locale with the selected one
     newPathname = newPathname.replace(`/${params.locale}`, `/${locale}`);
 
     router.push(newPathname);

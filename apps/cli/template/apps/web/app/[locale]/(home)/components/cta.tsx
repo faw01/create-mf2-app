@@ -28,7 +28,7 @@ export const CTA = ({ dictionary }: CTAProps) => (
             </Link>
           </Button>
           <Button asChild className="gap-4">
-            <Link href={env.NEXT_PUBLIC_APP_URL}>
+            <Link href={env.NEXT_PUBLIC_APP_URL ?? "/"}>
               {dictionary.web.global.secondaryCta}{" "}
               <MoveRight className="h-4 w-4" />
             </Link>

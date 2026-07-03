@@ -22,7 +22,7 @@ turbo dev --filter=web
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `BASEHUB_TOKEN` | No | BaseHub CMS token |
+| `BASEHUB_TOKEN` | No | BaseHub CMS token (blog and legal content render empty without it) |
 | `RESEND_TOKEN` | No | Resend API key |
 | `NEXT_PUBLIC_POSTHOG_KEY` | No | PostHog project key |
 | `ARCJET_KEY` | No | Arcjet security key |
