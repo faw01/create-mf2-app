@@ -1,8 +1,13 @@
-import { render } from "@testing-library/react";
-import { expect, test } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { expect, test, vi } from "vitest";
 import Page from "../app/(unauthenticated)/sign-in/[[...sign-in]]/page";
 
-test("Sign In Page", () => {
-  const { container } = render(<Page />);
-  expect(container).toBeDefined();
+vi.mock("@repo/auth/components/sign-in", () => ({
+  SignIn: () => <div data-testid="clerk-sign-in" />,
+}));
+
+test("sign-in page renders the auth sign-in component", async () => {
+  render(<Page />);
+
+  expect(await screen.findByTestId("clerk-sign-in")).toBeDefined();
 });

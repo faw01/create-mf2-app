@@ -16,7 +16,7 @@ export const CollaborationProvider = ({
     const response = await getUsers(userIds);
 
     if ("error" in response) {
-      throw new Error("Problem resolving users");
+      throw new Error(response.error);
     }
 
     return response.data;
@@ -26,7 +26,7 @@ export const CollaborationProvider = ({
     const response = await searchUsers(text);
 
     if ("error" in response) {
-      throw new Error("Problem resolving mention suggestions");
+      throw new Error(response.error);
     }
 
     return response.data;

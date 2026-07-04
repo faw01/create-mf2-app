@@ -14,12 +14,11 @@ export const NotificationsProvider = ({
   userId,
 }: NotificationsProviderProperties) => {
   const { resolvedTheme } = useTheme();
+  // resolvedTheme is undefined until next-themes hydrates.
+  const theme = resolvedTheme === "dark" ? "dark" : "light";
 
   return (
-    <RawNotificationsProvider
-      theme={resolvedTheme as "light" | "dark"}
-      userId={userId}
-    >
+    <RawNotificationsProvider theme={theme} userId={userId}>
       {children}
     </RawNotificationsProvider>
   );

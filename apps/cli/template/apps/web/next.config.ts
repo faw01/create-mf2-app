@@ -1,3 +1,4 @@
+import { withAnalytics } from "@repo/analytics/next-config";
 import { withCMS } from "@repo/cms/next-config";
 import { withToolbar } from "@repo/feature-flags/lib/toolbar";
 import { config, withAnalyzer } from "@repo/next-config";
@@ -5,12 +6,18 @@ import { withLogging, withSentry } from "@repo/observability/next-config";
 import type { NextConfig } from "next";
 import { env } from "@/env";
 
-let nextConfig: NextConfig = withToolbar(withLogging(config));
+let nextConfig: NextConfig = withToolbar(withLogging(withAnalytics(config)));
 
-nextConfig.images?.remotePatterns?.push({
-  protocol: "https",
-  hostname: "assets.basehub.com",
-});
+nextConfig.images = {
+  ...nextConfig.images,
+  remotePatterns: [
+    ...(nextConfig.images?.remotePatterns ?? []),
+    {
+      protocol: "https",
+      hostname: "assets.basehub.com",
+    },
+  ],
+};
 
 if (process.env.NODE_ENV === "production") {
   const redirects: NextConfig["redirects"] = async () => [

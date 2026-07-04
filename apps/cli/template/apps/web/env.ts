@@ -1,3 +1,5 @@
+import { keys as analytics } from "@repo/analytics/keys";
+import { keys as auth } from "@repo/auth/keys";
 import { keys as cms } from "@repo/cms/keys";
 import { keys as email } from "@repo/email/keys";
 import { keys as flags } from "@repo/feature-flags/keys";
@@ -9,6 +11,8 @@ import { createEnv } from "@t3-oss/env-nextjs";
 
 export const env = createEnv({
   extends: [
+    analytics(),
+    auth(),
     cms(),
     core(),
     email(),
@@ -20,4 +24,5 @@ export const env = createEnv({
   server: {},
   client: {},
   runtimeEnv: {},
+  emptyStringAsUndefined: true,
 });

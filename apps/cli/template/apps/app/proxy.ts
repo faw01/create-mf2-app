@@ -15,7 +15,6 @@ const securityHeaders = env.FLAGS_SECRET
 
 // Clerk middleware wraps other middleware in its callback
 export default authMiddleware(async (_auth, request) => {
-  // Run Arcjet bot detection
   if (env.ARCJET_KEY) {
     try {
       await secure(

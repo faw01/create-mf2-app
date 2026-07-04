@@ -1,5 +1,6 @@
 import { webhooks } from "@repo/webhooks";
 import { notFound } from "next/navigation";
+import { env } from "@/env";
 
 export const metadata = {
   title: "Webhooks",
@@ -7,6 +8,10 @@ export const metadata = {
 };
 
 const WebhooksPage = async () => {
+  if (!env.SVIX_TOKEN) {
+    notFound();
+  }
+
   const response = await webhooks.getAppPortal();
 
   if (!response?.url) {
