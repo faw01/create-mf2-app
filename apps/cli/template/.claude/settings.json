@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun x ultracite fix"
+            "command": "bun x biome format --write ."
           }
         ]
       }

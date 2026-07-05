@@ -1,11 +1,12 @@
 ---
 name: clerk
-description: Clerk authentication router. Use when user asks about adding authentication,
-  setting up Clerk, custom sign-in flows, Swift or native iOS auth, native Android
-  auth, Next.js patterns, React patterns, Vue patterns, Nuxt patterns, Astro patterns,
-  TanStack Start patterns, Expo patterns, React Router patterns, Chrome Extension patterns,
-  organizations, syncing users, or testing. Automatically routes to the specific skill
-  based on their task.
+description: Clerk authentication router. Use when user asks about Clerk CLI operations,
+  adding authentication, setting up Clerk, custom sign-in flows, Swift or native iOS
+  auth, native Android auth, Next.js patterns, React patterns, Vue patterns, Nuxt
+  patterns, Astro patterns, TanStack Start patterns, Expo patterns, React Router
+  patterns, Chrome Extension patterns, organizations, billing, subscriptions, payments,
+  pricing, plans, seat-based pricing, feature entitlements, syncing users, or testing.
+  Automatically routes to the specific skill based on their task.
 license: MIT
 metadata:
   version: 2.0.0
@@ -37,6 +38,12 @@ All skills are written for the current SDK. When something differs in Core 2, it
 - Framework detection and quickstart
 - Environment setup, API keys, Keyless flow
 - Migration from other auth providers
+
+**Operating Clerk from the CLI** → Use `clerk-cli`
+- Auth, linking, `doctor`, and environment pulls
+- User, org, session, app, and instance management
+- Backend and Platform API calls through `clerk api`
+- Deploy handoff and deploy status verification
 
 **Custom sign-in/sign-up UI** → Use `clerk-custom-ui`
 - Custom authentication flows with `useSignIn` / `useSignUp` hooks
@@ -95,6 +102,13 @@ All skills are written for the current SDK. When something differs in Core 2, it
 - Roles, permissions, RBAC
 - Member management
 
+**Billing & Subscriptions** → Use `clerk-billing`
+- `<PricingTable />` component
+- Plan and feature gating with `has()`
+- Seat-based B2B billing with organizations
+- Subscription lifecycle webhooks
+- Free trials, invoicing
+
 **Webhooks** → Use `clerk-webhooks`
 - Real-time events
 - Data syncing
@@ -125,6 +139,7 @@ All skills are written for the current SDK. When something differs in Core 2, it
 
 If you know your task, you can directly access:
 - `/clerk-setup` - Framework setup
+- `/clerk-cli` - CLI operations and Clerk resource management
 - `/clerk-custom-ui` - Custom flows & appearance
 - `/clerk-nextjs-patterns` - Next.js patterns
 - `/clerk-react-patterns` - React patterns
@@ -136,6 +151,7 @@ If you know your task, you can directly access:
 - `/clerk-expo-patterns` - Expo patterns
 - `/clerk-chrome-extension-patterns` - Chrome Extension patterns
 - `/clerk-orgs` - Organizations
+- `/clerk-billing` - Billing & subscriptions
 - `/clerk-webhooks` - Webhooks
 - `/clerk-testing` - Testing
 - `/clerk-swift` - Swift/native iOS
