@@ -29,12 +29,12 @@ function DialogCloseButtonComponent() {
         </DialogHeader>
         <div className="flex items-center gap-2">
           <div className="grid flex-1 gap-2">
-            <Label className="sr-only" htmlFor="link">
+            <Label htmlFor="link" className="sr-only">
               Link
             </Label>
             <Input
-              defaultValue="https://ui.shadcn.com/docs/installation"
               id="link"
+              defaultValue="https://ui.shadcn.com/docs/installation"
               readOnly
             />
           </div>
@@ -67,11 +67,11 @@ function DialogDemoComponent() {
           <FieldGroup>
             <Field>
               <Label htmlFor="name-1">Name</Label>
-              <Input defaultValue="Pedro Duarte" id="name-1" name="name" />
+              <Input id="name-1" name="name" defaultValue="Pedro Duarte" />
             </Field>
             <Field>
               <Label htmlFor="username-1">Username</Label>
-              <Input defaultValue="@peduarte" id="username-1" name="username" />
+              <Input id="username-1" name="username" defaultValue="@peduarte" />
             </Field>
           </FieldGroup>
           <DialogFooter>
@@ -118,9 +118,9 @@ function DialogScrollableContentComponent() {
             This is a dialog with scrollable content.
           </DialogDescription>
         </DialogHeader>
-        <div className="no-scrollbar -mx-4 max-h-[50vh] overflow-y-auto px-4">
+        <div className="-mx-4 no-scrollbar max-h-[50vh] overflow-y-auto px-4">
           {Array.from({ length: 10 }).map((_, index) => (
-            <p className="mb-4 leading-normal" key={index}>
+            <p key={index} className="mb-4 leading-normal">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
               eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
               enim ad minim veniam, quis nostrud exercitation ullamco laboris
@@ -150,9 +150,9 @@ function DialogStickyFooterComponent() {
             scrolls.
           </DialogDescription>
         </DialogHeader>
-        <div className="no-scrollbar -mx-4 max-h-[50vh] overflow-y-auto px-4">
+        <div className="-mx-4 no-scrollbar max-h-[50vh] overflow-y-auto px-4">
           {Array.from({ length: 10 }).map((_, index) => (
-            <p className="mb-4 leading-normal" key={index}>
+            <p key={index} className="mb-4 leading-normal">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
               eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
               enim ad minim veniam, quis nostrud exercitation ullamco laboris
@@ -181,7 +181,7 @@ const meta = {
 } satisfies Meta<typeof Dialog>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const CloseButton: Story = {
   render: () => <DialogCloseButtonComponent />,

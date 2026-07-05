@@ -44,9 +44,9 @@ function FieldCheckboxComponent() {
           <Field orientation="horizontal">
             <Checkbox id="finder-pref-9k2-hard-disks-ljj" />
             <FieldLabel
+              htmlFor="finder-pref-9k2-hard-disks-ljj"
               className="font-normal"
               defaultChecked
-              htmlFor="finder-pref-9k2-hard-disks-ljj"
             >
               Hard disks
             </FieldLabel>
@@ -54,8 +54,8 @@ function FieldCheckboxComponent() {
           <Field orientation="horizontal">
             <Checkbox id="finder-pref-9k2-external-disks-1yg" />
             <FieldLabel
-              className="font-normal"
               htmlFor="finder-pref-9k2-external-disks-1yg"
+              className="font-normal"
             >
               External disks
             </FieldLabel>
@@ -63,8 +63,8 @@ function FieldCheckboxComponent() {
           <Field orientation="horizontal">
             <Checkbox id="finder-pref-9k2-cds-dvds-fzt" />
             <FieldLabel
-              className="font-normal"
               htmlFor="finder-pref-9k2-cds-dvds-fzt"
+              className="font-normal"
             >
               CDs, DVDs, and iPods
             </FieldLabel>
@@ -72,8 +72,8 @@ function FieldCheckboxComponent() {
           <Field orientation="horizontal">
             <Checkbox id="finder-pref-9k2-connected-servers-6l2" />
             <FieldLabel
-              className="font-normal"
               htmlFor="finder-pref-9k2-connected-servers-6l2"
+              className="font-normal"
             >
               Connected servers
             </FieldLabel>
@@ -82,7 +82,7 @@ function FieldCheckboxComponent() {
       </FieldSet>
       <FieldSeparator />
       <Field orientation="horizontal">
-        <Checkbox defaultChecked id="finder-pref-9k2-sync-folders-nep" />
+        <Checkbox id="finder-pref-9k2-sync-folders-nep" defaultChecked />
         <FieldContent>
           <FieldLabel htmlFor="finder-pref-9k2-sync-folders-nep">
             Sync Desktop & Documents folders
@@ -114,7 +114,7 @@ function FieldChoiceCardComponent() {
                   Run GPU workloads on a K8s cluster.
                 </FieldDescription>
               </FieldContent>
-              <RadioGroupItem id="kubernetes-r2h" value="kubernetes" />
+              <RadioGroupItem value="kubernetes" id="kubernetes-r2h" />
             </Field>
           </FieldLabel>
           <FieldLabel htmlFor="vm-z4k">
@@ -125,7 +125,7 @@ function FieldChoiceCardComponent() {
                   Access a cluster to run GPU workloads.
                 </FieldDescription>
               </FieldContent>
-              <RadioGroupItem id="vm-z4k" value="vm" />
+              <RadioGroupItem value="vm" id="vm-z4k" />
             </Field>
           </FieldLabel>
         </RadioGroup>
@@ -231,12 +231,12 @@ function FieldDemoComponent() {
             <FieldGroup>
               <Field orientation="horizontal">
                 <Checkbox
-                  defaultChecked
                   id="checkout-7j9-same-as-shipping-wgm"
+                  defaultChecked
                 />
                 <FieldLabel
-                  className="font-normal"
                   htmlFor="checkout-7j9-same-as-shipping-wgm"
+                  className="font-normal"
                 >
                   Same as shipping address
                 </FieldLabel>
@@ -250,16 +250,16 @@ function FieldDemoComponent() {
                   Comments
                 </FieldLabel>
                 <Textarea
-                  className="resize-none"
                   id="checkout-7j9-optional-comments"
                   placeholder="Add any additional comments"
+                  className="resize-none"
                 />
               </Field>
             </FieldGroup>
           </FieldSet>
           <Field orientation="horizontal">
             <Button type="submit">Submit</Button>
-            <Button type="button" variant="outline">
+            <Button variant="outline" type="button">
               Cancel
             </Button>
           </Field>
@@ -279,16 +279,16 @@ function FieldFieldsetComponent() {
       <FieldGroup>
         <Field>
           <FieldLabel htmlFor="street">Street Address</FieldLabel>
-          <Input id="street" placeholder="123 Main St" type="text" />
+          <Input id="street" type="text" placeholder="123 Main St" />
         </Field>
         <div className="grid grid-cols-2 gap-4">
           <Field>
             <FieldLabel htmlFor="city">City</FieldLabel>
-            <Input id="city" placeholder="New York" type="text" />
+            <Input id="city" type="text" placeholder="New York" />
           </Field>
           <Field>
             <FieldLabel htmlFor="zip">Postal Code</FieldLabel>
-            <Input id="zip" placeholder="90502" type="text" />
+            <Input id="zip" type="text" placeholder="90502" />
           </Field>
         </div>
       </FieldGroup>
@@ -307,8 +307,8 @@ function FieldGroupComponent() {
         </FieldDescription>
         <FieldGroup data-slot="checkbox-group">
           <Field orientation="horizontal">
-            <Checkbox defaultChecked disabled id="push" />
-            <FieldLabel className="font-normal" htmlFor="push">
+            <Checkbox id="push" defaultChecked disabled />
+            <FieldLabel htmlFor="push" className="font-normal">
               Push notifications
             </FieldLabel>
           </Field>
@@ -324,13 +324,13 @@ function FieldGroupComponent() {
         <FieldGroup data-slot="checkbox-group">
           <Field orientation="horizontal">
             <Checkbox id="push-tasks" />
-            <FieldLabel className="font-normal" htmlFor="push-tasks">
+            <FieldLabel htmlFor="push-tasks" className="font-normal">
               Push notifications
             </FieldLabel>
           </Field>
           <Field orientation="horizontal">
             <Checkbox id="email-tasks" />
-            <FieldLabel className="font-normal" htmlFor="email-tasks">
+            <FieldLabel htmlFor="email-tasks" className="font-normal">
               Email notifications
             </FieldLabel>
           </Field>
@@ -346,7 +346,7 @@ function FieldInputComponent() {
       <FieldGroup>
         <Field>
           <FieldLabel htmlFor="username">Username</FieldLabel>
-          <Input id="username" placeholder="Max Leiter" type="text" />
+          <Input id="username" type="text" placeholder="Max Leiter" />
           <FieldDescription>
             Choose a unique username for your account.
           </FieldDescription>
@@ -356,7 +356,7 @@ function FieldInputComponent() {
           <FieldDescription>
             Must be at least 8 characters long.
           </FieldDescription>
-          <Input id="password" placeholder="••••••••" type="password" />
+          <Input id="password" type="password" placeholder="••••••••" />
         </Field>
       </FieldGroup>
     </FieldSet>
@@ -372,20 +372,20 @@ function FieldRadioComponent() {
       </FieldDescription>
       <RadioGroup defaultValue="monthly">
         <Field orientation="horizontal">
-          <RadioGroupItem id="plan-monthly" value="monthly" />
-          <FieldLabel className="font-normal" htmlFor="plan-monthly">
+          <RadioGroupItem value="monthly" id="plan-monthly" />
+          <FieldLabel htmlFor="plan-monthly" className="font-normal">
             Monthly ($9.99/month)
           </FieldLabel>
         </Field>
         <Field orientation="horizontal">
-          <RadioGroupItem id="plan-yearly" value="yearly" />
-          <FieldLabel className="font-normal" htmlFor="plan-yearly">
+          <RadioGroupItem value="yearly" id="plan-yearly" />
+          <FieldLabel htmlFor="plan-yearly" className="font-normal">
             Yearly ($99.99/year)
           </FieldLabel>
         </Field>
         <Field orientation="horizontal">
-          <RadioGroupItem id="plan-lifetime" value="lifetime" />
-          <FieldLabel className="font-normal" htmlFor="plan-lifetime">
+          <RadioGroupItem value="lifetime" id="plan-lifetime" />
+          <FieldLabel htmlFor="plan-lifetime" className="font-normal">
             Lifetime ($299.99)
           </FieldLabel>
         </Field>
@@ -464,13 +464,13 @@ function FieldSliderComponent() {
         <span className="font-medium tabular-nums">{value[1]}</span>).
       </FieldDescription>
       <Slider
-        aria-label="Price Range"
-        className="mt-2 w-full"
+        value={value}
+        onValueChange={(value) => setValue(value as [number, number])}
         max={1000}
         min={0}
-        onValueChange={(value) => setValue(value as [number, number])}
         step={10}
-        value={value}
+        className="mt-2 w-full"
+        aria-label="Price Range"
       />
     </Field>
   );
@@ -478,7 +478,7 @@ function FieldSliderComponent() {
 
 function FieldSwitchComponent() {
   return (
-    <Field className="w-fit" orientation="horizontal">
+    <Field orientation="horizontal" className="w-fit">
       <FieldLabel htmlFor="2fa">Multi-factor authentication</FieldLabel>
       <Switch id="2fa" />
     </Field>
@@ -513,7 +513,7 @@ const meta = {
 } satisfies Meta<typeof Field>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const FieldCheckbox: Story = {
   render: () => <FieldCheckboxComponent />,

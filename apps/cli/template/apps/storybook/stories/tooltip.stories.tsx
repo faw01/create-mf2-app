@@ -26,7 +26,7 @@ function TooltipDisabledComponent() {
     <Tooltip>
       <TooltipTrigger asChild>
         <span className="inline-block w-fit">
-          <Button disabled variant="outline">
+          <Button variant="outline" disabled>
             Disabled
           </Button>
         </span>
@@ -42,14 +42,12 @@ function TooltipKeyboardComponent() {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <Button size="icon-sm" variant="outline">
+        <Button variant="outline" size="icon-sm">
           <SaveIcon />
         </Button>
       </TooltipTrigger>
-      <TooltipContent className="pr-1.5">
-        <div className="flex items-center gap-2">
-          Save Changes <Kbd>S</Kbd>
-        </div>
+      <TooltipContent>
+        Save Changes <Kbd>S</Kbd>
       </TooltipContent>
     </Tooltip>
   );
@@ -61,7 +59,7 @@ function TooltipSidesComponent() {
       {(["left", "top", "bottom", "right"] as const).map((side) => (
         <Tooltip key={side}>
           <TooltipTrigger asChild>
-            <Button className="w-fit capitalize" variant="outline">
+            <Button variant="outline" className="w-fit capitalize">
               {side}
             </Button>
           </TooltipTrigger>
@@ -82,7 +80,7 @@ const meta = {
 } satisfies Meta<typeof Tooltip>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Demo: Story = {
   render: () => <TooltipDemoComponent />,

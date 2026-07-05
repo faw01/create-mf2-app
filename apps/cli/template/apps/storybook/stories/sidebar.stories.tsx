@@ -80,12 +80,7 @@ import {
   SquareTerminal,
   Trash2,
 } from "lucide-react";
-import {
-  type ComponentProps,
-  type ElementType,
-  Suspense,
-  useState,
-} from "react";
+import { type ComponentProps, ElementType, Suspense, useState } from "react";
 import { Toaster, toast } from "sonner";
 
 const projectsControlled = [
@@ -120,7 +115,7 @@ function SidebarControlledComponent() {
   const [open, setOpen] = useState(true);
 
   return (
-    <SidebarProvider onOpenChange={setOpen} open={open}>
+    <SidebarProvider open={open} onOpenChange={setOpen}>
       <Sidebar>
         <SidebarContent>
           <SidebarGroup>
@@ -310,8 +305,8 @@ function TeamSwitcher({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               size="lg"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                 <activeTeam.logo className="size-4" />
@@ -324,20 +319,20 @@ function TeamSwitcher({
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            align="start"
             className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+            align="start"
             side={isMobile ? "bottom" : "right"}
             sideOffset={4}
           >
             <DropdownMenuGroup>
-              <DropdownMenuLabel className="text-muted-foreground text-xs">
+              <DropdownMenuLabel className="text-xs text-muted-foreground">
                 Teams
               </DropdownMenuLabel>
               {teams.map((team, index) => (
                 <DropdownMenuItem
-                  className="gap-2 p-2"
                   key={team.name}
                   onClick={() => setActiveTeam(team)}
+                  className="gap-2 p-2"
                 >
                   <div className="flex size-6 items-center justify-center rounded-md border">
                     <team.logo className="size-3.5 shrink-0" />
@@ -385,10 +380,10 @@ function NavMain({
       <SidebarMenu>
         {items.map((item) => (
           <Collapsible
-            asChild
-            className="group/collapsible"
-            defaultOpen={item.isActive}
             key={item.title}
+            asChild
+            defaultOpen={item.isActive}
+            className="group/collapsible"
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
@@ -450,9 +445,9 @@ function NavProjectsDemo({
                 </SidebarMenuAction>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                align={isMobile ? "end" : "start"}
                 className="w-48 rounded-lg"
                 side={isMobile ? "bottom" : "right"}
+                align={isMobile ? "end" : "start"}
               >
                 <DropdownMenuGroup>
                   <DropdownMenuItem>
@@ -503,11 +498,11 @@ function NavUser({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               size="lg"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage alt={user.name} src={user.avatar} />
+                <AvatarImage src={user.avatar} alt={user.name} />
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
@@ -518,16 +513,16 @@ function NavUser({
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            align="end"
             className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
             side={isMobile ? "bottom" : "right"}
+            align="end"
             sideOffset={4}
           >
             <DropdownMenuGroup>
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                   <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage alt={user.name} src={user.avatar} />
+                    <AvatarImage src={user.avatar} alt={user.name} />
                     <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
@@ -617,8 +612,8 @@ function SidebarFooterComponent() {
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
-                  className="w-(--radix-popper-anchor-width)"
                   side="top"
+                  className="w-(--radix-popper-anchor-width)"
                 >
                   <DropdownMenuItem>
                     <span>Account</span>
@@ -658,8 +653,8 @@ function SidebarGroupActionComponent() {
           <SidebarGroup>
             <SidebarGroupLabel>Projects</SidebarGroupLabel>
             <SidebarGroupAction
-              onClick={() => toast("You clicked the group action!")}
               title="Add Project"
+              onClick={() => toast("You clicked the group action!")}
             >
               <PlusIcon /> <span className="sr-only">Add Project</span>
             </SidebarGroupAction>
@@ -703,7 +698,7 @@ function SidebarGroupCollapsibleComponent() {
     <SidebarProvider>
       <Sidebar>
         <SidebarContent>
-          <Collapsible className="group/collapsible" defaultOpen>
+          <Collapsible defaultOpen className="group/collapsible">
             <SidebarGroup>
               <SidebarGroupLabel
                 asChild
@@ -861,7 +856,7 @@ function SidebarMenuActionComponent() {
                           <span className="sr-only">More</span>
                         </SidebarMenuAction>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="start" side="right">
+                      <DropdownMenuContent side="right" align="start">
                         <DropdownMenuItem>
                           <span>Edit Project</span>
                         </DropdownMenuItem>
@@ -1084,9 +1079,9 @@ function SidebarMenuCollapsibleComponent() {
               <SidebarMenu>
                 {itemsMenuCollapsible.map((item, index) => (
                   <Collapsible
+                    key={index}
                     className="group/collapsible"
                     defaultOpen={index === 0}
-                    key={index}
                   >
                     <SidebarMenuItem>
                       <CollapsibleTrigger asChild>
@@ -1106,7 +1101,7 @@ function SidebarMenuCollapsibleComponent() {
                                   </a>
                                 </SidebarMenuSubButton>
                               </SidebarMenuSubItem>
-                            )
+                            ),
                           )}
                         </SidebarMenuSub>
                       </CollapsibleContent>
@@ -1440,7 +1435,7 @@ const meta = {
 } satisfies Meta<typeof Sidebar>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Controlled: Story = {
   render: () => <SidebarControlledComponent />,

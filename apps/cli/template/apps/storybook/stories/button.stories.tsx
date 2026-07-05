@@ -25,7 +25,7 @@ function ButtonDemoComponent() {
   return (
     <div className="flex flex-wrap items-center gap-2 md:flex-row">
       <Button variant="outline">Button</Button>
-      <Button aria-label="Submit" size="icon" variant="outline">
+      <Button variant="outline" size="icon" aria-label="Submit">
         <ArrowUpIcon />
       </Button>
     </div>
@@ -42,7 +42,7 @@ function ButtonGhostComponent() {
 
 function ButtonIconComponent() {
   return (
-    <Button size="icon" variant="outline">
+    <Button variant="outline" size="icon">
       <CircleFadingArrowUpIcon />
     </Button>
   );
@@ -59,7 +59,7 @@ function ButtonOutlineComponent() {
 function ButtonRoundedComponent() {
   return (
     <div className="flex flex-col gap-8">
-      <Button className="rounded-full" size="icon" variant="outline">
+      <Button variant="outline" size="icon" className="rounded-full">
         <ArrowUpIcon />
       </Button>
     </div>
@@ -77,7 +77,7 @@ function ButtonSizeComponent() {
         <Button size="xs" variant="outline">
           Extra Small
         </Button>
-        <Button aria-label="Submit" size="icon-xs" variant="outline">
+        <Button size="icon-xs" aria-label="Submit" variant="outline">
           <ArrowUpRightIcon />
         </Button>
       </div>
@@ -85,21 +85,21 @@ function ButtonSizeComponent() {
         <Button size="sm" variant="outline">
           Small
         </Button>
-        <Button aria-label="Submit" size="icon-sm" variant="outline">
+        <Button size="icon-sm" aria-label="Submit" variant="outline">
           <ArrowUpRightIcon />
         </Button>
       </div>
       <div className="flex items-start gap-2">
         <Button variant="outline">Default</Button>
-        <Button aria-label="Submit" size="icon" variant="outline">
+        <Button size="icon" aria-label="Submit" variant="outline">
           <ArrowUpRightIcon />
         </Button>
       </div>
       <div className="flex items-start gap-2">
-        <Button size="lg" variant="outline">
+        <Button variant="outline" size="lg">
           Large
         </Button>
-        <Button aria-label="Submit" size="icon-lg" variant="outline">
+        <Button size="icon-lg" aria-label="Submit" variant="outline">
           <ArrowUpRightIcon />
         </Button>
       </div>
@@ -110,11 +110,11 @@ function ButtonSizeComponent() {
 function ButtonSpinnerComponent() {
   return (
     <div className="flex gap-2">
-      <Button disabled variant="outline">
+      <Button variant="outline" disabled>
         <Spinner data-icon="inline-start" />
         Generating
       </Button>
-      <Button disabled variant="secondary">
+      <Button variant="secondary" disabled>
         Downloading
         <Spinner data-icon="inline-start" />
       </Button>
@@ -124,7 +124,7 @@ function ButtonSpinnerComponent() {
 
 function ButtonWithIconComponent() {
   return (
-    <Button size="sm" variant="outline">
+    <Button variant="outline" size="sm">
       <IconGitBranch /> New Branch
     </Button>
   );
@@ -138,7 +138,7 @@ const meta = {
 } satisfies Meta<typeof Button>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Aschild: Story = {
   render: () => <ButtonAschildComponent />,

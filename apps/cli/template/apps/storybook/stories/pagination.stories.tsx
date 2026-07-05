@@ -50,7 +50,7 @@ function PaginationDemoComponent() {
 function PaginationIconsOnlyComponent() {
   return (
     <div className="flex items-center justify-between gap-4">
-      <Field className="w-fit" orientation="horizontal">
+      <Field orientation="horizontal" className="w-fit">
         <FieldLabel htmlFor="select-rows-per-page">Rows per page</FieldLabel>
         <Select defaultValue="25">
           <SelectTrigger className="w-20" id="select-rows-per-page">
@@ -114,7 +114,7 @@ const meta = {
 } satisfies Meta<typeof Pagination>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Demo: Story = {
   render: () => <PaginationDemoComponent />,

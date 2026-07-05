@@ -17,7 +17,7 @@ function ToggleDisabledComponent() {
       <Toggle aria-label="Toggle disabled" disabled>
         Disabled
       </Toggle>
-      <Toggle aria-label="Toggle disabled outline" disabled variant="outline">
+      <Toggle variant="outline" aria-label="Toggle disabled outline" disabled>
         Disabled
       </Toggle>
     </div>
@@ -27,11 +27,11 @@ function ToggleDisabledComponent() {
 function ToggleOutlineComponent() {
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <Toggle aria-label="Toggle italic" variant="outline">
+      <Toggle variant="outline" aria-label="Toggle italic">
         <ItalicIcon />
         Italic
       </Toggle>
-      <Toggle aria-label="Toggle bold" variant="outline">
+      <Toggle variant="outline" aria-label="Toggle bold">
         <BoldIcon />
         Bold
       </Toggle>
@@ -42,13 +42,13 @@ function ToggleOutlineComponent() {
 function ToggleSizesComponent() {
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <Toggle aria-label="Toggle small" size="sm" variant="outline">
+      <Toggle variant="outline" aria-label="Toggle small" size="sm">
         Small
       </Toggle>
-      <Toggle aria-label="Toggle default" size="default" variant="outline">
+      <Toggle variant="outline" aria-label="Toggle default" size="default">
         Default
       </Toggle>
-      <Toggle aria-label="Toggle large" size="lg" variant="outline">
+      <Toggle variant="outline" aria-label="Toggle large" size="lg">
         Large
       </Toggle>
     </div>
@@ -72,7 +72,7 @@ const meta = {
 } satisfies Meta<typeof Toggle>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Demo: Story = {
   render: () => <ToggleDemoComponent />,

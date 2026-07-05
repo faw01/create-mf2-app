@@ -80,7 +80,7 @@ const meta = {
 } satisfies Meta<typeof NativeSelect>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Demo: Story = {
   render: () => <NativeSelectDemoComponent />,

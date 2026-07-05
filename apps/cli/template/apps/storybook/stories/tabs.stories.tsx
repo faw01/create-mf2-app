@@ -16,7 +16,7 @@ import { AppWindowIcon, CodeIcon } from "lucide-react";
 
 function TabsDemoComponent() {
   return (
-    <Tabs className="w-[400px]" defaultValue="overview">
+    <Tabs defaultValue="overview" className="w-[400px]">
       <TabsList>
         <TabsTrigger value="overview">Overview</TabsTrigger>
         <TabsTrigger value="analytics">Analytics</TabsTrigger>
@@ -32,7 +32,7 @@ function TabsDemoComponent() {
               across all your active projects.
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-muted-foreground text-sm">
+          <CardContent className="text-sm text-muted-foreground">
             You have 12 active projects and 3 pending tasks.
           </CardContent>
         </Card>
@@ -46,7 +46,7 @@ function TabsDemoComponent() {
               identify growth opportunities.
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-muted-foreground text-sm">
+          <CardContent className="text-sm text-muted-foreground">
             Page views are up 25% compared to last month.
           </CardContent>
         </Card>
@@ -60,7 +60,7 @@ function TabsDemoComponent() {
               multiple formats for analysis.
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-muted-foreground text-sm">
+          <CardContent className="text-sm text-muted-foreground">
             You have 5 reports ready and available to export.
           </CardContent>
         </Card>
@@ -74,7 +74,7 @@ function TabsDemoComponent() {
               experience to fit your needs.
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-muted-foreground text-sm">
+          <CardContent className="text-sm text-muted-foreground">
             Configure notifications, security, and themes.
           </CardContent>
         </Card>
@@ -88,7 +88,7 @@ function TabsDisabledComponent() {
     <Tabs defaultValue="home">
       <TabsList>
         <TabsTrigger value="home">Home</TabsTrigger>
-        <TabsTrigger disabled value="settings">
+        <TabsTrigger value="settings" disabled>
           Disabled
         </TabsTrigger>
       </TabsList>
@@ -145,7 +145,7 @@ const meta = {
 } satisfies Meta<typeof Tabs>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Demo: Story = {
   render: () => <TabsDemoComponent />,

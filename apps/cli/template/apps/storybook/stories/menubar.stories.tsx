@@ -230,7 +230,7 @@ function MenubarRadioComponent() {
       <MenubarMenu>
         <MenubarTrigger>Profiles</MenubarTrigger>
         <MenubarContent>
-          <MenubarRadioGroup onValueChange={setUser} value={user}>
+          <MenubarRadioGroup value={user} onValueChange={setUser}>
             <MenubarRadioItem value="andy">Andy</MenubarRadioItem>
             <MenubarRadioItem value="benoit">Benoit</MenubarRadioItem>
             <MenubarRadioItem value="luis">Luis</MenubarRadioItem>
@@ -243,7 +243,7 @@ function MenubarRadioComponent() {
       <MenubarMenu>
         <MenubarTrigger>Theme</MenubarTrigger>
         <MenubarContent>
-          <MenubarRadioGroup onValueChange={setTheme} value={theme}>
+          <MenubarRadioGroup value={theme} onValueChange={setTheme}>
             <MenubarRadioItem value="light">Light</MenubarRadioItem>
             <MenubarRadioItem value="dark">Dark</MenubarRadioItem>
             <MenubarRadioItem value="system">System</MenubarRadioItem>
@@ -310,7 +310,7 @@ const meta = {
 } satisfies Meta<typeof Menubar>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Checkbox: Story = {
   render: () => <MenubarCheckboxComponent />,

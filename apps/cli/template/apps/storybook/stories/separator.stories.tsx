@@ -5,7 +5,7 @@ function SeparatorDemoComponent() {
   return (
     <div className="flex max-w-sm flex-col gap-4 text-sm">
       <div className="flex flex-col gap-1.5">
-        <div className="font-medium leading-none">shadcn/ui</div>
+        <div className="leading-none font-medium">shadcn/ui</div>
         <div className="text-muted-foreground">
           The Foundation for your Design System
         </div>
@@ -45,21 +45,21 @@ function SeparatorMenuComponent() {
     <div className="flex items-center gap-2 text-sm md:gap-4">
       <div className="flex flex-col gap-1">
         <span className="font-medium">Settings</span>
-        <span className="text-muted-foreground text-xs">
+        <span className="text-xs text-muted-foreground">
           Manage preferences
         </span>
       </div>
       <Separator orientation="vertical" />
       <div className="flex flex-col gap-1">
         <span className="font-medium">Account</span>
-        <span className="text-muted-foreground text-xs">
+        <span className="text-xs text-muted-foreground">
           Profile & security
         </span>
       </div>
-      <Separator className="hidden md:block" orientation="vertical" />
+      <Separator orientation="vertical" className="hidden md:block" />
       <div className="hidden flex-col gap-1 md:flex">
         <span className="font-medium">Help</span>
-        <span className="text-muted-foreground text-xs">Support & docs</span>
+        <span className="text-xs text-muted-foreground">Support & docs</span>
       </div>
     </div>
   );
@@ -85,7 +85,7 @@ const meta = {
 } satisfies Meta<typeof Separator>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Demo: Story = {
   render: () => <SeparatorDemoComponent />,

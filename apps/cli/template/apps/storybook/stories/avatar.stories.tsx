@@ -21,7 +21,7 @@ import { PlusIcon } from "lucide-react";
 function AvatarBadgeIconComponent() {
   return (
     <Avatar className="grayscale">
-      <AvatarImage alt="@pranathip" src="https://github.com/pranathip.png" />
+      <AvatarImage src="https://github.com/pranathip.png" alt="@pranathip" />
       <AvatarFallback>PP</AvatarFallback>
       <AvatarBadge>
         <PlusIcon />
@@ -33,7 +33,7 @@ function AvatarBadgeIconComponent() {
 function AvatarBadgeComponent() {
   return (
     <Avatar>
-      <AvatarImage alt="@shadcn" src="https://github.com/shadcn.png" />
+      <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
       <AvatarFallback>CN</AvatarFallback>
       <AvatarBadge className="bg-green-600 dark:bg-green-800" />
     </Avatar>
@@ -44,9 +44,9 @@ function AvatarBasicComponent() {
   return (
     <Avatar>
       <AvatarImage
+        src="https://github.com/shadcn.png"
         alt="@shadcn"
         className="grayscale"
-        src="https://github.com/shadcn.png"
       />
       <AvatarFallback>CN</AvatarFallback>
     </Avatar>
@@ -58,36 +58,36 @@ function AvatarDemoComponent() {
     <div className="flex flex-row flex-wrap items-center gap-6 md:gap-12">
       <Avatar>
         <AvatarImage
+          src="https://github.com/shadcn.png"
           alt="@shadcn"
           className="grayscale"
-          src="https://github.com/shadcn.png"
         />
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
       <Avatar>
         <AvatarImage
-          alt="@evilrabbit"
           src="https://github.com/evilrabbit.png"
+          alt="@evilrabbit"
         />
         <AvatarFallback>ER</AvatarFallback>
         <AvatarBadge className="bg-green-600 dark:bg-green-800" />
       </Avatar>
       <AvatarGroup className="grayscale">
         <Avatar>
-          <AvatarImage alt="@shadcn" src="https://github.com/shadcn.png" />
+          <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
         <Avatar>
           <AvatarImage
-            alt="@maxleiter"
             src="https://github.com/maxleiter.png"
+            alt="@maxleiter"
           />
           <AvatarFallback>LR</AvatarFallback>
         </Avatar>
         <Avatar>
           <AvatarImage
-            alt="@evilrabbit"
             src="https://github.com/evilrabbit.png"
+            alt="@evilrabbit"
           />
           <AvatarFallback>ER</AvatarFallback>
         </Avatar>
@@ -101,9 +101,9 @@ function AvatarDropdownComponent() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className="rounded-full" size="icon" variant="ghost">
+        <Button variant="ghost" size="icon" className="rounded-full">
           <Avatar>
-            <AvatarImage alt="shadcn" src="https://github.com/shadcn.png" />
+            <AvatarImage src="https://github.com/shadcn.png" alt="shadcn" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
         </Button>
@@ -127,17 +127,17 @@ function AvatarGroupCountIconComponent() {
   return (
     <AvatarGroup className="grayscale">
       <Avatar>
-        <AvatarImage alt="@shadcn" src="https://github.com/shadcn.png" />
+        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
       <Avatar>
-        <AvatarImage alt="@maxleiter" src="https://github.com/maxleiter.png" />
+        <AvatarImage src="https://github.com/maxleiter.png" alt="@maxleiter" />
         <AvatarFallback>LR</AvatarFallback>
       </Avatar>
       <Avatar>
         <AvatarImage
-          alt="@evilrabbit"
           src="https://github.com/evilrabbit.png"
+          alt="@evilrabbit"
         />
         <AvatarFallback>ER</AvatarFallback>
       </Avatar>
@@ -152,17 +152,17 @@ function AvatarGroupCountComponent() {
   return (
     <AvatarGroup className="grayscale">
       <Avatar>
-        <AvatarImage alt="@shadcn" src="https://github.com/shadcn.png" />
+        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
       <Avatar>
-        <AvatarImage alt="@maxleiter" src="https://github.com/maxleiter.png" />
+        <AvatarImage src="https://github.com/maxleiter.png" alt="@maxleiter" />
         <AvatarFallback>LR</AvatarFallback>
       </Avatar>
       <Avatar>
         <AvatarImage
-          alt="@evilrabbit"
           src="https://github.com/evilrabbit.png"
+          alt="@evilrabbit"
         />
         <AvatarFallback>ER</AvatarFallback>
       </Avatar>
@@ -175,17 +175,17 @@ function AvatarGroupComponent() {
   return (
     <AvatarGroup className="grayscale">
       <Avatar>
-        <AvatarImage alt="@shadcn" src="https://github.com/shadcn.png" />
+        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
       <Avatar>
-        <AvatarImage alt="@maxleiter" src="https://github.com/maxleiter.png" />
+        <AvatarImage src="https://github.com/maxleiter.png" alt="@maxleiter" />
         <AvatarFallback>LR</AvatarFallback>
       </Avatar>
       <Avatar>
         <AvatarImage
-          alt="@evilrabbit"
           src="https://github.com/evilrabbit.png"
+          alt="@evilrabbit"
         />
         <AvatarFallback>ER</AvatarFallback>
       </Avatar>
@@ -197,15 +197,15 @@ function AvatarSizeComponent() {
   return (
     <div className="flex flex-wrap items-center gap-2 grayscale">
       <Avatar size="sm">
-        <AvatarImage alt="@shadcn" src="https://github.com/shadcn.png" />
+        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
       <Avatar>
-        <AvatarImage alt="@shadcn" src="https://github.com/shadcn.png" />
+        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
       <Avatar size="lg">
-        <AvatarImage alt="@shadcn" src="https://github.com/shadcn.png" />
+        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
     </div>
@@ -220,7 +220,7 @@ const meta = {
 } satisfies Meta<typeof Avatar>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const BadgeIcon: Story = {
   render: () => <AvatarBadgeIconComponent />,

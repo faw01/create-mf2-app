@@ -29,11 +29,11 @@ function SheetDemoComponent() {
         <div className="grid flex-1 auto-rows-min gap-6 px-4">
           <div className="grid gap-3">
             <Label htmlFor="sheet-demo-name">Name</Label>
-            <Input defaultValue="Pedro Duarte" id="sheet-demo-name" />
+            <Input id="sheet-demo-name" defaultValue="Pedro Duarte" />
           </div>
           <div className="grid gap-3">
             <Label htmlFor="sheet-demo-username">Username</Label>
-            <Input defaultValue="@peduarte" id="sheet-demo-username" />
+            <Input id="sheet-demo-username" defaultValue="@peduarte" />
           </div>
         </div>
         <SheetFooter>
@@ -74,13 +74,13 @@ function SheetSideComponent() {
       {SHEET_SIDES.map((side) => (
         <Sheet key={side}>
           <SheetTrigger asChild>
-            <Button className="capitalize" variant="outline">
+            <Button variant="outline" className="capitalize">
               {side}
             </Button>
           </SheetTrigger>
           <SheetContent
-            className="data-[side=bottom]:max-h-[50vh] data-[side=top]:max-h-[50vh]"
             side={side}
+            className="data-[side=bottom]:max-h-[50vh] data-[side=top]:max-h-[50vh]"
           >
             <SheetHeader>
               <SheetTitle>Edit profile</SheetTitle>
@@ -91,7 +91,7 @@ function SheetSideComponent() {
             </SheetHeader>
             <div className="no-scrollbar overflow-y-auto px-4">
               {Array.from({ length: 10 }).map((_, index) => (
-                <p className="mb-2 leading-relaxed" key={index}>
+                <p key={index} className="mb-2 leading-relaxed">
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
                   do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                   Ut enim ad minim veniam, quis nostrud exercitation ullamco
@@ -124,7 +124,7 @@ const meta = {
 } satisfies Meta<typeof Sheet>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Demo: Story = {
   render: () => <SheetDemoComponent />,

@@ -21,7 +21,7 @@ function PopoverAlignmentsComponent() {
     <div className="flex gap-6">
       <Popover>
         <PopoverTrigger asChild>
-          <Button size="sm" variant="outline">
+          <Button variant="outline" size="sm">
             Start
           </Button>
         </PopoverTrigger>
@@ -31,7 +31,7 @@ function PopoverAlignmentsComponent() {
       </Popover>
       <Popover>
         <PopoverTrigger asChild>
-          <Button size="sm" variant="outline">
+          <Button variant="outline" size="sm">
             Center
           </Button>
         </PopoverTrigger>
@@ -41,7 +41,7 @@ function PopoverAlignmentsComponent() {
       </Popover>
       <Popover>
         <PopoverTrigger asChild>
-          <Button size="sm" variant="outline">
+          <Button variant="outline" size="sm">
             End
           </Button>
         </PopoverTrigger>
@@ -80,8 +80,8 @@ function PopoverDemoComponent() {
       <PopoverContent className="w-80">
         <div className="grid gap-4">
           <div className="space-y-2">
-            <h4 className="font-medium leading-none">Dimensions</h4>
-            <p className="text-muted-foreground text-sm">
+            <h4 className="leading-none font-medium">Dimensions</h4>
+            <p className="text-sm text-muted-foreground">
               Set the dimensions for the layer.
             </p>
           </div>
@@ -89,33 +89,33 @@ function PopoverDemoComponent() {
             <div className="grid grid-cols-3 items-center gap-4">
               <Label htmlFor="width">Width</Label>
               <Input
-                className="col-span-2 h-8"
-                defaultValue="100%"
                 id="width"
+                defaultValue="100%"
+                className="col-span-2 h-8"
               />
             </div>
             <div className="grid grid-cols-3 items-center gap-4">
               <Label htmlFor="maxWidth">Max. width</Label>
               <Input
-                className="col-span-2 h-8"
-                defaultValue="300px"
                 id="maxWidth"
+                defaultValue="300px"
+                className="col-span-2 h-8"
               />
             </div>
             <div className="grid grid-cols-3 items-center gap-4">
               <Label htmlFor="height">Height</Label>
               <Input
-                className="col-span-2 h-8"
-                defaultValue="25px"
                 id="height"
+                defaultValue="25px"
+                className="col-span-2 h-8"
               />
             </div>
             <div className="grid grid-cols-3 items-center gap-4">
               <Label htmlFor="maxHeight">Max. height</Label>
               <Input
-                className="col-span-2 h-8"
-                defaultValue="none"
                 id="maxHeight"
+                defaultValue="none"
+                className="col-span-2 h-8"
               />
             </div>
           </div>
@@ -131,7 +131,7 @@ function PopoverFormComponent() {
       <PopoverTrigger asChild>
         <Button variant="outline">Open Popover</Button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-64">
+      <PopoverContent className="w-64" align="start">
         <PopoverHeader>
           <PopoverTitle>Dimensions</PopoverTitle>
           <PopoverDescription>
@@ -140,16 +140,16 @@ function PopoverFormComponent() {
         </PopoverHeader>
         <FieldGroup className="gap-4">
           <Field orientation="horizontal">
-            <FieldLabel className="w-1/2" htmlFor="width">
+            <FieldLabel htmlFor="width" className="w-1/2">
               Width
             </FieldLabel>
-            <Input defaultValue="100%" id="width" />
+            <Input id="width" defaultValue="100%" />
           </Field>
           <Field orientation="horizontal">
-            <FieldLabel className="w-1/2" htmlFor="height">
+            <FieldLabel htmlFor="height" className="w-1/2">
               Height
             </FieldLabel>
-            <Input defaultValue="25px" id="height" />
+            <Input id="height" defaultValue="25px" />
           </Field>
         </FieldGroup>
       </PopoverContent>
@@ -165,7 +165,7 @@ const meta = {
 } satisfies Meta<typeof Popover>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Alignments: Story = {
   render: () => <PopoverAlignmentsComponent />,

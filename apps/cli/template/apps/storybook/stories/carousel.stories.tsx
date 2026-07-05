@@ -31,14 +31,13 @@ function CarouselApiComponent() {
 
   return (
     <div className="mx-auto max-w-[10rem] sm:max-w-xs">
-      <Carousel className="w-full max-w-xs" setApi={setApi}>
+      <Carousel setApi={setApi} className="w-full max-w-xs">
         <CarouselContent>
           {Array.from({ length: 5 }).map((_, index) => (
-            // biome-ignore lint/suspicious/noArrayIndexKey: static list
             <CarouselItem key={index}>
               <Card className="m-px">
                 <CardContent className="flex aspect-square items-center justify-center p-6">
-                  <span className="font-semibold text-4xl">{index + 1}</span>
+                  <span className="text-4xl font-semibold">{index + 1}</span>
                 </CardContent>
               </Card>
             </CarouselItem>
@@ -47,7 +46,7 @@ function CarouselApiComponent() {
         <CarouselPrevious />
         <CarouselNext />
       </Carousel>
-      <div className="py-2 text-center text-muted-foreground text-sm">
+      <div className="py-2 text-center text-sm text-muted-foreground">
         Slide {current} of {count}
       </div>
     </div>
@@ -59,12 +58,11 @@ function CarouselDemoComponent() {
     <Carousel className="w-full max-w-[12rem] sm:max-w-xs">
       <CarouselContent>
         {Array.from({ length: 5 }).map((_, index) => (
-          // biome-ignore lint/suspicious/noArrayIndexKey: static list
           <CarouselItem key={index}>
             <div className="p-1">
               <Card>
                 <CardContent className="flex aspect-square items-center justify-center p-6">
-                  <span className="font-semibold text-4xl">{index + 1}</span>
+                  <span className="text-4xl font-semibold">{index + 1}</span>
                 </CardContent>
               </Card>
             </div>
@@ -87,12 +85,11 @@ function CarouselMultipleComponent() {
     >
       <CarouselContent>
         {Array.from({ length: 5 }).map((_, index) => (
-          // biome-ignore lint/suspicious/noArrayIndexKey: static list
-          <CarouselItem className="sm:basis-1/2 lg:basis-1/3" key={index}>
+          <CarouselItem key={index} className="sm:basis-1/2 lg:basis-1/3">
             <div className="p-1">
               <Card>
                 <CardContent className="flex aspect-square items-center justify-center p-6">
-                  <span className="font-semibold text-3xl">{index + 1}</span>
+                  <span className="text-3xl font-semibold">{index + 1}</span>
                 </CardContent>
               </Card>
             </div>
@@ -108,20 +105,19 @@ function CarouselMultipleComponent() {
 function CarouselOrientationComponent() {
   return (
     <Carousel
-      className="w-full max-w-xs"
       opts={{
         align: "start",
       }}
       orientation="vertical"
+      className="w-full max-w-xs"
     >
       <CarouselContent className="-mt-1 h-[270px]">
         {Array.from({ length: 5 }).map((_, index) => (
-          // biome-ignore lint/suspicious/noArrayIndexKey: static list
-          <CarouselItem className="basis-1/2 pt-1" key={index}>
+          <CarouselItem key={index} className="basis-1/2 pt-1">
             <div className="p-1">
               <Card>
                 <CardContent className="flex items-center justify-center p-6">
-                  <span className="font-semibold text-3xl">{index + 1}</span>
+                  <span className="text-3xl font-semibold">{index + 1}</span>
                 </CardContent>
               </Card>
             </div>
@@ -139,19 +135,18 @@ function CarouselPluginComponent() {
 
   return (
     <Carousel
+      plugins={[plugin.current]}
       className="w-full max-w-[10rem] sm:max-w-xs"
       onMouseEnter={plugin.current.stop}
       onMouseLeave={plugin.current.reset}
-      plugins={[plugin.current]}
     >
       <CarouselContent>
         {Array.from({ length: 5 }).map((_, index) => (
-          // biome-ignore lint/suspicious/noArrayIndexKey: static list
           <CarouselItem key={index}>
             <div className="p-1">
               <Card>
                 <CardContent className="flex aspect-square items-center justify-center p-6">
-                  <span className="font-semibold text-4xl">{index + 1}</span>
+                  <span className="text-4xl font-semibold">{index + 1}</span>
                 </CardContent>
               </Card>
             </div>
@@ -167,19 +162,18 @@ function CarouselPluginComponent() {
 function CarouselSizeComponent() {
   return (
     <Carousel
-      className="w-full max-w-[12rem] sm:max-w-xs md:max-w-sm"
       opts={{
         align: "start",
       }}
+      className="w-full max-w-[12rem] sm:max-w-xs md:max-w-sm"
     >
       <CarouselContent>
         {Array.from({ length: 5 }).map((_, index) => (
-          // biome-ignore lint/suspicious/noArrayIndexKey: static list
-          <CarouselItem className="basis-1/2 lg:basis-1/3" key={index}>
+          <CarouselItem key={index} className="basis-1/2 lg:basis-1/3">
             <div className="p-1">
               <Card>
                 <CardContent className="flex aspect-square items-center justify-center p-6">
-                  <span className="font-semibold text-3xl">{index + 1}</span>
+                  <span className="text-3xl font-semibold">{index + 1}</span>
                 </CardContent>
               </Card>
             </div>
@@ -197,12 +191,11 @@ function CarouselSpacingComponent() {
     <Carousel className="w-full max-w-[12rem] sm:max-w-xs md:max-w-sm">
       <CarouselContent className="-ml-1">
         {Array.from({ length: 5 }).map((_, index) => (
-          // biome-ignore lint/suspicious/noArrayIndexKey: static list
-          <CarouselItem className="basis-1/2 pl-1 lg:basis-1/3" key={index}>
+          <CarouselItem key={index} className="basis-1/2 pl-1 lg:basis-1/3">
             <div className="p-1">
               <Card>
                 <CardContent className="flex aspect-square items-center justify-center p-6">
-                  <span className="font-semibold text-2xl">{index + 1}</span>
+                  <span className="text-2xl font-semibold">{index + 1}</span>
                 </CardContent>
               </Card>
             </div>
@@ -223,7 +216,7 @@ const meta = {
 } satisfies Meta<typeof Carousel>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Api: Story = {
   render: () => <CarouselApiComponent />,

@@ -33,8 +33,8 @@ function SelectAlignItemComponent() {
           </FieldDescription>
         </FieldContent>
         <Switch
-          checked={alignItemWithTrigger}
           id="align-item"
+          checked={alignItemWithTrigger}
           onCheckedChange={setAlignItemWithTrigger}
         />
       </Field>
@@ -91,7 +91,7 @@ function SelectDisabledComponent() {
           <SelectItem value="apple">Apple</SelectItem>
           <SelectItem value="banana">Banana</SelectItem>
           <SelectItem value="blueberry">Blueberry</SelectItem>
-          <SelectItem disabled value="grapes">
+          <SelectItem value="grapes" disabled>
             Grapes
           </SelectItem>
           <SelectItem value="pineapple">Pineapple</SelectItem>
@@ -128,7 +128,7 @@ function SelectGroupsComponent() {
 
 function SelectInvalidComponent() {
   return (
-    <Field className="w-full max-w-48" data-invalid>
+    <Field data-invalid className="w-full max-w-48">
       <FieldLabel>Fruit</FieldLabel>
       <Select>
         <SelectTrigger aria-invalid>
@@ -211,7 +211,7 @@ const meta = {
 } satisfies Meta<typeof Select>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const AlignItem: Story = {
   render: () => <SelectAlignItemComponent />,

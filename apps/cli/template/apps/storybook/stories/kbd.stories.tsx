@@ -18,7 +18,7 @@ function KbdButtonComponent() {
   return (
     <Button variant="outline">
       Accept{" "}
-      <Kbd className="translate-x-0.5" data-icon="inline-end">
+      <Kbd data-icon="inline-end" className="translate-x-0.5">
         ⏎
       </Kbd>
     </Button>
@@ -46,7 +46,7 @@ function KbdDemoComponent() {
 function KbdGroupComponent() {
   return (
     <div className="flex flex-col items-center gap-4">
-      <p className="text-muted-foreground text-sm">
+      <p className="text-sm text-muted-foreground">
         Use{" "}
         <KbdGroup>
           <Kbd>Ctrl + B</Kbd>
@@ -83,24 +83,20 @@ function KbdTooltipComponent() {
           <TooltipTrigger asChild>
             <Button variant="outline">Save</Button>
           </TooltipTrigger>
-          <TooltipContent className="pr-1.5">
-            <div className="flex items-center gap-2">
-              Save Changes <Kbd>S</Kbd>
-            </div>
+          <TooltipContent>
+            Save Changes <Kbd>S</Kbd>
           </TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button variant="outline">Print</Button>
           </TooltipTrigger>
-          <TooltipContent className="pr-1.5">
-            <div className="flex items-center gap-2">
-              Print Document{" "}
-              <KbdGroup>
-                <Kbd>Ctrl</Kbd>
-                <Kbd>P</Kbd>
-              </KbdGroup>
-            </div>
+          <TooltipContent>
+            Print Document{" "}
+            <KbdGroup>
+              <Kbd>Ctrl</Kbd>
+              <Kbd>P</Kbd>
+            </KbdGroup>
           </TooltipContent>
         </Tooltip>
       </ButtonGroup>
@@ -116,7 +112,7 @@ const meta = {
 } satisfies Meta<typeof Kbd>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const KbdButton: Story = {
   render: () => <KbdButtonComponent />,

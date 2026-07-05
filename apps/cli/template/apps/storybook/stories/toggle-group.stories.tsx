@@ -20,14 +20,14 @@ import { useState } from "react";
 
 function ToggleGroupDemoComponent() {
   return (
-    <ToggleGroup type="multiple" variant="outline">
-      <ToggleGroupItem aria-label="Toggle bold" value="bold">
+    <ToggleGroup variant="outline" type="multiple">
+      <ToggleGroupItem value="bold" aria-label="Toggle bold">
         <Bold />
       </ToggleGroupItem>
-      <ToggleGroupItem aria-label="Toggle italic" value="italic">
+      <ToggleGroupItem value="italic" aria-label="Toggle italic">
         <Italic />
       </ToggleGroupItem>
-      <ToggleGroupItem aria-label="Toggle strikethrough" value="strikethrough">
+      <ToggleGroupItem value="strikethrough" aria-label="Toggle strikethrough">
         <Underline />
       </ToggleGroupItem>
     </ToggleGroup>
@@ -37,13 +37,13 @@ function ToggleGroupDemoComponent() {
 function ToggleGroupDisabledComponent() {
   return (
     <ToggleGroup disabled type="multiple">
-      <ToggleGroupItem aria-label="Toggle bold" value="bold">
+      <ToggleGroupItem value="bold" aria-label="Toggle bold">
         <Bold />
       </ToggleGroupItem>
-      <ToggleGroupItem aria-label="Toggle italic" value="italic">
+      <ToggleGroupItem value="italic" aria-label="Toggle italic">
         <Italic />
       </ToggleGroupItem>
-      <ToggleGroupItem aria-label="Toggle strikethrough" value="strikethrough">
+      <ToggleGroupItem value="strikethrough" aria-label="Toggle strikethrough">
         <Underline />
       </ToggleGroupItem>
     </ToggleGroup>
@@ -56,44 +56,44 @@ function ToggleGroupFontWeightSelectorComponent() {
     <Field>
       <FieldLabel>Font Weight</FieldLabel>
       <ToggleGroup
-        onValueChange={(value) => setFontWeight(value)}
-        size="lg"
-        spacing={2}
         type="single"
         value={fontWeight}
+        onValueChange={(value) => setFontWeight(value)}
         variant="outline"
+        spacing={2}
+        size="lg"
       >
         <ToggleGroupItem
+          value="light"
           aria-label="Light"
           className="flex size-16 flex-col items-center justify-center rounded-xl"
-          value="light"
         >
-          <span className="font-light text-2xl leading-none">Aa</span>
-          <span className="text-muted-foreground text-xs">Light</span>
+          <span className="text-2xl leading-none font-light">Aa</span>
+          <span className="text-xs text-muted-foreground">Light</span>
         </ToggleGroupItem>
         <ToggleGroupItem
+          value="normal"
           aria-label="Normal"
           className="flex size-16 flex-col items-center justify-center rounded-xl"
-          value="normal"
         >
-          <span className="font-normal text-2xl leading-none">Aa</span>
-          <span className="text-muted-foreground text-xs">Normal</span>
+          <span className="text-2xl leading-none font-normal">Aa</span>
+          <span className="text-xs text-muted-foreground">Normal</span>
         </ToggleGroupItem>
         <ToggleGroupItem
+          value="medium"
           aria-label="Medium"
           className="flex size-16 flex-col items-center justify-center rounded-xl"
-          value="medium"
         >
-          <span className="font-medium text-2xl leading-none">Aa</span>
-          <span className="text-muted-foreground text-xs">Medium</span>
+          <span className="text-2xl leading-none font-medium">Aa</span>
+          <span className="text-xs text-muted-foreground">Medium</span>
         </ToggleGroupItem>
         <ToggleGroupItem
+          value="bold"
           aria-label="Bold"
           className="flex size-16 flex-col items-center justify-center rounded-xl"
-          value="bold"
         >
-          <span className="font-bold text-2xl leading-none">Aa</span>
-          <span className="text-muted-foreground text-xs">Bold</span>
+          <span className="text-2xl leading-none font-bold">Aa</span>
+          <span className="text-xs text-muted-foreground">Bold</span>
         </ToggleGroupItem>
       </ToggleGroup>
       <FieldDescription>
@@ -109,11 +109,11 @@ function ToggleGroupFontWeightSelectorComponent() {
 
 function ToggleGroupOutlineComponent() {
   return (
-    <ToggleGroup defaultValue="all" type="single" variant="outline">
-      <ToggleGroupItem aria-label="Toggle all" value="all">
+    <ToggleGroup variant="outline" type="single" defaultValue="all">
+      <ToggleGroupItem value="all" aria-label="Toggle all">
         All
       </ToggleGroupItem>
-      <ToggleGroupItem aria-label="Toggle missed" value="missed">
+      <ToggleGroupItem value="missed" aria-label="Toggle missed">
         Missed
       </ToggleGroupItem>
     </ToggleGroup>
@@ -123,31 +123,31 @@ function ToggleGroupOutlineComponent() {
 function ToggleGroupSizesComponent() {
   return (
     <div className="flex flex-col gap-4">
-      <ToggleGroup defaultValue="top" size="sm" type="single" variant="outline">
-        <ToggleGroupItem aria-label="Toggle top" value="top">
+      <ToggleGroup type="single" size="sm" defaultValue="top" variant="outline">
+        <ToggleGroupItem value="top" aria-label="Toggle top">
           Top
         </ToggleGroupItem>
-        <ToggleGroupItem aria-label="Toggle bottom" value="bottom">
+        <ToggleGroupItem value="bottom" aria-label="Toggle bottom">
           Bottom
         </ToggleGroupItem>
-        <ToggleGroupItem aria-label="Toggle left" value="left">
+        <ToggleGroupItem value="left" aria-label="Toggle left">
           Left
         </ToggleGroupItem>
-        <ToggleGroupItem aria-label="Toggle right" value="right">
+        <ToggleGroupItem value="right" aria-label="Toggle right">
           Right
         </ToggleGroupItem>
       </ToggleGroup>
-      <ToggleGroup defaultValue="top" type="single" variant="outline">
-        <ToggleGroupItem aria-label="Toggle top" value="top">
+      <ToggleGroup type="single" defaultValue="top" variant="outline">
+        <ToggleGroupItem value="top" aria-label="Toggle top">
           Top
         </ToggleGroupItem>
-        <ToggleGroupItem aria-label="Toggle bottom" value="bottom">
+        <ToggleGroupItem value="bottom" aria-label="Toggle bottom">
           Bottom
         </ToggleGroupItem>
-        <ToggleGroupItem aria-label="Toggle left" value="left">
+        <ToggleGroupItem value="left" aria-label="Toggle left">
           Left
         </ToggleGroupItem>
-        <ToggleGroupItem aria-label="Toggle right" value="right">
+        <ToggleGroupItem value="right" aria-label="Toggle right">
           Right
         </ToggleGroupItem>
       </ToggleGroup>
@@ -158,22 +158,22 @@ function ToggleGroupSizesComponent() {
 function ToggleGroupSpacingComponent() {
   return (
     <ToggleGroup
-      defaultValue="top"
-      size="sm"
-      spacing={2}
       type="single"
+      size="sm"
+      defaultValue="top"
       variant="outline"
+      spacing={2}
     >
-      <ToggleGroupItem aria-label="Toggle top" value="top">
+      <ToggleGroupItem value="top" aria-label="Toggle top">
         Top
       </ToggleGroupItem>
-      <ToggleGroupItem aria-label="Toggle bottom" value="bottom">
+      <ToggleGroupItem value="bottom" aria-label="Toggle bottom">
         Bottom
       </ToggleGroupItem>
-      <ToggleGroupItem aria-label="Toggle left" value="left">
+      <ToggleGroupItem value="left" aria-label="Toggle left">
         Left
       </ToggleGroupItem>
-      <ToggleGroupItem aria-label="Toggle right" value="right">
+      <ToggleGroupItem value="right" aria-label="Toggle right">
         Right
       </ToggleGroupItem>
     </ToggleGroup>
@@ -183,18 +183,18 @@ function ToggleGroupSpacingComponent() {
 function ToggleGroupVerticalComponent() {
   return (
     <ToggleGroup
-      defaultValue={["bold", "italic"]}
+      type="multiple"
       orientation="vertical"
       spacing={1}
-      type="multiple"
+      defaultValue={["bold", "italic"]}
     >
-      <ToggleGroupItem aria-label="Toggle bold" value="bold">
+      <ToggleGroupItem value="bold" aria-label="Toggle bold">
         <BoldIcon />
       </ToggleGroupItem>
-      <ToggleGroupItem aria-label="Toggle italic" value="italic">
+      <ToggleGroupItem value="italic" aria-label="Toggle italic">
         <ItalicIcon />
       </ToggleGroupItem>
-      <ToggleGroupItem aria-label="Toggle underline" value="underline">
+      <ToggleGroupItem value="underline" aria-label="Toggle underline">
         <UnderlineIcon />
       </ToggleGroupItem>
     </ToggleGroup>
@@ -209,7 +209,7 @@ const meta = {
 } satisfies Meta<typeof ToggleGroup>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Demo: Story = {
   render: () => <ToggleGroupDemoComponent />,

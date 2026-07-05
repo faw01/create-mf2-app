@@ -38,9 +38,6 @@ import { Label } from "@repo/design-system/components/ui/label";
 import {
   Popover,
   PopoverContent,
-  PopoverDescription,
-  PopoverHeader,
-  PopoverTitle,
   PopoverTrigger,
 } from "@repo/design-system/components/ui/popover";
 import { Spinner } from "@repo/design-system/components/ui/spinner";
@@ -92,9 +89,8 @@ import { toast } from "sonner";
 function useCopyToClipboard({ timeout = 2000 }: { timeout?: number } = {}) {
   const [isCopied, setIsCopied] = useState(false);
   const copyToClipboard = (value: string) => {
-    if (typeof window === "undefined" || !navigator.clipboard?.writeText) {
+    if (typeof window === "undefined" || !navigator.clipboard?.writeText)
       return;
-    }
     navigator.clipboard.writeText(value).then(() => {
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), timeout);
@@ -110,7 +106,7 @@ function InputGroupBasicComponent() {
         <FieldLabel htmlFor="input-default-01">
           Default (No Input Group)
         </FieldLabel>
-        <Input id="input-default-01" placeholder="Placeholder" />
+        <Input placeholder="Placeholder" id="input-default-01" />
       </Field>
       <Field>
         <FieldLabel htmlFor="input-group-02">Input Group</FieldLabel>
@@ -122,9 +118,9 @@ function InputGroupBasicComponent() {
         <FieldLabel htmlFor="input-disabled-03">Disabled</FieldLabel>
         <InputGroup>
           <InputGroupInput
-            disabled
             id="input-disabled-03"
             placeholder="This field is disabled"
+            disabled
           />
         </InputGroup>
       </Field>
@@ -132,9 +128,9 @@ function InputGroupBasicComponent() {
         <FieldLabel htmlFor="input-invalid-04">Invalid</FieldLabel>
         <InputGroup>
           <InputGroupInput
-            aria-invalid="true"
             id="input-invalid-04"
             placeholder="This field is invalid"
+            aria-invalid="true"
           />
         </InputGroup>
       </Field>
@@ -164,7 +160,7 @@ function InputGroupBlockEndComponent() {
           />
           <InputGroupAddon align="block-end">
             <InputGroupText>0/280</InputGroupText>
-            <InputGroupButton className="ml-auto" size="sm" variant="default">
+            <InputGroupButton variant="default" size="sm" className="ml-auto">
               Post
             </InputGroupButton>
           </InputGroupAddon>
@@ -197,14 +193,14 @@ function InputGroupBlockStartComponent() {
         <FieldLabel htmlFor="block-start-textarea">Textarea</FieldLabel>
         <InputGroup>
           <InputGroupTextarea
-            className="font-mono text-sm"
             id="block-start-textarea"
             placeholder="console.log('Hello, world!');"
+            className="font-mono text-sm"
           />
           <InputGroupAddon align="block-start">
             <FileCodeIcon className="text-muted-foreground" />
             <InputGroupText className="font-mono">script.js</InputGroupText>
-            <InputGroupButton className="ml-auto" size="icon-xs">
+            <InputGroupButton size="icon-xs" className="ml-auto">
               <CopyIcon />
               <span className="sr-only">Copy</span>
             </InputGroupButton>
@@ -248,11 +244,11 @@ function InputGroupButtonComponent() {
         <InputGroupAddon align="inline-end">
           <InputGroupButton
             aria-label="Copy"
+            title="Copy"
+            size="icon-xs"
             onClick={() => {
               copyToClipboard("https://x.com/shadcn");
             }}
-            size="icon-xs"
-            title="Copy"
           >
             {isCopied ? <IconCheck /> : <IconCopy />}
           </InputGroupButton>
@@ -262,7 +258,7 @@ function InputGroupButtonComponent() {
         <Popover>
           <PopoverTrigger asChild>
             <InputGroupAddon>
-              <InputGroupButton size="icon-xs" variant="secondary">
+              <InputGroupButton variant="secondary" size="icon-xs">
                 <IconInfoCircle />
               </InputGroupButton>
             </InputGroupAddon>
@@ -285,8 +281,8 @@ function InputGroupButtonComponent() {
             size="icon-xs"
           >
             <IconStar
-              className="data-[favorite=true]:fill-blue-600 data-[favorite=true]:stroke-blue-600"
               data-favorite={isFavorite}
+              className="data-[favorite=true]:fill-blue-600 data-[favorite=true]:stroke-blue-600"
             />
           </InputGroupButton>
         </InputGroupAddon>
@@ -306,8 +302,8 @@ function InputGroupCustomComponent() {
     <div className="grid w-full max-w-sm gap-6">
       <InputGroup>
         <TextareaAutosize
-          className="field-sizing-content flex min-h-16 w-full resize-none rounded-md bg-transparent px-3 py-2.5 text-base outline-none transition-[color,box-shadow] md:text-sm"
           data-slot="input-group-control"
+          className="flex field-sizing-content min-h-16 w-full resize-none rounded-md bg-transparent px-3 py-2.5 text-base transition-[color,box-shadow] outline-none md:text-sm"
           placeholder="Autoresize textarea..."
         />
         <InputGroupAddon align="block-end">
@@ -341,9 +337,9 @@ function InputGroupDropdownComponent() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <InputGroupButton
+                variant="ghost"
                 aria-label="More"
                 size="icon-xs"
-                variant="ghost"
               >
                 <MoreHorizontal />
               </InputGroupButton>
@@ -363,7 +359,7 @@ function InputGroupDropdownComponent() {
         <InputGroupAddon align="inline-end">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <InputGroupButton className="!pr-1.5 text-xs" variant="ghost">
+              <InputGroupButton variant="ghost" className="pr-1.5! text-xs">
                 Search In... <ChevronDownIcon className="size-3" />
               </InputGroupButton>
             </DropdownMenuTrigger>
@@ -391,7 +387,7 @@ function InputGroupIconComponent() {
         </InputGroupAddon>
       </InputGroup>
       <InputGroup>
-        <InputGroupInput placeholder="Enter your email" type="email" />
+        <InputGroupInput type="email" placeholder="Enter your email" />
         <InputGroupAddon>
           <MailIcon />
         </InputGroupAddon>
@@ -430,8 +426,8 @@ function InputGroupInCardComponent() {
             <InputGroup>
               <InputGroupInput
                 id="email-input"
-                placeholder="you@example.com"
                 type="email"
+                placeholder="you@example.com"
               />
               <InputGroupAddon align="inline-end">
                 <MailIcon />
@@ -456,9 +452,9 @@ function InputGroupInCardComponent() {
             </FieldLabel>
             <InputGroup>
               <InputGroupTextarea
-                className="min-h-[100px]"
                 id="feedback-textarea"
                 placeholder="Share your thoughts..."
+                className="min-h-[100px]"
               />
               <InputGroupAddon align="block-end">
                 <InputGroupText>0/500 characters</InputGroupText>
@@ -482,8 +478,8 @@ function InputGroupInlineEndComponent() {
       <InputGroup>
         <InputGroupInput
           id="inline-end-input"
-          placeholder="Enter password"
           type="password"
+          placeholder="Enter password"
         />
         <InputGroupAddon align="inline-end">
           <EyeOffIcon />
@@ -535,16 +531,16 @@ function InputGroupLabelComponent() {
       <InputGroup>
         <InputGroupInput id="email-2" placeholder="shadcn@vercel.com" />
         <InputGroupAddon align="block-start">
-          <Label className="text-foreground" htmlFor="email-2">
+          <Label htmlFor="email-2" className="text-foreground">
             Email
           </Label>
           <Tooltip>
             <TooltipTrigger asChild>
               <InputGroupButton
+                variant="ghost"
                 aria-label="Help"
                 className="ml-auto rounded-full"
                 size="icon-xs"
-                variant="ghost"
               >
                 <InfoIcon />
               </InputGroupButton>
@@ -612,7 +608,7 @@ function InputGroupTextComponent() {
         <InputGroupAddon>
           <InputGroupText>https://</InputGroupText>
         </InputGroupAddon>
-        <InputGroupInput className="!pl-0.5" placeholder="example.com" />
+        <InputGroupInput placeholder="example.com" className="pl-0.5!" />
         <InputGroupAddon align="inline-end">
           <InputGroupText>.com</InputGroupText>
         </InputGroupAddon>
@@ -626,7 +622,7 @@ function InputGroupTextComponent() {
       <InputGroup>
         <InputGroupTextarea placeholder="Enter your message" />
         <InputGroupAddon align="block-end">
-          <InputGroupText className="text-muted-foreground text-xs">
+          <InputGroupText className="text-xs text-muted-foreground">
             120 characters left
           </InputGroupText>
         </InputGroupAddon>
@@ -663,9 +659,9 @@ function InputGroupTextareaExamplesComponent() {
         <FieldLabel htmlFor="textarea-header-footer-14">Invalid</FieldLabel>
         <InputGroup>
           <InputGroupTextarea
-            aria-invalid="true"
             id="textarea-header-footer-14"
             placeholder="Enter your text here..."
+            aria-invalid="true"
           />
         </InputGroup>
         <FieldDescription>
@@ -676,9 +672,9 @@ function InputGroupTextareaExamplesComponent() {
         <FieldLabel htmlFor="textarea-header-footer-15">Disabled</FieldLabel>
         <InputGroup>
           <InputGroupTextarea
-            disabled
             id="textarea-header-footer-15"
             placeholder="Enter your text here..."
+            disabled
           />
         </InputGroup>
         <FieldDescription>
@@ -710,9 +706,9 @@ function InputGroupTextareaExamplesComponent() {
           <InputGroupAddon align="block-end">
             <InputGroupText>0/280 characters</InputGroupText>
             <InputGroupButton
-              className="ml-auto rounded-full"
-              size="icon-xs"
               variant="default"
+              size="icon-xs"
+              className="ml-auto rounded-full"
             >
               <ArrowUpIcon />
               <span className="sr-only">Send</span>
@@ -724,15 +720,15 @@ function InputGroupTextareaExamplesComponent() {
         <FieldLabel htmlFor="textarea-comment-31">Addon (Buttons)</FieldLabel>
         <InputGroup>
           <InputGroupTextarea
-            className="min-h-[120px]"
             id="textarea-comment-31"
             placeholder="Share your thoughts..."
+            className="min-h-[120px]"
           />
           <InputGroupAddon align="block-end">
-            <InputGroupButton className="ml-auto" size="sm" variant="ghost">
+            <InputGroupButton variant="ghost" className="ml-auto" size="sm">
               Cancel
             </InputGroupButton>
-            <InputGroupButton size="sm" variant="default">
+            <InputGroupButton variant="default" size="sm">
               Post Comment
             </InputGroupButton>
           </InputGroupAddon>
@@ -742,16 +738,16 @@ function InputGroupTextareaExamplesComponent() {
         <FieldLabel htmlFor="textarea-code-32">Code Editor</FieldLabel>
         <InputGroup>
           <InputGroupTextarea
-            className="min-h-[300px] py-3"
             id="textarea-code-32"
             placeholder="console.log('Hello, world!');"
+            className="min-h-[300px] py-3"
           />
           <InputGroupAddon align="block-start" className="border-b">
-            <InputGroupText className="font-medium font-mono">
+            <InputGroupText className="font-mono font-medium">
               <CodeIcon />
               script.js
             </InputGroupText>
-            <InputGroupButton className="ml-auto" size="icon-xs">
+            <InputGroupButton size="icon-xs" className="ml-auto">
               <RefreshCwIcon />
             </InputGroupButton>
             <InputGroupButton size="icon-xs" variant="ghost">
@@ -773,25 +769,25 @@ function InputGroupTextareaComponent() {
     <div className="grid w-full max-w-md gap-4">
       <InputGroup>
         <InputGroupTextarea
-          className="min-h-[200px]"
           id="textarea-code-32"
           placeholder="console.log('Hello, world!');"
+          className="min-h-[200px]"
         />
         <InputGroupAddon align="block-end" className="border-t">
           <InputGroupText>Line 1, Column 1</InputGroupText>
-          <InputGroupButton className="ml-auto" size="sm" variant="default">
+          <InputGroupButton size="sm" className="ml-auto" variant="default">
             Run <IconCornerDownLeft />
           </InputGroupButton>
         </InputGroupAddon>
         <InputGroupAddon align="block-start" className="border-b">
-          <InputGroupText className="font-medium font-mono">
+          <InputGroupText className="font-mono font-medium">
             <IconBrandJavascript />
             script.js
           </InputGroupText>
           <InputGroupButton className="ml-auto" size="icon-xs">
             <IconRefresh />
           </InputGroupButton>
-          <InputGroupButton size="icon-xs" variant="ghost">
+          <InputGroupButton variant="ghost" size="icon-xs">
             <IconCopy />
           </InputGroupButton>
         </InputGroupAddon>
@@ -809,9 +805,9 @@ function InputGroupTooltipComponent() {
           <Tooltip>
             <TooltipTrigger asChild>
               <InputGroupButton
+                variant="ghost"
                 aria-label="Info"
                 size="icon-xs"
-                variant="ghost"
               >
                 <InfoIcon />
               </InputGroupButton>
@@ -828,9 +824,9 @@ function InputGroupTooltipComponent() {
           <Tooltip>
             <TooltipTrigger asChild>
               <InputGroupButton
+                variant="ghost"
                 aria-label="Help"
                 size="icon-xs"
-                variant="ghost"
               >
                 <HelpCircle />
               </InputGroupButton>
@@ -847,9 +843,9 @@ function InputGroupTooltipComponent() {
           <TooltipTrigger asChild>
             <InputGroupAddon>
               <InputGroupButton
+                variant="ghost"
                 aria-label="Help"
                 size="icon-xs"
-                variant="ghost"
               >
                 <HelpCircle />
               </InputGroupButton>
@@ -930,8 +926,8 @@ function InputGroupWithAddonsComponent() {
           <InputGroupAddon align="inline-end">
             <StarIcon />
             <InputGroupButton
-              onClick={() => toast("Copied to clipboard")}
               size="icon-xs"
+              onClick={() => toast("Copied to clipboard")}
             >
               <CopyIcon />
             </InputGroupButton>
@@ -962,7 +958,7 @@ function InputGroupWithAddonsComponent() {
           <InputGroupInput id="input-label-10" />
         </InputGroup>
         <InputGroup>
-          <InputGroupInput aria-label="Optional" id="input-optional-12" />
+          <InputGroupInput id="input-optional-12" aria-label="Optional" />
           <InputGroupAddon align="inline-end">
             <InputGroupText>(optional)</InputGroupText>
           </InputGroupAddon>
@@ -1012,7 +1008,7 @@ function InputGroupWithButtonsComponent() {
         <InputGroup>
           <InputGroupInput id="input-button-18" />
           <InputGroupAddon align="inline-end">
-            <InputGroupButton size="icon-xs" variant="secondary">
+            <InputGroupButton variant="secondary" size="icon-xs">
               <TrashIcon />
             </InputGroupButton>
           </InputGroupAddon>
@@ -1068,7 +1064,7 @@ function InputGroupWithKbdComponent() {
       <Field>
         <FieldLabel htmlFor="input-username-26">Username</FieldLabel>
         <InputGroup>
-          <InputGroupInput defaultValue="shadcn" id="input-username-26" />
+          <InputGroupInput id="input-username-26" defaultValue="shadcn" />
           <InputGroupAddon align="inline-end">
             <div className="flex size-4 items-center justify-center rounded-full bg-green-500 dark:bg-green-800">
               <CheckIcon className="size-3 text-white" />
@@ -1091,9 +1087,9 @@ function InputGroupWithKbdComponent() {
       </InputGroup>
       <InputGroup data-disabled="true">
         <InputGroupInput
-          disabled
           id="input-search-disabled-28"
           placeholder="Search documentation..."
+          disabled
         />
         <InputGroupAddon>
           <SearchIcon />
@@ -1125,130 +1121,11 @@ function InputGroupWithKbdComponent() {
           Loading (&quot;data-disabled=&quot;true&quot;)
         </FieldLabel>
         <InputGroup>
-          <InputGroupInput defaultValue="shadcn" disabled id="input-group-29" />
+          <InputGroupInput id="input-group-29" disabled defaultValue="shadcn" />
           <InputGroupAddon align="inline-end">
             <Spinner />
           </InputGroupAddon>
         </InputGroup>
-        <FieldDescription>
-          This is a description of the input group.
-        </FieldDescription>
-      </Field>
-    </FieldGroup>
-  );
-}
-
-function InputGroupWithTooltipComponent({
-  country,
-  setCountry,
-}: {
-  country: string;
-  setCountry: (value: string) => void;
-}) {
-  return (
-    <FieldGroup>
-      <Field>
-        <FieldLabel htmlFor="input-tooltip-20">Tooltip</FieldLabel>
-        <InputGroup>
-          <InputGroupInput id="input-tooltip-20" />
-          <InputGroupAddon align="inline-end">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <InputGroupButton className="rounded-full" size="icon-xs">
-                  <InfoIcon />
-                </InputGroupButton>
-              </TooltipTrigger>
-              <TooltipContent>This is content in a tooltip.</TooltipContent>
-            </Tooltip>
-          </InputGroupAddon>
-        </InputGroup>
-        <FieldDescription>
-          This is a description of the input group.
-        </FieldDescription>
-      </Field>
-      <Field>
-        <FieldLabel htmlFor="input-dropdown-21">Dropdown</FieldLabel>
-        <InputGroup>
-          <InputGroupInput id="input-dropdown-21" />
-          <InputGroupAddon>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <InputGroupButton className="text-muted-foreground tabular-nums">
-                  {country} <ChevronDownIcon />
-                </InputGroupButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="start"
-                alignOffset={-8}
-                className="min-w-16"
-                sideOffset={10}
-              >
-                <DropdownMenuItem onClick={() => setCountry("+1")}>
-                  +1
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setCountry("+44")}>
-                  +44
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setCountry("+46")}>
-                  +46
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </InputGroupAddon>
-        </InputGroup>
-        <FieldDescription>
-          This is a description of the input group.
-        </FieldDescription>
-      </Field>
-      <Field>
-        <FieldLabel htmlFor="input-secure-19">Popover</FieldLabel>
-        <InputGroup>
-          <Popover>
-            <PopoverTrigger asChild>
-              <InputGroupAddon>
-                <InputGroupButton size="icon-xs" variant="secondary">
-                  <InfoIcon />
-                </InputGroupButton>
-              </InputGroupAddon>
-            </PopoverTrigger>
-            <PopoverContent align="start">
-              <PopoverHeader>
-                <PopoverTitle>Your connection is not secure.</PopoverTitle>
-                <PopoverDescription>
-                  You should not enter any sensitive information on this site.
-                </PopoverDescription>
-              </PopoverHeader>
-            </PopoverContent>
-          </Popover>
-          <InputGroupAddon className="pl-1 text-muted-foreground">
-            https://
-          </InputGroupAddon>
-          <InputGroupInput id="input-secure-19" />
-          <InputGroupAddon align="inline-end">
-            <InputGroupButton
-              onClick={() => toast("Added to favorites")}
-              size="icon-xs"
-            >
-              <StarIcon />
-            </InputGroupButton>
-          </InputGroupAddon>
-        </InputGroup>
-        <FieldDescription>
-          This is a description of the input group.
-        </FieldDescription>
-      </Field>
-      <Field>
-        <FieldLabel htmlFor="url">Button Group</FieldLabel>
-        <ButtonGroup>
-          <ButtonGroupText>https://</ButtonGroupText>
-          <InputGroup>
-            <InputGroupInput id="url" />
-            <InputGroupAddon align="inline-end">
-              <InfoIcon />
-            </InputGroupAddon>
-          </InputGroup>
-          <ButtonGroupText>.com</ButtonGroupText>
-        </ButtonGroup>
         <FieldDescription>
           This is a description of the input group.
         </FieldDescription>
@@ -1265,7 +1142,7 @@ const meta = {
 } satisfies Meta<typeof InputGroup>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Basic: Story = {
   render: () => <InputGroupBasicComponent />,
@@ -1353,8 +1230,4 @@ export const WithButtons: Story = {
 
 export const WithKbd: Story = {
   render: () => <InputGroupWithKbdComponent />,
-};
-
-export const WithTooltip: Story = {
-  render: () => <InputGroupWithTooltipComponent />,
 };

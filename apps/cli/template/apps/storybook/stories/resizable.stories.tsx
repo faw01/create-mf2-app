@@ -8,8 +8,8 @@ import type { Meta, StoryObj } from "@storybook/react";
 function ResizableDemoComponent() {
   return (
     <ResizablePanelGroup
-      className="max-w-sm rounded-lg border"
       orientation="horizontal"
+      className="max-w-sm rounded-lg border"
     >
       <ResizablePanel defaultSize="50%">
         <div className="flex h-[200px] items-center justify-center p-6">
@@ -39,8 +39,8 @@ function ResizableDemoComponent() {
 function ResizableHandleComponent() {
   return (
     <ResizablePanelGroup
-      className="min-h-[200px] max-w-md rounded-lg border md:min-w-[450px]"
       orientation="horizontal"
+      className="min-h-[200px] max-w-md rounded-lg border md:min-w-[450px]"
     >
       <ResizablePanel defaultSize="25%">
         <div className="flex h-full items-center justify-center p-6">
@@ -60,8 +60,8 @@ function ResizableHandleComponent() {
 function ResizableVerticalComponent() {
   return (
     <ResizablePanelGroup
-      className="min-h-[200px] max-w-sm rounded-lg border"
       orientation="vertical"
+      className="min-h-[200px] max-w-sm rounded-lg border"
     >
       <ResizablePanel defaultSize="25%">
         <div className="flex h-full items-center justify-center p-6">
@@ -86,7 +86,7 @@ const meta = {
 } satisfies Meta<typeof ResizableHandle>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Demo: Story = {
   render: () => <ResizableDemoComponent />,

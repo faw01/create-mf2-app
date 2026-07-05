@@ -62,7 +62,7 @@ function AlertDemoComponent() {
 
 function AlertDestructiveComponent() {
   return (
-    <Alert className="max-w-md" variant="destructive">
+    <Alert variant="destructive" className="max-w-md">
       <AlertCircleIcon />
       <AlertTitle>Payment failed</AlertTitle>
       <AlertDescription>
@@ -81,7 +81,7 @@ const meta = {
 } satisfies Meta<typeof Alert>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Basic: Story = {
   render: () => <AlertBasicComponent />,

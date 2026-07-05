@@ -8,14 +8,14 @@ import Image from "next/image";
 import { Fragment } from "react";
 
 const tags = Array.from({ length: 50 }).map(
-  (_, i, a) => `v1.2.0-beta.${a.length - i}`
+  (_, i, a) => `v1.2.0-beta.${a.length - i}`,
 );
 
 function ScrollAreaDemoComponent() {
   return (
     <ScrollArea className="h-72 w-48 rounded-md border">
       <div className="p-4">
-        <h4 className="mb-4 font-medium text-sm leading-none">Tags</h4>
+        <h4 className="mb-4 text-sm leading-none font-medium">Tags</h4>
         {tags.map((tag) => (
           <Fragment key={tag}>
             <div className="text-sm">{tag}</div>
@@ -28,11 +28,11 @@ function ScrollAreaDemoComponent() {
 }
 
 export interface Artwork {
-  art: string;
   artist: string;
+  art: string;
 }
 
-export const works: Artwork[] = [
+const works: Artwork[] = [
   {
     artist: "Ornella Binni",
     art: "https://images.unsplash.com/photo-1465869185982-5a1a7522cbcb?auto=format&fit=crop&w=300&q=80",
@@ -49,20 +49,20 @@ export const works: Artwork[] = [
 
 function ScrollAreaHorizontalDemoComponent() {
   return (
-    <ScrollArea className="w-96 whitespace-nowrap rounded-md border">
+    <ScrollArea className="w-96 rounded-md border whitespace-nowrap">
       <div className="flex w-max space-x-4 p-4">
         {works.map((artwork) => (
-          <figure className="shrink-0" key={artwork.artist}>
+          <figure key={artwork.artist} className="shrink-0">
             <div className="overflow-hidden rounded-md">
               <Image
+                src={artwork.art}
                 alt={`Photo by ${artwork.artist}`}
                 className="aspect-[3/4] h-fit w-fit object-cover"
-                height={400}
-                src={artwork.art}
                 width={300}
+                height={400}
               />
             </div>
-            <figcaption className="pt-2 text-muted-foreground text-xs">
+            <figcaption className="pt-2 text-xs text-muted-foreground">
               Photo by{" "}
               <span className="font-semibold text-foreground">
                 {artwork.artist}
@@ -84,7 +84,7 @@ const meta = {
 } satisfies Meta<typeof ScrollArea>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Demo: Story = {
   render: () => <ScrollAreaDemoComponent />,

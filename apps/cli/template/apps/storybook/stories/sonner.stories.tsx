@@ -5,6 +5,7 @@ import { toast } from "sonner";
 function SonnerDemoComponent() {
   return (
     <Button
+      variant="outline"
       onClick={() =>
         toast("Event has been created", {
           description: "Sunday, December 03, 2023 at 9:00 AM",
@@ -14,7 +15,6 @@ function SonnerDemoComponent() {
           },
         })
       }
-      variant="outline"
     >
       Show Toast
     </Button>
@@ -24,13 +24,13 @@ function SonnerDemoComponent() {
 function SonnerDescriptionComponent() {
   return (
     <Button
-      className="w-fit"
       onClick={() =>
         toast("Event has been created", {
           description: "Monday, January 3rd at 6:00pm",
         })
       }
       variant="outline"
+      className="w-fit"
     >
       Show Toast
     </Button>
@@ -41,50 +41,50 @@ function SonnerPositionComponent() {
   return (
     <div className="flex flex-wrap justify-center gap-2">
       <Button
+        variant="outline"
         onClick={() =>
           toast("Event has been created", { position: "top-left" })
         }
-        variant="outline"
       >
         Top Left
       </Button>
       <Button
+        variant="outline"
         onClick={() =>
           toast("Event has been created", { position: "top-center" })
         }
-        variant="outline"
       >
         Top Center
       </Button>
       <Button
+        variant="outline"
         onClick={() =>
           toast("Event has been created", { position: "top-right" })
         }
-        variant="outline"
       >
         Top Right
       </Button>
       <Button
+        variant="outline"
         onClick={() =>
           toast("Event has been created", { position: "bottom-left" })
         }
-        variant="outline"
       >
         Bottom Left
       </Button>
       <Button
+        variant="outline"
         onClick={() =>
           toast("Event has been created", { position: "bottom-center" })
         }
-        variant="outline"
       >
         Bottom Center
       </Button>
       <Button
+        variant="outline"
         onClick={() =>
           toast("Event has been created", { position: "bottom-right" })
         }
-        variant="outline"
       >
         Bottom Right
       </Button>
@@ -95,52 +95,52 @@ function SonnerPositionComponent() {
 function SonnerTypesComponent() {
   return (
     <div className="flex flex-wrap gap-2">
-      <Button onClick={() => toast("Event has been created")} variant="outline">
+      <Button variant="outline" onClick={() => toast("Event has been created")}>
         Default
       </Button>
       <Button
-        onClick={() => toast.success("Event has been created")}
         variant="outline"
+        onClick={() => toast.success("Event has been created")}
       >
         Success
       </Button>
       <Button
+        variant="outline"
         onClick={() =>
           toast.info("Be at the area 10 minutes before the event time")
         }
-        variant="outline"
       >
         Info
       </Button>
       <Button
+        variant="outline"
         onClick={() =>
           toast.warning("Event start time cannot be earlier than 8am")
         }
-        variant="outline"
       >
         Warning
       </Button>
       <Button
-        onClick={() => toast.error("Event has not been created")}
         variant="outline"
+        onClick={() => toast.error("Event has not been created")}
       >
         Error
       </Button>
       <Button
+        variant="outline"
         onClick={() => {
           toast.promise<{ name: string }>(
             () =>
               new Promise((resolve) =>
-                setTimeout(() => resolve({ name: "Event" }), 2000)
+                setTimeout(() => resolve({ name: "Event" }), 2000),
               ),
             {
               loading: "Loading...",
               success: (data) => `${data.name} has been created`,
               error: "Error",
-            }
+            },
           );
         }}
-        variant="outline"
       >
         Promise
       </Button>
@@ -155,7 +155,7 @@ const meta = {
 } satisfies Meta;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Demo: Story = {
   render: () => <SonnerDemoComponent />,

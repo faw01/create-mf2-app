@@ -8,14 +8,14 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 function HoverCardDemoComponent() {
   return (
-    <HoverCard closeDelay={100} openDelay={10}>
+    <HoverCard openDelay={10} closeDelay={100}>
       <HoverCardTrigger asChild>
         <Button variant="link">Hover Here</Button>
       </HoverCardTrigger>
       <HoverCardContent className="flex w-64 flex-col gap-0.5">
         <div className="font-semibold">@nextjs</div>
         <div>The React Framework – created and maintained by @vercel.</div>
-        <div className="mt-1 text-muted-foreground text-xs">
+        <div className="mt-1 text-xs text-muted-foreground">
           Joined December 2021
         </div>
       </HoverCardContent>
@@ -29,9 +29,9 @@ function HoverCardSidesComponent() {
   return (
     <div className="flex flex-wrap justify-center gap-2">
       {HOVER_CARD_SIDES.map((side) => (
-        <HoverCard closeDelay={100} key={side} openDelay={100}>
+        <HoverCard key={side} openDelay={100} closeDelay={100}>
           <HoverCardTrigger asChild>
-            <Button className="capitalize" variant="outline">
+            <Button variant="outline" className="capitalize">
               {side}
             </Button>
           </HoverCardTrigger>
@@ -55,7 +55,7 @@ const meta = {
 } satisfies Meta<typeof HoverCard>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Demo: Story = {
   render: () => <HoverCardDemoComponent />,

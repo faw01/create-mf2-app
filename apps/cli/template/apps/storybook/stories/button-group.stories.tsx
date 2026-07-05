@@ -84,7 +84,7 @@ function ButtonGroupDemoComponent() {
   return (
     <ButtonGroup>
       <ButtonGroup className="hidden sm:flex">
-        <Button aria-label="Go Back" size="icon" variant="outline">
+        <Button variant="outline" size="icon" aria-label="Go Back">
           <ArrowLeftIcon />
         </Button>
       </ButtonGroup>
@@ -96,7 +96,7 @@ function ButtonGroupDemoComponent() {
         <Button variant="outline">Snooze</Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button aria-label="More Options" size="icon" variant="outline">
+            <Button variant="outline" size="icon" aria-label="More Options">
               <MoreHorizontalIcon />
             </Button>
           </DropdownMenuTrigger>
@@ -132,8 +132,8 @@ function ButtonGroupDemoComponent() {
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>
                   <DropdownMenuRadioGroup
-                    onValueChange={setLabel}
                     value={label}
+                    onValueChange={setLabel}
                   >
                     <DropdownMenuRadioItem value="personal">
                       Personal
@@ -168,7 +168,7 @@ function ButtonGroupDropdownComponent() {
       <Button variant="outline">Follow</Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button className="!pl-2" variant="outline">
+          <Button variant="outline" className="pl-2!">
             <ChevronDownIcon />
           </Button>
         </DropdownMenuTrigger>
@@ -218,27 +218,27 @@ function ButtonGroupInputGroupComponent() {
   return (
     <ButtonGroup className="[--radius:9999rem]">
       <ButtonGroup>
-        <Button size="icon" variant="outline">
+        <Button variant="outline" size="icon">
           <PlusIcon />
         </Button>
       </ButtonGroup>
       <ButtonGroup>
         <InputGroup>
           <InputGroupInput
-            disabled={voiceEnabled}
             placeholder={
               voiceEnabled ? "Record and send audio..." : "Send a message..."
             }
+            disabled={voiceEnabled}
           />
           <InputGroupAddon align="inline-end">
             <Tooltip>
               <TooltipTrigger asChild>
                 <InputGroupButton
-                  aria-pressed={voiceEnabled}
-                  className="data-[active=true]:bg-orange-100 data-[active=true]:text-orange-700 dark:data-[active=true]:bg-orange-800 dark:data-[active=true]:text-orange-100"
-                  data-active={voiceEnabled}
                   onClick={() => setVoiceEnabled(!voiceEnabled)}
                   size="icon-xs"
+                  data-active={voiceEnabled}
+                  className="data-[active=true]:bg-orange-100 data-[active=true]:text-orange-700 dark:data-[active=true]:bg-orange-800 dark:data-[active=true]:text-orange-100"
+                  aria-pressed={voiceEnabled}
                 >
                   <AudioLinesIcon />
                 </InputGroupButton>
@@ -256,7 +256,7 @@ function ButtonGroupInputComponent() {
   return (
     <ButtonGroup>
       <Input placeholder="Search..." />
-      <Button aria-label="Search" variant="outline">
+      <Button variant="outline" aria-label="Search">
         <SearchIcon />
       </Button>
     </ButtonGroup>
@@ -267,7 +267,7 @@ function ButtonGroupNestedComponent() {
   return (
     <ButtonGroup>
       <ButtonGroup>
-        <Button size="icon" variant="outline">
+        <Button variant="outline" size="icon">
           <PlusIcon />
         </Button>
       </ButtonGroup>
@@ -291,14 +291,14 @@ function ButtonGroupNestedComponent() {
 function ButtonGroupOrientationComponent() {
   return (
     <ButtonGroup
+      orientation="vertical"
       aria-label="Media controls"
       className="h-fit"
-      orientation="vertical"
     >
-      <Button size="icon" variant="outline">
+      <Button variant="outline" size="icon">
         <PlusIcon />
       </Button>
-      <Button size="icon" variant="outline">
+      <Button variant="outline" size="icon">
         <MinusIcon />
       </Button>
     </ButtonGroup>
@@ -313,7 +313,7 @@ function ButtonGroupPopoverComponent() {
       </Button>
       <Popover>
         <PopoverTrigger asChild>
-          <Button aria-label="Open Popover" size="icon" variant="outline">
+          <Button variant="outline" size="icon" aria-label="Open Popover">
             <ChevronDownIcon />
           </Button>
         </PopoverTrigger>
@@ -325,13 +325,13 @@ function ButtonGroupPopoverComponent() {
             </PopoverDescription>
           </PopoverHeader>
           <Field>
-            <FieldLabel className="sr-only" htmlFor="task">
+            <FieldLabel htmlFor="task" className="sr-only">
               Task Description
             </FieldLabel>
             <Textarea
-              className="resize-none"
               id="task"
               placeholder="I need to..."
+              className="resize-none"
             />
             <FieldDescription>
               Copilot will open a pull request for review.
@@ -364,7 +364,7 @@ function ButtonGroupSelectComponent() {
   return (
     <ButtonGroup>
       <ButtonGroup>
-        <Select onValueChange={setCurrency} value={currency}>
+        <Select value={currency} onValueChange={setCurrency}>
           <SelectTrigger className="font-mono">{currency}</SelectTrigger>
           <SelectContent className="min-w-24">
             <SelectGroup>
@@ -379,7 +379,7 @@ function ButtonGroupSelectComponent() {
             </SelectGroup>
           </SelectContent>
         </Select>
-        <Input pattern="[0-9]*" placeholder="10.00" />
+        <Input placeholder="10.00" pattern="[0-9]*" />
       </ButtonGroup>
       <ButtonGroup>
         <Button aria-label="Send" size="icon" variant="outline">
@@ -393,11 +393,11 @@ function ButtonGroupSelectComponent() {
 function ButtonGroupSeparatorComponent() {
   return (
     <ButtonGroup>
-      <Button size="sm" variant="secondary">
+      <Button variant="secondary" size="sm">
         Copy
       </Button>
       <ButtonGroupSeparator />
-      <Button size="sm" variant="secondary">
+      <Button variant="secondary" size="sm">
         Paste
       </Button>
     </ButtonGroup>
@@ -408,16 +408,16 @@ function ButtonGroupSizeComponent() {
   return (
     <div className="flex flex-col items-start gap-8">
       <ButtonGroup>
-        <Button size="sm" variant="outline">
+        <Button variant="outline" size="sm">
           Small
         </Button>
-        <Button size="sm" variant="outline">
+        <Button variant="outline" size="sm">
           Button
         </Button>
-        <Button size="sm" variant="outline">
+        <Button variant="outline" size="sm">
           Group
         </Button>
-        <Button size="icon-sm" variant="outline">
+        <Button variant="outline" size="icon-sm">
           <PlusIcon />
         </Button>
       </ButtonGroup>
@@ -425,21 +425,21 @@ function ButtonGroupSizeComponent() {
         <Button variant="outline">Default</Button>
         <Button variant="outline">Button</Button>
         <Button variant="outline">Group</Button>
-        <Button size="icon" variant="outline">
+        <Button variant="outline" size="icon">
           <PlusIcon />
         </Button>
       </ButtonGroup>
       <ButtonGroup>
-        <Button size="lg" variant="outline">
+        <Button variant="outline" size="lg">
           Large
         </Button>
-        <Button size="lg" variant="outline">
+        <Button variant="outline" size="lg">
           Button
         </Button>
-        <Button size="lg" variant="outline">
+        <Button variant="outline" size="lg">
           Group
         </Button>
-        <Button size="icon-lg" variant="outline">
+        <Button variant="outline" size="icon-lg">
           <PlusIcon />
         </Button>
       </ButtonGroup>
@@ -467,7 +467,7 @@ const meta = {
 } satisfies Meta<typeof ButtonGroup>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Demo: Story = {
   render: () => <ButtonGroupDemoComponent />,

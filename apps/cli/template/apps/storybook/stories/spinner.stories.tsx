@@ -53,11 +53,11 @@ function SpinnerButtonComponent() {
         <Spinner data-icon="inline-start" />
         Loading...
       </Button>
-      <Button disabled size="sm" variant="outline">
+      <Button variant="outline" disabled size="sm">
         <Spinner data-icon="inline-start" />
         Please wait
       </Button>
-      <Button disabled size="sm" variant="secondary">
+      <Button variant="secondary" disabled size="sm">
         <Spinner data-icon="inline-start" />
         Processing
       </Button>
@@ -68,9 +68,9 @@ function SpinnerButtonComponent() {
 function CustomSpinner({ className, ...props }: ComponentProps<"svg">) {
   return (
     <LoaderIcon
+      role="status"
       aria-label="Loading"
       className={cn("size-4 animate-spin", className)}
-      role="status"
       {...props}
     />
   );
@@ -115,7 +115,7 @@ function SpinnerEmptyComponent() {
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <Button size="sm" variant="outline">
+        <Button variant="outline" size="sm">
           Cancel
         </Button>
       </EmptyContent>
@@ -127,13 +127,13 @@ function SpinnerInputGroupComponent() {
   return (
     <div className="flex w-full max-w-md flex-col gap-4">
       <InputGroup>
-        <InputGroupInput disabled placeholder="Send a message..." />
+        <InputGroupInput placeholder="Send a message..." disabled />
         <InputGroupAddon align="inline-end">
           <Spinner />
         </InputGroupAddon>
       </InputGroup>
       <InputGroup>
-        <InputGroupTextarea disabled placeholder="Send a message..." />
+        <InputGroupTextarea placeholder="Send a message..." disabled />
         <InputGroupAddon align="block-end">
           <Spinner /> Validating...
           <InputGroupButton className="ml-auto" variant="default">
@@ -165,7 +165,7 @@ const meta = {
 } satisfies Meta<typeof Spinner>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const SpinnerBadge: Story = {
   render: () => <SpinnerBadgeComponent />,

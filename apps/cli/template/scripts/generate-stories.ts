@@ -1,78 +1,60 @@
-import { readdir, unlink } from "node:fs/promises";
+/**
+ * Regenerates Storybook stories from the shadcn/ui demo examples.
+ *
+ * shadcn/ui publishes demo sources for every component (apps/v4/examples/radix
+ * in the shadcn-ui/ui repo). This script downloads them, keeps the demos whose
+ * component exists locally in packages/design-system/components/ui/, rewrites
+ * their imports to @repo/design-system, and merges each component's demos into
+ * one <name>.stories.tsx file. Run it after `bump-ui` so stories track the
+ * upstream components (`bump-ui` chains it automatically).
+ *
+ * Behavior:
+ * - Overwrites the story file for every local ui component that has demos.
+ * - Leaves alone: the composite showcases with no matching component
+ *   (data-table, date-picker, typography), components with no upstream demos,
+ *   and any story file containing a "generate-stories: skip" marker.
+ * - Self-heals drift: upstream demos can exercise APIs the local components
+ *   do not have yet (or no longer have). After generating, the script
+ *   typechecks the storybook workspace and drops the demos that fail,
+ *   regenerating until green, and reports what it dropped.
+ * - Pass a path to a local shadcn-ui/ui checkout to skip the download:
+ *   `bun scripts/generate-stories.ts ~/Downloads/ui-main`
+ */
+
+import { execSync, spawnSync } from "node:child_process";
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-const SOURCE_DIR = "/Users/faw/Downloads/ui-main/apps/v4/examples/radix";
-const TARGET_DIR =
-  "/Users/faw/Documents/GitHub/korrect/startdown/apps/cli/template/apps/storybook/stories";
+const ROOT = join(import.meta.dirname, "..");
+const UI_DIR = join(ROOT, "packages", "design-system", "components", "ui");
+const STORYBOOK_DIR = join(ROOT, "apps", "storybook");
+const STORIES_DIR = join(STORYBOOK_DIR, "stories");
 
-const COMPONENT_NAMES = [
-  "navigation-menu",
-  "dropdown-menu",
-  "native-select",
-  "context-menu",
-  "alert-dialog",
-  "aspect-ratio",
-  "button-group",
-  "toggle-group",
-  "input-group",
-  "radio-group",
-  "scroll-area",
-  "collapsible",
-  "breadcrumb",
-  "pagination",
-  "hover-card",
-  "resizable",
-  "accordion",
-  "separator",
-  "direction",
-  "input-otp",
-  "checkbox",
-  "carousel",
-  "calendar",
-  "textarea",
-  "skeleton",
-  "progress",
-  "combobox",
-  "menubar",
-  "command",
-  "spinner",
-  "tooltip",
-  "sidebar",
-  "popover",
-  "toggle",
-  "switch",
-  "slider",
-  "sonner",
-  "dialog",
-  "drawer",
-  "select",
-  "button",
-  "avatar",
-  "alert",
-  "badge",
-  "label",
-  "empty",
-  "field",
-  "chart",
-  "sheet",
-  "table",
-  "input",
-  "tabs",
-  "card",
-  "form",
-  "item",
-  "kbd",
-];
+const MAX_HEAL_PASSES = 5;
 
-const SPECIAL_PREFIXES = ["data-table", "date-picker", "typography"];
+const SHADCN_TARBALL_URL =
+  "https://codeload.github.com/shadcn-ui/ui/tar.gz/refs/heads/main";
+const TARBALL_EXAMPLES_PATH = "ui-main/apps/v4/examples/radix";
+
+// Hand-crafted composite showcases with no matching ui component file.
+const SKIP_PREFIXES = ["data-table", "date-picker", "typography"];
+
+// Story files containing this marker are never overwritten.
+const SKIP_MARKER = "generate-stories: skip";
 
 const WIDE_GROUPS = new Set([
-  "data-table",
   "table",
   "sidebar",
   "navigation-menu",
   "menubar",
-  "typography",
   "resizable",
 ]);
 
@@ -129,11 +111,16 @@ const ALIAS_RE = /^(\w+)\s+as\s+(\w+)$/;
 const REACT_DOT_G_RE = /React\.(\w+)/g;
 const EXPORT_DEFAULT_FUNC_RE = /export\s+default\s+function\s+\w+/;
 const EXPORT_FUNC_RE = /export\s+function\s+\w+/;
+const EXPORT_DESCRIPTION_LINE_RE = /^export const description = .*\n?/gm;
+const EXPORT_CONST_PREFIX_GM_RE = /^export const /gm;
 const DECL_NAME_GM_RE = /^(?:const|let|(?:async\s+)?function)\s+(\w+)/gm;
 const FUNC_NAME_GM_RE = /^function\s+(\w+)/gm;
 const DOUBLE_NEWLINE_RE = /\n\n+/;
+const TSC_ERROR_LINE_RE = /^stories\/([\w-]+)\.stories\.tsx\((\d+),\d+\):/gm;
+const RENDER_FUNC_REF_RE = /<(\w+Component)\s*\/>/;
+const TOP_LEVEL_FUNC_RE = /^function (\w+Component)\b/;
 
-function shouldSkip(filename: string): boolean {
+function shouldSkipExample(filename: string): boolean {
   if (!filename.endsWith(".tsx")) {
     return true;
   }
@@ -141,9 +128,6 @@ function shouldSkip(filename: string): boolean {
     return true;
   }
   if (filename === "calendar-hijri.tsx") {
-    return true;
-  }
-  if (filename === "date-picker-natural-language.tsx") {
     return true;
   }
   if (filename === "alert-action.tsx") {
@@ -168,16 +152,16 @@ function toPascalCase(str: string): string {
     .join("");
 }
 
-function getGroup(filename: string): string | null {
+function getGroup(filename: string, componentNames: string[]): string | null {
   const name = filename.replace(TSX_EXT_RE, "");
 
-  for (const prefix of SPECIAL_PREFIXES) {
+  for (const prefix of SKIP_PREFIXES) {
     if (name === prefix || name.startsWith(`${prefix}-`)) {
-      return prefix;
+      return null;
     }
   }
 
-  for (const comp of COMPONENT_NAMES) {
+  for (const comp of componentNames) {
     if (name === comp || name.startsWith(`${comp}-`)) {
       return comp;
     }
@@ -355,6 +339,14 @@ function parseImport(raw: string): ParsedImport | null {
 }
 
 function transformImportSource(source: string): string | "SKIP" {
+  // Current upstream layout (apps/v4/examples/radix imports).
+  if (source.startsWith("@/styles/radix-nova/ui/")) {
+    return source.replace(
+      "@/styles/radix-nova/ui/",
+      "@repo/design-system/components/ui/"
+    );
+  }
+  // Older upstream layouts, kept for checkouts that predate radix-nova.
   if (source.startsWith("@/examples/radix/ui/")) {
     return source.replace(
       "@/examples/radix/ui/",
@@ -771,9 +763,6 @@ function findPrimaryComponent(
   group: string,
   merged: ParsedImport[]
 ): string | null {
-  if (SPECIAL_PREFIXES.includes(group)) {
-    return null;
-  }
   const uiSource = `@repo/design-system/components/ui/${group}`;
   for (const imp of merged) {
     if (imp.source === uiSource) {
@@ -837,7 +826,9 @@ function buildStoryFileContent(
   parts.push("");
 
   parts.push("export default meta;");
-  parts.push("type Story = StoryObj<typeof meta>;");
+  // Stories are render-only. Deriving Story from meta would force per-story
+  // args whenever the primary component has required props (e.g. chart).
+  parts.push("type Story = StoryObj;");
   parts.push("");
 
   for (const story of stories) {
@@ -850,10 +841,27 @@ function buildStoryFileContent(
   return parts.join("\n");
 }
 
-async function generateStoryFile(
+function processExampleBody(body: string, funcName: string): string {
+  let processed = body.replace(EXPORT_DESCRIPTION_LINE_RE, "");
+  // Named exports in a stories file would be picked up as stories by CSF, so
+  // demote the demos' data exports to plain declarations.
+  processed = processed.replace(EXPORT_CONST_PREFIX_GM_RE, "const ");
+  processed = processed.replace(EXPORT_DEFAULT_FUNC_RE, `function ${funcName}`);
+  processed = processed.replace(EXPORT_FUNC_RE, `function ${funcName}`);
+  return processed.trim();
+}
+
+type GeneratedGroup = {
+  storyPath: string;
+  funcToFile: Map<string, string>;
+};
+
+function generateStoryFile(
+  sourceDir: string,
   group: string,
   exampleFiles: string[]
-): Promise<void> {
+): GeneratedGroup {
+  const funcToFile = new Map<string, string>();
   const allImports: ParsedImport[] = [];
   const stories: StoryEntry[] = [];
   const hooks: HookFlags = {
@@ -867,13 +875,13 @@ async function generateStoryFile(
   for (const file of exampleFiles.sort()) {
     const variant = getVariant(file, group);
     const funcName = `${toPascalCase(group)}${variant}Component`;
-    const content = await Bun.file(join(SOURCE_DIR, file)).text();
+    funcToFile.set(funcName, file);
+    const content = readFileSync(join(sourceDir, file), "utf8");
     const { importStatements, body } = splitImportsAndBody(content);
 
     processExampleImports(importStatements, allImports, hooks);
 
     const reactResult = transformReactNamespace(body);
-    let processedBody = reactResult.body;
     for (const v of reactResult.values) {
       reactValues.add(v);
     }
@@ -881,15 +889,11 @@ async function generateStoryFile(
       reactTypes.add(t);
     }
 
-    processedBody = processedBody.replace(
-      EXPORT_DEFAULT_FUNC_RE,
-      `function ${funcName}`
-    );
-    processedBody = processedBody.replace(
-      EXPORT_FUNC_RE,
-      `function ${funcName}`
-    );
-    stories.push({ variant, funcName, body: processedBody.trim() });
+    stories.push({
+      variant,
+      funcName,
+      body: processExampleBody(reactResult.body, funcName),
+    });
   }
 
   disambiguateDeclarations(stories);
@@ -930,26 +934,65 @@ async function generateStoryFile(
     primaryComponent
   );
 
-  const filename = `${group}.stories.tsx`;
-  await Bun.write(join(TARGET_DIR, filename), output);
-  console.log(`Generated ${filename} (${stories.length} stories)`);
+  const storyPath = join(STORIES_DIR, `${group}.stories.tsx`);
+  writeFileSync(storyPath, output);
+  console.log(`  ${group}.stories.tsx (${stories.length} stories)`);
+  return { storyPath, funcToFile };
 }
 
-async function main() {
-  console.log("Reading source examples...");
-  const files = await readdir(SOURCE_DIR);
-  const exampleFiles = files.filter(
-    (f) => f.endsWith(".tsx") && !shouldSkip(f)
-  );
-  console.log(`Found ${exampleFiles.length} example files`);
+async function resolveSourceDir(): Promise<string> {
+  const override = process.argv[2];
+  if (override) {
+    const nested = join(override, "apps", "v4", "examples", "radix");
+    if (existsSync(nested)) {
+      return nested;
+    }
+    if (existsSync(override)) {
+      return override;
+    }
+    console.error(`Source path not found: ${override}`);
+    process.exit(1);
+  }
 
+  const workDir = join(tmpdir(), "mf2-shadcn-examples");
+  rmSync(workDir, { recursive: true, force: true });
+  mkdirSync(workDir, { recursive: true });
+
+  console.log("Downloading shadcn/ui (main) demo examples...");
+  const response = await fetch(SHADCN_TARBALL_URL);
+  if (!response.ok) {
+    console.error(`Download failed: HTTP ${response.status}`);
+    process.exit(1);
+  }
+  const tarPath = join(workDir, "ui-main.tar.gz");
+  await Bun.write(tarPath, response);
+  execSync(`tar -xzf ui-main.tar.gz ${TARBALL_EXAMPLES_PATH}`, {
+    cwd: workDir,
+    stdio: "inherit",
+  });
+  return join(workDir, TARBALL_EXAMPLES_PATH);
+}
+
+function hasSkipMarker(group: string): boolean {
+  const storyPath = join(STORIES_DIR, `${group}.stories.tsx`);
+  if (!existsSync(storyPath)) {
+    return false;
+  }
+  return readFileSync(storyPath, "utf8").includes(SKIP_MARKER);
+}
+
+function collectGroups(
+  sourceDir: string,
+  componentNames: string[]
+): Map<string, string[]> {
   const groups = new Map<string, string[]>();
-  const skipped: string[] = [];
 
-  for (const file of exampleFiles) {
-    const group = getGroup(file);
+  for (const file of readdirSync(sourceDir)) {
+    if (shouldSkipExample(file)) {
+      continue;
+    }
+    const group = getGroup(file, componentNames);
     if (!group) {
-      skipped.push(file);
       continue;
     }
     if (!groups.has(group)) {
@@ -958,40 +1001,222 @@ async function main() {
     groups.get(group)?.push(file);
   }
 
-  if (skipped.length > 0) {
-    console.log(`Skipped ${skipped.length} files with no group match:`);
-    for (const f of skipped) {
-      console.log(`  - ${f}`);
-    }
+  return groups;
+}
+
+function formatStories(files: string[]): void {
+  if (files.length === 0) {
+    return;
   }
-
-  console.log(`\nGrouped into ${groups.size} component groups`);
-
-  console.log("\nDeleting existing story files...");
-  const existing = await readdir(TARGET_DIR);
-  let deleted = 0;
-  for (const file of existing) {
-    if (file.endsWith(".stories.tsx")) {
-      await unlink(join(TARGET_DIR, file));
-      deleted++;
-    }
-  }
-  console.log(`Deleted ${deleted} existing story files`);
-
-  console.log("\nGenerating new story files...");
-  let totalStories = 0;
-
-  for (const [group, groupFiles] of [...groups.entries()].sort()) {
-    await generateStoryFile(group, groupFiles);
-    totalStories += groupFiles.length;
-  }
-
-  console.log(
-    `\nDone! Generated ${groups.size} story files with ${totalStories} total stories`
+  // apps/storybook is excluded from the template biome config, so format the
+  // regenerated stories with a standalone config to match repo style.
+  const configDir = join(tmpdir(), "mf2-stories-biome");
+  mkdirSync(configDir, { recursive: true });
+  writeFileSync(
+    join(configDir, "biome.json"),
+    JSON.stringify({
+      linter: { enabled: false },
+      formatter: { enabled: true, indentStyle: "space" },
+      assist: { actions: { source: { organizeImports: "on" } } },
+    })
+  );
+  execSync(
+    `bunx biome check --write --config-path=${configDir} ${files.join(" ")}`,
+    { cwd: ROOT, stdio: "inherit" }
   );
 }
 
-main().catch((err) => {
-  console.error("Fatal error:", err);
+type TypecheckResult = {
+  green: boolean;
+  output: string;
+  failures: Map<string, Set<number>>;
+};
+
+function typecheckStorybook(): TypecheckResult {
+  const result = spawnSync("bun", ["run", "typecheck"], {
+    cwd: STORYBOOK_DIR,
+    encoding: "utf8",
+  });
+  const output = `${result.stdout ?? ""}${result.stderr ?? ""}`;
+  const failures = new Map<string, Set<number>>();
+
+  for (const match of output.matchAll(TSC_ERROR_LINE_RE)) {
+    const group = match[1];
+    if (!failures.has(group)) {
+      failures.set(group, new Set());
+    }
+    failures.get(group)?.add(Number(match[2]));
+  }
+
+  return { green: result.status === 0, output, failures };
+}
+
+function resolveFuncForLine(
+  storyLines: string[],
+  lineNumber: number
+): string | null {
+  const index = lineNumber - 1;
+  const renderMatch = storyLines[index]?.match(RENDER_FUNC_REF_RE);
+  if (renderMatch) {
+    return renderMatch[1];
+  }
+  for (let i = index; i >= 0; i--) {
+    const funcMatch = storyLines[i].match(TOP_LEVEL_FUNC_RE);
+    if (funcMatch) {
+      return funcMatch[1];
+    }
+  }
+  return null;
+}
+
+/**
+ * Maps typecheck failures back to the demo files that caused them and removes
+ * those demos from their groups. Returns the groups needing regeneration, or
+ * null when a failure cannot be attributed to a demo (manual fix needed).
+ */
+function dropFailingDemos(
+  failures: Map<string, Set<number>>,
+  groups: Map<string, string[]>,
+  generated: Map<string, GeneratedGroup>,
+  dropped: Map<string, string[]>
+): Set<string> | null {
+  const regenerate = new Set<string>();
+
+  for (const [group, lines] of failures) {
+    const gen = generated.get(group);
+    const files = groups.get(group);
+    if (!(gen && files)) {
+      return null;
+    }
+    const storyLines = readFileSync(gen.storyPath, "utf8").split("\n");
+    for (const line of lines) {
+      const funcName = resolveFuncForLine(storyLines, line);
+      const demoFile = funcName ? gen.funcToFile.get(funcName) : undefined;
+      if (!demoFile) {
+        return null;
+      }
+      if (files.includes(demoFile)) {
+        files.splice(files.indexOf(demoFile), 1);
+        if (!dropped.has(group)) {
+          dropped.set(group, []);
+        }
+        dropped.get(group)?.push(demoFile);
+      }
+      regenerate.add(group);
+    }
+  }
+
+  return regenerate;
+}
+
+function reportRun(
+  dropped: Map<string, string[]>,
+  withoutExamples: string[],
+  writtenCount: number
+): void {
+  if (dropped.size > 0) {
+    console.log(
+      "\nDropped demos that do not typecheck against the local components"
+    );
+    console.log("(API drift; run bump-ui to refresh components, then rerun):");
+    for (const [group, files] of [...dropped.entries()].sort()) {
+      console.log(`  ${group}: ${files.sort().join(", ")}`);
+    }
+  }
+
+  if (withoutExamples.length > 0) {
+    console.log(
+      `\nNo upstream demos for: ${withoutExamples.sort().join(", ")} (existing stories left untouched)`
+    );
+  }
+
+  console.log(
+    `\nDone. Regenerated ${writtenCount} story files. Composite showcases (${SKIP_PREFIXES.join(", ")}) are never touched.`
+  );
+}
+
+async function main(): Promise<void> {
+  const sourceDir = await resolveSourceDir();
+
+  const componentNames = readdirSync(UI_DIR)
+    .filter((file) => file.endsWith(".tsx"))
+    .map((file) => file.replace(TSX_EXT_RE, ""))
+    .sort((a, b) => b.length - a.length);
+
+  const groups = collectGroups(sourceDir, componentNames);
+  const markerSkipped = new Set<string>();
+  for (const group of [...groups.keys()]) {
+    if (hasSkipMarker(group)) {
+      console.log(`  ${group}: skip marker found, left untouched`);
+      markerSkipped.add(group);
+      groups.delete(group);
+    }
+  }
+
+  console.log(
+    `\nRegenerating stories for ${groups.size} of ${componentNames.length} local components...`
+  );
+
+  const generated = new Map<string, GeneratedGroup>();
+  for (const [group, files] of [...groups.entries()].sort()) {
+    generated.set(group, generateStoryFile(sourceDir, group, files));
+  }
+
+  const dropped = new Map<string, string[]>();
+  let lastOutput = "";
+
+  for (let pass = 0; pass < MAX_HEAL_PASSES; pass++) {
+    console.log("\nTypechecking storybook workspace...");
+    const check = typecheckStorybook();
+    lastOutput = check.output;
+    if (check.green) {
+      lastOutput = "";
+      break;
+    }
+
+    const regenerate = dropFailingDemos(
+      check.failures,
+      groups,
+      generated,
+      dropped
+    );
+    if (!regenerate || regenerate.size === 0) {
+      break;
+    }
+
+    console.log(
+      `Dropping demos with API drift and regenerating: ${[...regenerate].sort().join(", ")}`
+    );
+    for (const group of regenerate) {
+      const files = groups.get(group) ?? [];
+      if (files.length === 0) {
+        rmSync(join(STORIES_DIR, `${group}.stories.tsx`), { force: true });
+        generated.delete(group);
+        console.log(`  ${group}: all demos dropped, story file removed`);
+        continue;
+      }
+      generated.set(group, generateStoryFile(sourceDir, group, files));
+    }
+  }
+
+  if (lastOutput !== "") {
+    console.error(
+      "\nTypecheck still failing after regeneration; manual fix needed:"
+    );
+    console.error(lastOutput);
+    process.exit(1);
+  }
+
+  console.log("\nFormatting regenerated stories...");
+  formatStories([...generated.values()].map((g) => g.storyPath));
+
+  const withoutExamples = componentNames.filter(
+    (name) => !(groups.has(name) || markerSkipped.has(name))
+  );
+  reportRun(dropped, withoutExamples, generated.size);
+}
+
+main().catch((error) => {
+  console.error("Fatal error:", error);
   process.exit(1);
 });

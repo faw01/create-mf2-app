@@ -50,10 +50,10 @@ function CommandBasicComponent() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Button className="w-fit" onClick={() => setOpen(true)} variant="outline">
+      <Button onClick={() => setOpen(true)} variant="outline" className="w-fit">
         Open Menu
       </Button>
-      <CommandDialog onOpenChange={setOpen} open={open}>
+      <CommandDialog open={open} onOpenChange={setOpen}>
         <Command>
           <CommandInput placeholder="Type a command or search..." />
           <CommandList>
@@ -130,13 +130,13 @@ function CommandDialogComponent() {
 
   return (
     <>
-      <p className="text-muted-foreground text-sm">
+      <p className="text-sm text-muted-foreground">
         Press{" "}
-        <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-medium font-mono text-[10px] text-muted-foreground opacity-100">
+        <kbd className="pointer-events-none inline-flex h-5 items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100 select-none">
           <span className="text-xs">⌘</span>J
         </kbd>
       </p>
-      <CommandDialog onOpenChange={setOpen} open={open}>
+      <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput placeholder="Type a command or search..." />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
@@ -183,10 +183,10 @@ function CommandGroupsComponent() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Button className="w-fit" onClick={() => setOpen(true)} variant="outline">
+      <Button onClick={() => setOpen(true)} variant="outline" className="w-fit">
         Open Menu
       </Button>
-      <CommandDialog onOpenChange={setOpen} open={open}>
+      <CommandDialog open={open} onOpenChange={setOpen}>
         <Command>
           <CommandInput placeholder="Type a command or search..." />
           <CommandList>
@@ -235,10 +235,10 @@ function CommandScrollableComponent() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Button className="w-fit" onClick={() => setOpen(true)} variant="outline">
+      <Button onClick={() => setOpen(true)} variant="outline" className="w-fit">
         Open Menu
       </Button>
-      <CommandDialog onOpenChange={setOpen} open={open}>
+      <CommandDialog open={open} onOpenChange={setOpen}>
         <Command>
           <CommandInput placeholder="Type a command or search..." />
           <CommandList>
@@ -376,10 +376,10 @@ function CommandShortcutsComponent() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Button className="w-fit" onClick={() => setOpen(true)} variant="outline">
+      <Button onClick={() => setOpen(true)} variant="outline" className="w-fit">
         Open Menu
       </Button>
-      <CommandDialog onOpenChange={setOpen} open={open}>
+      <CommandDialog open={open} onOpenChange={setOpen}>
         <Command>
           <CommandInput placeholder="Type a command or search..." />
           <CommandList>
@@ -416,7 +416,7 @@ const meta = {
 } satisfies Meta<typeof Command>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Basic: Story = {
   render: () => <CommandBasicComponent />,

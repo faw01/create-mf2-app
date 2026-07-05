@@ -35,20 +35,20 @@ function EmptyAvatarGroupComponent() {
         <EmptyMedia>
           <div className="flex -space-x-2 *:data-[slot=avatar]:size-12 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:ring-background *:data-[slot=avatar]:grayscale">
             <Avatar>
-              <AvatarImage alt="@shadcn" src="https://github.com/shadcn.png" />
+              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
             <Avatar>
               <AvatarImage
-                alt="@maxleiter"
                 src="https://github.com/maxleiter.png"
+                alt="@maxleiter"
               />
               <AvatarFallback>LR</AvatarFallback>
             </Avatar>
             <Avatar>
               <AvatarImage
-                alt="@evilrabbit"
                 src="https://github.com/evilrabbit.png"
+                alt="@evilrabbit"
               />
               <AvatarFallback>ER</AvatarFallback>
             </Avatar>
@@ -76,8 +76,8 @@ function EmptyAvatarComponent() {
         <EmptyMedia variant="default">
           <Avatar className="size-12">
             <AvatarImage
-              className="grayscale"
               src="https://github.com/shadcn.png"
+              className="grayscale"
             />
             <AvatarFallback>LR</AvatarFallback>
           </Avatar>
@@ -137,7 +137,7 @@ function EmptyCardComponent() {
           </Button>
           <Button variant="outline">Import project</Button>
         </div>
-        <Button asChild className="text-muted-foreground" variant="link">
+        <Button variant="link" asChild className="text-muted-foreground">
           <a href="#">
             Learn more <ArrowUpRightIcon />
           </a>
@@ -165,10 +165,10 @@ function EmptyDemoComponent() {
         <Button variant="outline">Import Project</Button>
       </EmptyContent>
       <Button
+        variant="link"
         asChild
         className="text-muted-foreground"
         size="sm"
-        variant="link"
       >
         <a href="#">
           Learn More <ArrowUpRightIcon />
@@ -219,7 +219,7 @@ function EmptyOutlineComponent() {
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <Button size="sm" variant="outline">
+        <Button variant="outline" size="sm">
           Upload Files
         </Button>
       </EmptyContent>
@@ -235,7 +235,7 @@ const meta = {
 } satisfies Meta<typeof Empty>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const AvatarGroup: Story = {
   render: () => <EmptyAvatarGroupComponent />,

@@ -16,7 +16,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 function RadioGroupChoiceCardComponent() {
   return (
-    <RadioGroup className="max-w-sm" defaultValue="plus">
+    <RadioGroup defaultValue="plus" className="max-w-sm">
       <FieldLabel htmlFor="plus-plan">
         <Field orientation="horizontal">
           <FieldContent>
@@ -25,7 +25,7 @@ function RadioGroupChoiceCardComponent() {
               For individuals and small teams.
             </FieldDescription>
           </FieldContent>
-          <RadioGroupItem id="plus-plan" value="plus" />
+          <RadioGroupItem value="plus" id="plus-plan" />
         </Field>
       </FieldLabel>
       <FieldLabel htmlFor="pro-plan">
@@ -34,7 +34,7 @@ function RadioGroupChoiceCardComponent() {
             <FieldTitle>Pro</FieldTitle>
             <FieldDescription>For growing businesses.</FieldDescription>
           </FieldContent>
-          <RadioGroupItem id="pro-plan" value="pro" />
+          <RadioGroupItem value="pro" id="pro-plan" />
         </Field>
       </FieldLabel>
       <FieldLabel htmlFor="enterprise-plan">
@@ -45,7 +45,7 @@ function RadioGroupChoiceCardComponent() {
               For large teams and enterprises.
             </FieldDescription>
           </FieldContent>
-          <RadioGroupItem id="enterprise-plan" value="enterprise" />
+          <RadioGroupItem value="enterprise" id="enterprise-plan" />
         </Field>
       </FieldLabel>
     </RadioGroup>
@@ -54,17 +54,17 @@ function RadioGroupChoiceCardComponent() {
 
 function RadioGroupDemoComponent() {
   return (
-    <RadioGroup className="w-fit" defaultValue="comfortable">
+    <RadioGroup defaultValue="comfortable" className="w-fit">
       <div className="flex items-center gap-3">
-        <RadioGroupItem id="r1" value="default" />
+        <RadioGroupItem value="default" id="r1" />
         <Label htmlFor="r1">Default</Label>
       </div>
       <div className="flex items-center gap-3">
-        <RadioGroupItem id="r2" value="comfortable" />
+        <RadioGroupItem value="comfortable" id="r2" />
         <Label htmlFor="r2">Comfortable</Label>
       </div>
       <div className="flex items-center gap-3">
-        <RadioGroupItem id="r3" value="compact" />
+        <RadioGroupItem value="compact" id="r3" />
         <Label htmlFor="r3">Compact</Label>
       </div>
     </RadioGroup>
@@ -73,9 +73,9 @@ function RadioGroupDemoComponent() {
 
 function RadioGroupDescriptionComponent() {
   return (
-    <RadioGroup className="w-fit" defaultValue="comfortable">
+    <RadioGroup defaultValue="comfortable" className="w-fit">
       <Field orientation="horizontal">
-        <RadioGroupItem id="desc-r1" value="default" />
+        <RadioGroupItem value="default" id="desc-r1" />
         <FieldContent>
           <FieldLabel htmlFor="desc-r1">Default</FieldLabel>
           <FieldDescription>
@@ -84,14 +84,14 @@ function RadioGroupDescriptionComponent() {
         </FieldContent>
       </Field>
       <Field orientation="horizontal">
-        <RadioGroupItem id="desc-r2" value="comfortable" />
+        <RadioGroupItem value="comfortable" id="desc-r2" />
         <FieldContent>
           <FieldLabel htmlFor="desc-r2">Comfortable</FieldLabel>
           <FieldDescription>More space between elements.</FieldDescription>
         </FieldContent>
       </Field>
       <Field orientation="horizontal">
-        <RadioGroupItem id="desc-r3" value="compact" />
+        <RadioGroupItem value="compact" id="desc-r3" />
         <FieldContent>
           <FieldLabel htmlFor="desc-r3">Compact</FieldLabel>
           <FieldDescription>
@@ -105,22 +105,22 @@ function RadioGroupDescriptionComponent() {
 
 function RadioGroupDisabledComponent() {
   return (
-    <RadioGroup className="w-fit" defaultValue="option2">
-      <Field data-disabled orientation="horizontal">
-        <RadioGroupItem disabled id="disabled-1" value="option1" />
-        <FieldLabel className="font-normal" htmlFor="disabled-1">
+    <RadioGroup defaultValue="option2" className="w-fit">
+      <Field orientation="horizontal" data-disabled>
+        <RadioGroupItem value="option1" id="disabled-1" disabled />
+        <FieldLabel htmlFor="disabled-1" className="font-normal">
           Disabled
         </FieldLabel>
       </Field>
       <Field orientation="horizontal">
-        <RadioGroupItem id="disabled-2" value="option2" />
-        <FieldLabel className="font-normal" htmlFor="disabled-2">
+        <RadioGroupItem value="option2" id="disabled-2" />
+        <FieldLabel htmlFor="disabled-2" className="font-normal">
           Option 2
         </FieldLabel>
       </Field>
       <Field orientation="horizontal">
-        <RadioGroupItem id="disabled-3" value="option3" />
-        <FieldLabel className="font-normal" htmlFor="disabled-3">
+        <RadioGroupItem value="option3" id="disabled-3" />
+        <FieldLabel htmlFor="disabled-3" className="font-normal">
           Option 3
         </FieldLabel>
       </Field>
@@ -137,20 +137,20 @@ function RadioGroupFieldsetComponent() {
       </FieldDescription>
       <RadioGroup defaultValue="monthly">
         <Field orientation="horizontal">
-          <RadioGroupItem id="plan-monthly" value="monthly" />
-          <FieldLabel className="font-normal" htmlFor="plan-monthly">
+          <RadioGroupItem value="monthly" id="plan-monthly" />
+          <FieldLabel htmlFor="plan-monthly" className="font-normal">
             Monthly ($9.99/month)
           </FieldLabel>
         </Field>
         <Field orientation="horizontal">
-          <RadioGroupItem id="plan-yearly" value="yearly" />
-          <FieldLabel className="font-normal" htmlFor="plan-yearly">
+          <RadioGroupItem value="yearly" id="plan-yearly" />
+          <FieldLabel htmlFor="plan-yearly" className="font-normal">
             Yearly ($99.99/year)
           </FieldLabel>
         </Field>
         <Field orientation="horizontal">
-          <RadioGroupItem id="plan-lifetime" value="lifetime" />
-          <FieldLabel className="font-normal" htmlFor="plan-lifetime">
+          <RadioGroupItem value="lifetime" id="plan-lifetime" />
+          <FieldLabel htmlFor="plan-lifetime" className="font-normal">
             Lifetime ($299.99)
           </FieldLabel>
         </Field>
@@ -167,21 +167,21 @@ function RadioGroupInvalidComponent() {
         Choose how you want to receive notifications.
       </FieldDescription>
       <RadioGroup defaultValue="email">
-        <Field data-invalid orientation="horizontal">
-          <RadioGroupItem aria-invalid id="invalid-email" value="email" />
-          <FieldLabel className="font-normal" htmlFor="invalid-email">
+        <Field orientation="horizontal" data-invalid>
+          <RadioGroupItem value="email" id="invalid-email" aria-invalid />
+          <FieldLabel htmlFor="invalid-email" className="font-normal">
             Email only
           </FieldLabel>
         </Field>
-        <Field data-invalid orientation="horizontal">
-          <RadioGroupItem aria-invalid id="invalid-sms" value="sms" />
-          <FieldLabel className="font-normal" htmlFor="invalid-sms">
+        <Field orientation="horizontal" data-invalid>
+          <RadioGroupItem value="sms" id="invalid-sms" aria-invalid />
+          <FieldLabel htmlFor="invalid-sms" className="font-normal">
             SMS only
           </FieldLabel>
         </Field>
-        <Field data-invalid orientation="horizontal">
-          <RadioGroupItem aria-invalid id="invalid-both" value="both" />
-          <FieldLabel className="font-normal" htmlFor="invalid-both">
+        <Field orientation="horizontal" data-invalid>
+          <RadioGroupItem value="both" id="invalid-both" aria-invalid />
+          <FieldLabel htmlFor="invalid-both" className="font-normal">
             Both Email & SMS
           </FieldLabel>
         </Field>
@@ -198,7 +198,7 @@ const meta = {
 } satisfies Meta<typeof RadioGroup>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const ChoiceCard: Story = {
   render: () => <RadioGroupChoiceCardComponent />,

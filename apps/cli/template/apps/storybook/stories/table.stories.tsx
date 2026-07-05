@@ -36,7 +36,7 @@ function TableActionsComponent() {
           <TableCell className="text-right">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button className="size-8" size="icon" variant="ghost">
+                <Button variant="ghost" size="icon" className="size-8">
                   <MoreHorizontalIcon />
                   <span className="sr-only">Open menu</span>
                 </Button>
@@ -58,7 +58,7 @@ function TableActionsComponent() {
           <TableCell className="text-right">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button className="size-8" size="icon" variant="ghost">
+                <Button variant="ghost" size="icon" className="size-8">
                   <MoreHorizontalIcon />
                   <span className="sr-only">Open menu</span>
                 </Button>
@@ -80,7 +80,7 @@ function TableActionsComponent() {
           <TableCell className="text-right">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button className="size-8" size="icon" variant="ghost">
+                <Button variant="ghost" size="icon" className="size-8">
                   <MoreHorizontalIcon />
                   <span className="sr-only">Open menu</span>
                 </Button>
@@ -263,7 +263,7 @@ const meta = {
 } satisfies Meta<typeof Table>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Actions: Story = {
   render: () => <TableActionsComponent />,

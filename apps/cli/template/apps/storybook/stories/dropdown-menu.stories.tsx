@@ -62,9 +62,9 @@ function DropdownMenuAvatarComponent() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className="rounded-full" size="icon" variant="ghost">
+        <Button variant="ghost" size="icon" className="rounded-full">
           <Avatar>
-            <AvatarImage alt="shadcn" src="https://github.com/shadcn.png" />
+            <AvatarImage src="https://github.com/shadcn.png" alt="shadcn" />
             <AvatarFallback>LR</AvatarFallback>
           </Avatar>
         </Button>
@@ -185,8 +185,8 @@ function DropdownMenuCheckboxesComponent() {
           </DropdownMenuCheckboxItem>
           <DropdownMenuCheckboxItem
             checked={showActivityBar}
-            disabled
             onCheckedChange={setShowActivityBar}
+            disabled
           >
             Activity Bar
           </DropdownMenuCheckboxItem>
@@ -317,8 +317,8 @@ function DropdownMenuComplexComponent() {
                 <DropdownMenuGroup>
                   <DropdownMenuLabel>Appearance</DropdownMenuLabel>
                   <DropdownMenuRadioGroup
-                    onValueChange={setTheme}
                     value={theme}
+                    onValueChange={setTheme}
                   >
                     <DropdownMenuRadioItem value="light">
                       <SunIcon />
@@ -448,7 +448,7 @@ function DropdownMenuDemoComponent() {
       <DropdownMenuTrigger asChild>
         <Button variant="outline">Open</Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-40">
+      <DropdownMenuContent className="w-40" align="start">
         <DropdownMenuGroup>
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuItem>
@@ -570,7 +570,7 @@ function DropdownMenuRadioGroupComponent() {
       <DropdownMenuContent className="w-32">
         <DropdownMenuGroup>
           <DropdownMenuLabel>Panel Position</DropdownMenuLabel>
-          <DropdownMenuRadioGroup onValueChange={setPosition} value={position}>
+          <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
             <DropdownMenuRadioItem value="top">Top</DropdownMenuRadioItem>
             <DropdownMenuRadioItem value="bottom">Bottom</DropdownMenuRadioItem>
             <DropdownMenuRadioItem value="right">Right</DropdownMenuRadioItem>
@@ -593,8 +593,8 @@ function DropdownMenuRadioIconsComponent() {
         <DropdownMenuGroup>
           <DropdownMenuLabel>Select Payment Method</DropdownMenuLabel>
           <DropdownMenuRadioGroup
-            onValueChange={setPaymentMethod}
             value={paymentMethod}
+            onValueChange={setPaymentMethod}
           >
             <DropdownMenuRadioItem value="card">
               <CreditCardIcon />
@@ -696,7 +696,7 @@ const meta = {
 } satisfies Meta<typeof DropdownMenu>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const DropdownMenuAvatar: Story = {
   render: () => <DropdownMenuAvatarComponent />,

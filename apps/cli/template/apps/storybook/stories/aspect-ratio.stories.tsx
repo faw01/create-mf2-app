@@ -5,12 +5,12 @@ import Image from "next/image";
 function AspectRatioDemoComponent() {
   return (
     <div className="w-full max-w-sm">
-      <AspectRatio className="rounded-lg bg-muted" ratio={16 / 9}>
+      <AspectRatio ratio={16 / 9} className="rounded-lg bg-muted">
         <Image
-          alt="Photo"
-          className="w-full rounded-lg object-cover grayscale dark:brightness-20"
-          fill
           src="https://avatar.vercel.sh/shadcn1"
+          alt="Photo"
+          fill
+          className="w-full rounded-lg object-cover grayscale dark:brightness-20"
         />
       </AspectRatio>
     </div>
@@ -20,12 +20,12 @@ function AspectRatioDemoComponent() {
 function AspectRatioPortraitComponent() {
   return (
     <div className="w-full max-w-[10rem]">
-      <AspectRatio className="rounded-lg bg-muted" ratio={9 / 16}>
+      <AspectRatio ratio={9 / 16} className="rounded-lg bg-muted">
         <Image
-          alt="Photo"
-          className="rounded-lg object-cover grayscale dark:brightness-20"
-          fill
           src="https://avatar.vercel.sh/shadcn1"
+          alt="Photo"
+          fill
+          className="rounded-lg object-cover grayscale dark:brightness-20"
         />
       </AspectRatio>
     </div>
@@ -35,12 +35,12 @@ function AspectRatioPortraitComponent() {
 function AspectRatioSquareComponent() {
   return (
     <div className="w-full max-w-[12rem]">
-      <AspectRatio className="rounded-lg bg-muted" ratio={1 / 1}>
+      <AspectRatio ratio={1 / 1} className="rounded-lg bg-muted">
         <Image
-          alt="Photo"
-          className="rounded-lg object-cover grayscale dark:brightness-20"
-          fill
           src="https://avatar.vercel.sh/shadcn1"
+          alt="Photo"
+          fill
+          className="rounded-lg object-cover grayscale dark:brightness-20"
         />
       </AspectRatio>
     </div>
@@ -55,7 +55,7 @@ const meta = {
 } satisfies Meta<typeof AspectRatio>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Demo: Story = {
   render: () => <AspectRatioDemoComponent />,

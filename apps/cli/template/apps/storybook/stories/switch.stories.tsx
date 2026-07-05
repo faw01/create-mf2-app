@@ -33,7 +33,7 @@ function SwitchChoiceCardComponent() {
               Receive notifications when focus mode is enabled or disabled.
             </FieldDescription>
           </FieldContent>
-          <Switch defaultChecked id="switch-notifications" />
+          <Switch id="switch-notifications" defaultChecked />
         </Field>
       </FieldLabel>
     </FieldGroup>
@@ -51,7 +51,7 @@ function SwitchDemoComponent() {
 
 function SwitchDescriptionComponent() {
   return (
-    <Field className="max-w-sm" orientation="horizontal">
+    <Field orientation="horizontal" className="max-w-sm">
       <FieldContent>
         <FieldLabel htmlFor="switch-focus-mode">
           Share across devices
@@ -67,8 +67,8 @@ function SwitchDescriptionComponent() {
 
 function SwitchDisabledComponent() {
   return (
-    <Field className="w-fit" data-disabled orientation="horizontal">
-      <Switch disabled id="switch-disabled-unchecked" />
+    <Field orientation="horizontal" data-disabled className="w-fit">
+      <Switch id="switch-disabled-unchecked" disabled />
       <FieldLabel htmlFor="switch-disabled-unchecked">Disabled</FieldLabel>
     </Field>
   );
@@ -76,7 +76,7 @@ function SwitchDisabledComponent() {
 
 function SwitchInvalidComponent() {
   return (
-    <Field className="max-w-sm" data-invalid orientation="horizontal">
+    <Field orientation="horizontal" className="max-w-sm" data-invalid>
       <FieldContent>
         <FieldLabel htmlFor="switch-terms">
           Accept terms and conditions
@@ -85,7 +85,7 @@ function SwitchInvalidComponent() {
           You must accept the terms and conditions to continue.
         </FieldDescription>
       </FieldContent>
-      <Switch aria-invalid id="switch-terms" />
+      <Switch id="switch-terms" aria-invalid />
     </Field>
   );
 }
@@ -113,7 +113,7 @@ const meta = {
 } satisfies Meta<typeof Switch>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const ChoiceCard: Story = {
   render: () => <SwitchChoiceCardComponent />,

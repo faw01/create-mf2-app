@@ -29,14 +29,14 @@ function InputBadgeComponent() {
     <Field>
       <FieldLabel htmlFor="input-badge">
         Webhook URL{" "}
-        <Badge className="ml-auto" variant="secondary">
+        <Badge variant="secondary" className="ml-auto">
           Beta
         </Badge>
       </FieldLabel>
       <Input
         id="input-badge"
-        placeholder="https://api.example.com/webhook"
         type="url"
+        placeholder="https://api.example.com/webhook"
       />
     </Field>
   );
@@ -62,7 +62,7 @@ function InputDemoComponent() {
   return (
     <Field>
       <FieldLabel htmlFor="input-demo-api-key">API Key</FieldLabel>
-      <Input id="input-demo-api-key" placeholder="sk-..." type="password" />
+      <Input id="input-demo-api-key" type="password" placeholder="sk-..." />
       <FieldDescription>
         Your API key is encrypted and stored securely.
       </FieldDescription>
@@ -75,10 +75,10 @@ function InputDisabledComponent() {
     <Field data-disabled>
       <FieldLabel htmlFor="input-demo-disabled">Email</FieldLabel>
       <Input
-        disabled
         id="input-demo-disabled"
-        placeholder="Email"
         type="email"
+        placeholder="Email"
+        disabled
       />
       <FieldDescription>This field is currently disabled.</FieldDescription>
     </Field>
@@ -91,8 +91,8 @@ function InputFieldComponent() {
       <FieldLabel htmlFor="input-field-username">Username</FieldLabel>
       <Input
         id="input-field-username"
-        placeholder="Enter your username"
         type="text"
+        placeholder="Enter your username"
       />
       <FieldDescription>
         Choose a unique username for your account.
@@ -112,8 +112,8 @@ function InputFieldgroupComponent() {
         <FieldLabel htmlFor="fieldgroup-email">Email</FieldLabel>
         <Input
           id="fieldgroup-email"
-          placeholder="name@example.com"
           type="email"
+          placeholder="name@example.com"
         />
         <FieldDescription>
           We&apos;ll send updates to this address.
@@ -147,14 +147,14 @@ function InputFormComponent() {
           <FieldLabel htmlFor="form-name">Name</FieldLabel>
           <Input
             id="form-name"
+            type="text"
             placeholder="Evil Rabbit"
             required
-            type="text"
           />
         </Field>
         <Field>
           <FieldLabel htmlFor="form-email">Email</FieldLabel>
-          <Input id="form-email" placeholder="john@example.com" type="email" />
+          <Input id="form-email" type="email" placeholder="john@example.com" />
           <FieldDescription>
             We&apos;ll never share your email with anyone.
           </FieldDescription>
@@ -162,7 +162,7 @@ function InputFormComponent() {
         <div className="grid grid-cols-2 gap-4">
           <Field>
             <FieldLabel htmlFor="form-phone">Phone</FieldLabel>
-            <Input id="form-phone" placeholder="+1 (555) 123-4567" type="tel" />
+            <Input id="form-phone" type="tel" placeholder="+1 (555) 123-4567" />
           </Field>
           <Field>
             <FieldLabel htmlFor="form-country">Country</FieldLabel>
@@ -180,7 +180,7 @@ function InputFormComponent() {
         </div>
         <Field>
           <FieldLabel htmlFor="form-address">Address</FieldLabel>
-          <Input id="form-address" placeholder="123 Main St" type="text" />
+          <Input id="form-address" type="text" placeholder="123 Main St" />
         </Field>
         <Field orientation="horizontal">
           <Button type="button" variant="outline">
@@ -211,7 +211,7 @@ function InputGridComponent() {
 function InputInlineComponent() {
   return (
     <Field orientation="horizontal">
-      <Input placeholder="Search..." type="search" />
+      <Input type="search" placeholder="Search..." />
       <Button>Search</Button>
     </Field>
   );
@@ -238,7 +238,7 @@ function InputInvalidComponent() {
   return (
     <Field data-invalid>
       <FieldLabel htmlFor="input-invalid">Invalid Input</FieldLabel>
-      <Input aria-invalid id="input-invalid" placeholder="Error" />
+      <Input id="input-invalid" placeholder="Error" aria-invalid />
       <FieldDescription>
         This field contains validation errors.
       </FieldDescription>
@@ -270,7 +270,7 @@ const meta = {
 } satisfies Meta<typeof Input>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const InputBadge: Story = {
   render: () => <InputBadgeComponent />,

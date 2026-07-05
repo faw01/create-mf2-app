@@ -5,13 +5,6 @@ import {
 } from "@repo/design-system/components/ui/avatar";
 import { Button } from "@repo/design-system/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@repo/design-system/components/ui/dropdown-menu";
-import {
   Item,
   ItemActions,
   ItemContent,
@@ -25,7 +18,6 @@ import {
 import type { Meta, StoryObj } from "@storybook/react";
 import {
   BadgeCheckIcon,
-  ChevronDownIcon,
   ChevronRightIcon,
   ExternalLinkIcon,
   InboxIcon,
@@ -51,10 +43,10 @@ function ItemAvatarComponent() {
         </ItemContent>
         <ItemActions>
           <Button
-            aria-label="Invite"
-            className="rounded-full"
             size="icon-sm"
             variant="outline"
+            className="rounded-full"
+            aria-label="Invite"
           >
             <Plus />
           </Button>
@@ -64,20 +56,20 @@ function ItemAvatarComponent() {
         <ItemMedia>
           <div className="flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:ring-background *:data-[slot=avatar]:grayscale">
             <Avatar className="hidden sm:flex">
-              <AvatarImage alt="@shadcn" src="https://github.com/shadcn.png" />
+              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
             <Avatar className="hidden sm:flex">
               <AvatarImage
-                alt="@maxleiter"
                 src="https://github.com/maxleiter.png"
+                alt="@maxleiter"
               />
               <AvatarFallback>LR</AvatarFallback>
             </Avatar>
             <Avatar>
               <AvatarImage
-                alt="@evilrabbit"
                 src="https://github.com/evilrabbit.png"
+                alt="@evilrabbit"
               />
               <AvatarFallback>ER</AvatarFallback>
             </Avatar>
@@ -110,12 +102,12 @@ function ItemDemoComponent() {
           </ItemDescription>
         </ItemContent>
         <ItemActions>
-          <Button size="sm" variant="outline">
+          <Button variant="outline" size="sm">
             Action
           </Button>
         </ItemActions>
       </Item>
-      <Item asChild size="sm" variant="outline">
+      <Item variant="outline" size="sm" asChild>
         <a href="#">
           <ItemMedia>
             <BadgeCheckIcon className="size-5" />
@@ -132,59 +124,7 @@ function ItemDemoComponent() {
   );
 }
 
-const peopleDropdown = [
-  {
-    username: "shadcn",
-    avatar: "https://github.com/shadcn.png",
-    email: "shadcn@vercel.com",
-  },
-  {
-    username: "maxleiter",
-    avatar: "https://github.com/maxleiter.png",
-    email: "maxleiter@vercel.com",
-  },
-  {
-    username: "evilrabbit",
-    avatar: "https://github.com/evilrabbit.png",
-    email: "evilrabbit@vercel.com",
-  },
-];
-
-function ItemDropdownComponent() {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline">
-          Select <ChevronDownIcon />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48">
-        <DropdownMenuGroup>
-          {peopleDropdown.map((person) => (
-            <DropdownMenuItem key={person.username}>
-              <Item className="w-full p-2" size="xs">
-                <ItemMedia>
-                  <Avatar className="size-[--spacing(6.5)]">
-                    <AvatarImage className="grayscale" src={person.avatar} />
-                    <AvatarFallback>{person.username.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                </ItemMedia>
-                <ItemContent className="gap-0">
-                  <ItemTitle>{person.username}</ItemTitle>
-                  <ItemDescription className="leading-none">
-                    {person.email}
-                  </ItemDescription>
-                </ItemContent>
-              </Item>
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
-
-const peopleGroup = [
+const people = [
   {
     username: "shadcn",
     avatar: "https://github.com/shadcn.png",
@@ -205,11 +145,11 @@ const peopleGroup = [
 function ItemGroupComponent() {
   return (
     <ItemGroup className="max-w-sm">
-      {peopleGroup.map((person, index) => (
+      {people.map((person, index) => (
         <Item key={person.username} variant="outline">
           <ItemMedia>
             <Avatar>
-              <AvatarImage className="grayscale" src={person.avatar} />
+              <AvatarImage src={person.avatar} className="grayscale" />
               <AvatarFallback>{person.username.charAt(0)}</AvatarFallback>
             </Avatar>
           </ItemMedia>
@@ -218,7 +158,7 @@ function ItemGroupComponent() {
             <ItemDescription>{person.email}</ItemDescription>
           </ItemContent>
           <ItemActions>
-            <Button className="rounded-full" size="icon" variant="ghost">
+            <Button variant="ghost" size="icon" className="rounded-full">
               <PlusIcon />
             </Button>
           </ItemActions>
@@ -260,11 +200,11 @@ function ItemHeaderComponent() {
           <Item key={model.name} variant="outline">
             <ItemHeader>
               <Image
-                alt={model.name}
-                className="aspect-square w-full rounded-sm object-cover"
-                height={128}
                 src={model.image}
+                alt={model.name}
                 width={128}
+                height={128}
+                className="aspect-square w-full rounded-sm object-cover"
               />
             </ItemHeader>
             <ItemContent>
@@ -327,15 +267,15 @@ function ItemImageComponent() {
     <div className="flex w-full max-w-md flex-col gap-6">
       <ItemGroup className="gap-4">
         {music.map((song) => (
-          <Item asChild key={song.title} role="listitem" variant="outline">
+          <Item key={song.title} variant="outline" asChild role="listitem">
             <a href="#">
               <ItemMedia variant="image">
                 <Image
-                  alt={song.title}
-                  className="object-cover grayscale"
-                  height={32}
                   src={`https://avatar.vercel.sh/${song.title}`}
+                  alt={song.title}
                   width={32}
+                  height={32}
+                  className="object-cover grayscale"
                 />
               </ItemMedia>
               <ItemContent>
@@ -372,8 +312,8 @@ function ItemLinkComponent() {
           </ItemActions>
         </a>
       </Item>
-      <Item asChild variant="outline">
-        <a href="#" rel="noopener noreferrer" target="_blank">
+      <Item variant="outline" asChild>
+        <a href="#" target="_blank" rel="noopener noreferrer">
           <ItemContent>
             <ItemTitle>External resource</ItemTitle>
             <ItemDescription>
@@ -384,42 +324,6 @@ function ItemLinkComponent() {
             <ExternalLinkIcon className="size-4" />
           </ItemActions>
         </a>
-      </Item>
-    </div>
-  );
-}
-
-function ItemSizeComponent() {
-  return (
-    <div className="flex w-full max-w-md flex-col gap-6">
-      <Item variant="outline">
-        <ItemMedia variant="icon">
-          <InboxIcon />
-        </ItemMedia>
-        <ItemContent>
-          <ItemTitle>Default Size</ItemTitle>
-          <ItemDescription>
-            The standard size for most use cases.
-          </ItemDescription>
-        </ItemContent>
-      </Item>
-      <Item size="sm" variant="outline">
-        <ItemMedia variant="icon">
-          <InboxIcon />
-        </ItemMedia>
-        <ItemContent>
-          <ItemTitle>Small Size</ItemTitle>
-          <ItemDescription>A compact size for dense layouts.</ItemDescription>
-        </ItemContent>
-      </Item>
-      <Item size="xs" variant="outline">
-        <ItemMedia variant="icon">
-          <InboxIcon />
-        </ItemMedia>
-        <ItemContent>
-          <ItemTitle>Extra Small Size</ItemTitle>
-          <ItemDescription>The most compact size available.</ItemDescription>
-        </ItemContent>
       </Item>
     </div>
   );
@@ -473,7 +377,7 @@ const meta = {
 } satisfies Meta<typeof Item>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const ItemAvatar: Story = {
   render: () => <ItemAvatarComponent />,
@@ -481,10 +385,6 @@ export const ItemAvatar: Story = {
 
 export const Demo: Story = {
   render: () => <ItemDemoComponent />,
-};
-
-export const Dropdown: Story = {
-  render: () => <ItemDropdownComponent />,
 };
 
 export const Group: Story = {
@@ -505,10 +405,6 @@ export const ItemImage: Story = {
 
 export const Link: Story = {
   render: () => <ItemLinkComponent />,
-};
-
-export const Size: Story = {
-  render: () => <ItemSizeComponent />,
 };
 
 export const Variant: Story = {

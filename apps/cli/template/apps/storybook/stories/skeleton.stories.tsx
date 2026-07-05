@@ -92,7 +92,7 @@ const meta = {
 } satisfies Meta<typeof Skeleton>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Avatar: Story = {
   render: () => <SkeletonAvatarComponent />,

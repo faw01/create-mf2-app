@@ -29,10 +29,10 @@ function ContextMenuBasicComponent() {
   return (
     <ContextMenu>
       <ContextMenuTrigger className="flex aspect-video w-full max-w-xs items-center justify-center rounded-xl border border-dashed text-sm">
-        <span className="pointer-fine:inline-block hidden">
+        <span className="hidden pointer-fine:inline-block">
           Right click here
         </span>
-        <span className="pointer-coarse:inline-block hidden">
+        <span className="hidden pointer-coarse:inline-block">
           Long press here
         </span>
       </ContextMenuTrigger>
@@ -51,10 +51,10 @@ function ContextMenuCheckboxesComponent() {
   return (
     <ContextMenu>
       <ContextMenuTrigger className="flex aspect-video w-full max-w-xs items-center justify-center rounded-xl border border-dashed text-sm">
-        <span className="pointer-fine:inline-block hidden">
+        <span className="hidden pointer-fine:inline-block">
           Right click here
         </span>
-        <span className="pointer-coarse:inline-block hidden">
+        <span className="hidden pointer-coarse:inline-block">
           Long press here
         </span>
       </ContextMenuTrigger>
@@ -77,10 +77,10 @@ function ContextMenuDemoComponent() {
   return (
     <ContextMenu>
       <ContextMenuTrigger className="flex aspect-video w-full max-w-xs items-center justify-center rounded-xl border border-dashed text-sm">
-        <span className="pointer-fine:inline-block hidden">
+        <span className="hidden pointer-fine:inline-block">
           Right click here
         </span>
-        <span className="pointer-coarse:inline-block hidden">
+        <span className="hidden pointer-coarse:inline-block">
           Long press here
         </span>
       </ContextMenuTrigger>
@@ -143,10 +143,10 @@ function ContextMenuDestructiveComponent() {
   return (
     <ContextMenu>
       <ContextMenuTrigger className="flex aspect-video w-full max-w-xs items-center justify-center rounded-xl border border-dashed text-sm">
-        <span className="pointer-fine:inline-block hidden">
+        <span className="hidden pointer-fine:inline-block">
           Right click here
         </span>
-        <span className="pointer-coarse:inline-block hidden">
+        <span className="hidden pointer-coarse:inline-block">
           Long press here
         </span>
       </ContextMenuTrigger>
@@ -177,10 +177,10 @@ function ContextMenuGroupsComponent() {
   return (
     <ContextMenu>
       <ContextMenuTrigger className="flex aspect-video w-full max-w-xs items-center justify-center rounded-xl border border-dashed text-sm">
-        <span className="pointer-fine:inline-block hidden">
+        <span className="hidden pointer-fine:inline-block">
           Right click here
         </span>
-        <span className="pointer-coarse:inline-block hidden">
+        <span className="hidden pointer-coarse:inline-block">
           Long press here
         </span>
       </ContextMenuTrigger>
@@ -243,10 +243,10 @@ function ContextMenuIconsComponent() {
   return (
     <ContextMenu>
       <ContextMenuTrigger className="flex aspect-video w-full max-w-xs items-center justify-center rounded-xl border border-dashed text-sm">
-        <span className="pointer-fine:inline-block hidden">
+        <span className="hidden pointer-fine:inline-block">
           Right click here
         </span>
-        <span className="pointer-coarse:inline-block hidden">
+        <span className="hidden pointer-coarse:inline-block">
           Long press here
         </span>
       </ContextMenuTrigger>
@@ -284,17 +284,17 @@ function ContextMenuRadioComponent() {
   return (
     <ContextMenu>
       <ContextMenuTrigger className="flex aspect-video w-full max-w-xs items-center justify-center rounded-xl border border-dashed text-sm">
-        <span className="pointer-fine:inline-block hidden">
+        <span className="hidden pointer-fine:inline-block">
           Right click here
         </span>
-        <span className="pointer-coarse:inline-block hidden">
+        <span className="hidden pointer-coarse:inline-block">
           Long press here
         </span>
       </ContextMenuTrigger>
       <ContextMenuContent>
         <ContextMenuGroup>
           <ContextMenuLabel>People</ContextMenuLabel>
-          <ContextMenuRadioGroup onValueChange={setUser} value={user}>
+          <ContextMenuRadioGroup value={user} onValueChange={setUser}>
             <ContextMenuRadioItem value="pedro">
               Pedro Duarte
             </ContextMenuRadioItem>
@@ -304,7 +304,7 @@ function ContextMenuRadioComponent() {
         <ContextMenuSeparator />
         <ContextMenuGroup>
           <ContextMenuLabel>Theme</ContextMenuLabel>
-          <ContextMenuRadioGroup onValueChange={setTheme} value={theme}>
+          <ContextMenuRadioGroup value={theme} onValueChange={setTheme}>
             <ContextMenuRadioItem value="light">Light</ContextMenuRadioItem>
             <ContextMenuRadioItem value="dark">Dark</ContextMenuRadioItem>
             <ContextMenuRadioItem value="system">System</ContextMenuRadioItem>
@@ -319,10 +319,10 @@ function ContextMenuShortcutsComponent() {
   return (
     <ContextMenu>
       <ContextMenuTrigger className="flex aspect-video w-full max-w-xs items-center justify-center rounded-xl border border-dashed text-sm">
-        <span className="pointer-fine:inline-block hidden">
+        <span className="hidden pointer-fine:inline-block">
           Right click here
         </span>
-        <span className="pointer-coarse:inline-block hidden">
+        <span className="hidden pointer-coarse:inline-block">
           Long press here
         </span>
       </ContextMenuTrigger>
@@ -357,89 +357,14 @@ function ContextMenuShortcutsComponent() {
   );
 }
 
-function ContextMenuSidesComponent() {
-  return (
-    <div className="grid w-full max-w-sm grid-cols-2 gap-4">
-      <ContextMenu>
-        <ContextMenuTrigger className="flex aspect-video w-full max-w-xs items-center justify-center rounded-xl border border-dashed text-sm">
-          <span className="pointer-fine:inline-block hidden">
-            Right click (top)
-          </span>
-          <span className="pointer-coarse:inline-block hidden">
-            Long press (top)
-          </span>
-        </ContextMenuTrigger>
-        <ContextMenuContent side="top">
-          <ContextMenuGroup>
-            <ContextMenuItem>Back</ContextMenuItem>
-            <ContextMenuItem>Forward</ContextMenuItem>
-            <ContextMenuItem>Reload</ContextMenuItem>
-          </ContextMenuGroup>
-        </ContextMenuContent>
-      </ContextMenu>
-      <ContextMenu>
-        <ContextMenuTrigger className="flex aspect-video w-full max-w-xs items-center justify-center rounded-xl border border-dashed text-sm">
-          <span className="pointer-fine:inline-block hidden">
-            Right click (right)
-          </span>
-          <span className="pointer-coarse:inline-block hidden">
-            Long press (right)
-          </span>
-        </ContextMenuTrigger>
-        <ContextMenuContent side="right">
-          <ContextMenuGroup>
-            <ContextMenuItem>Back</ContextMenuItem>
-            <ContextMenuItem>Forward</ContextMenuItem>
-            <ContextMenuItem>Reload</ContextMenuItem>
-          </ContextMenuGroup>
-        </ContextMenuContent>
-      </ContextMenu>
-      <ContextMenu>
-        <ContextMenuTrigger className="flex aspect-video w-full max-w-xs items-center justify-center rounded-xl border border-dashed text-sm">
-          <span className="pointer-fine:inline-block hidden">
-            Right click (bottom)
-          </span>
-          <span className="pointer-coarse:inline-block hidden">
-            Long press (bottom)
-          </span>
-        </ContextMenuTrigger>
-        <ContextMenuContent side="bottom">
-          <ContextMenuGroup>
-            <ContextMenuItem>Back</ContextMenuItem>
-            <ContextMenuItem>Forward</ContextMenuItem>
-            <ContextMenuItem>Reload</ContextMenuItem>
-          </ContextMenuGroup>
-        </ContextMenuContent>
-      </ContextMenu>
-      <ContextMenu>
-        <ContextMenuTrigger className="flex aspect-video w-full max-w-xs items-center justify-center rounded-xl border border-dashed text-sm">
-          <span className="pointer-fine:inline-block hidden">
-            Right click (left)
-          </span>
-          <span className="pointer-coarse:inline-block hidden">
-            Long press (left)
-          </span>
-        </ContextMenuTrigger>
-        <ContextMenuContent side="left">
-          <ContextMenuGroup>
-            <ContextMenuItem>Back</ContextMenuItem>
-            <ContextMenuItem>Forward</ContextMenuItem>
-            <ContextMenuItem>Reload</ContextMenuItem>
-          </ContextMenuGroup>
-        </ContextMenuContent>
-      </ContextMenu>
-    </div>
-  );
-}
-
 function ContextMenuSubmenuComponent() {
   return (
     <ContextMenu>
       <ContextMenuTrigger className="flex aspect-video w-full max-w-xs items-center justify-center rounded-xl border border-dashed text-sm">
-        <span className="pointer-fine:inline-block hidden">
+        <span className="hidden pointer-fine:inline-block">
           Right click here
         </span>
-        <span className="pointer-coarse:inline-block hidden">
+        <span className="hidden pointer-coarse:inline-block">
           Long press here
         </span>
       </ContextMenuTrigger>
@@ -485,7 +410,7 @@ const meta = {
 } satisfies Meta<typeof ContextMenu>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Basic: Story = {
   render: () => <ContextMenuBasicComponent />,
@@ -517,10 +442,6 @@ export const Radio: Story = {
 
 export const Shortcuts: Story = {
   render: () => <ContextMenuShortcutsComponent />,
-};
-
-export const Sides: Story = {
-  render: () => <ContextMenuSidesComponent />,
 };
 
 export const Submenu: Story = {

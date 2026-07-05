@@ -25,9 +25,9 @@ function TextareaDisabledComponent() {
     <Field data-disabled>
       <FieldLabel htmlFor="textarea-disabled">Message</FieldLabel>
       <Textarea
-        disabled
         id="textarea-disabled"
         placeholder="Type your message here."
+        disabled
       />
     </Field>
   );
@@ -48,9 +48,9 @@ function TextareaInvalidComponent() {
     <Field data-invalid>
       <FieldLabel htmlFor="textarea-invalid">Message</FieldLabel>
       <Textarea
-        aria-invalid
         id="textarea-invalid"
         placeholder="Type your message here."
+        aria-invalid
       />
       <FieldDescription>Please enter a valid message.</FieldDescription>
     </Field>
@@ -65,7 +65,7 @@ const meta = {
 } satisfies Meta<typeof Textarea>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const TextareaButton: Story = {
   render: () => <TextareaButtonComponent />,

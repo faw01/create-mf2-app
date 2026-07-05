@@ -37,10 +37,10 @@ const itemsBasic = [
 function AccordionBasicComponent() {
   return (
     <Accordion
-      className="max-w-lg"
+      type="single"
       collapsible
       defaultValue="item-1"
-      type="single"
+      className="max-w-lg"
     >
       {itemsBasic.map((item) => (
         <AccordionItem key={item.value} value={item.value}>
@@ -76,16 +76,16 @@ const itemsBorders = [
 function AccordionBordersComponent() {
   return (
     <Accordion
-      className="max-w-lg rounded-lg border"
-      collapsible
-      defaultValue="billing"
       type="single"
+      collapsible
+      className="max-w-lg rounded-lg border"
+      defaultValue="billing"
     >
       {itemsBorders.map((item) => (
         <AccordionItem
-          className="border-b px-4 last:border-b-0"
           key={item.value}
           value={item.value}
+          className="border-b px-4 last:border-b-0"
         >
           <AccordionTrigger>{item.trigger}</AccordionTrigger>
           <AccordionContent>{item.content}</AccordionContent>
@@ -127,7 +127,7 @@ function AccordionCardComponent() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Accordion collapsible defaultValue="plans" type="single">
+        <Accordion type="single" collapsible defaultValue="plans">
           {itemsCard.map((item) => (
             <AccordionItem key={item.value} value={item.value}>
               <AccordionTrigger>{item.trigger}</AccordionTrigger>
@@ -143,10 +143,10 @@ function AccordionCardComponent() {
 function AccordionDemoComponent() {
   return (
     <Accordion
-      className="max-w-lg"
+      type="single"
       collapsible
       defaultValue="shipping"
-      type="single"
+      className="max-w-lg"
     >
       <AccordionItem value="shipping">
         <AccordionTrigger>What are your shipping options?</AccordionTrigger>
@@ -175,7 +175,7 @@ function AccordionDemoComponent() {
 
 function AccordionDisabledComponent() {
   return (
-    <Accordion className="w-full" collapsible type="single">
+    <Accordion type="single" collapsible className="w-full">
       <AccordionItem value="item-1">
         <AccordionTrigger>Can I access my account history?</AccordionTrigger>
         <AccordionContent>
@@ -184,7 +184,7 @@ function AccordionDisabledComponent() {
           section of your dashboard.
         </AccordionContent>
       </AccordionItem>
-      <AccordionItem disabled value="item-2">
+      <AccordionItem value="item-2" disabled>
         <AccordionTrigger>Premium feature information</AccordionTrigger>
         <AccordionContent>
           This section contains information about premium features. Upgrade your
@@ -227,9 +227,9 @@ const itemsMultiple = [
 function AccordionMultipleComponent() {
   return (
     <Accordion
+      type="multiple"
       className="max-w-lg"
       defaultValue={["notifications"]}
-      type="multiple"
     >
       {itemsMultiple.map((item) => (
         <AccordionItem key={item.value} value={item.value}>
@@ -249,7 +249,7 @@ const meta = {
 } satisfies Meta<typeof Accordion>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Basic: Story = {
   render: () => <AccordionBasicComponent />,

@@ -48,8 +48,8 @@ function InputOtpControlledComponent() {
     <div className="space-y-2">
       <InputOTP
         maxLength={6}
-        onChange={(value) => setValue(value)}
         value={value}
+        onChange={(value) => setValue(value)}
       >
         <InputOTPGroup>
           <InputOTPSlot index={0} />
@@ -73,7 +73,7 @@ function InputOtpControlledComponent() {
 
 function InputOtpDemoComponent() {
   return (
-    <InputOTP defaultValue="123456" maxLength={6}>
+    <InputOTP maxLength={6} defaultValue="123456">
       <InputOTPGroup>
         <InputOTPSlot index={0} />
         <InputOTPSlot index={1} />
@@ -88,7 +88,7 @@ function InputOtpDemoComponent() {
 
 function InputOtpDisabledComponent() {
   return (
-    <InputOTP disabled id="disabled" maxLength={6} value="123456">
+    <InputOTP id="disabled" maxLength={6} disabled value="123456">
       <InputOTPGroup>
         <InputOTPSlot index={0} />
         <InputOTPSlot index={1} />
@@ -120,12 +120,12 @@ function InputOtpFormComponent() {
             <FieldLabel htmlFor="otp-verification">
               Verification code
             </FieldLabel>
-            <Button size="xs" variant="outline">
+            <Button variant="outline" size="xs">
               <RefreshCwIcon />
               Resend Code
             </Button>
           </div>
-          <InputOTP id="otp-verification" maxLength={6} required>
+          <InputOTP maxLength={6} id="otp-verification" required>
             <InputOTPGroup className="*:data-[slot=input-otp-slot]:h-12 *:data-[slot=input-otp-slot]:w-11 *:data-[slot=input-otp-slot]:text-xl">
               <InputOTPSlot index={0} />
               <InputOTPSlot index={1} />
@@ -145,14 +145,14 @@ function InputOtpFormComponent() {
       </CardContent>
       <CardFooter>
         <Field>
-          <Button className="w-full" type="submit">
+          <Button type="submit" className="w-full">
             Verify
           </Button>
-          <div className="text-muted-foreground text-sm">
+          <div className="text-sm text-muted-foreground">
             Having trouble signing in?{" "}
             <a
-              className="underline underline-offset-4 transition-colors hover:text-primary"
               href="#"
+              className="underline underline-offset-4 transition-colors hover:text-primary"
             >
               Contact support
             </a>
@@ -180,20 +180,20 @@ function InputOtpInvalidComponent() {
   const [value, setValue] = useState("000000");
 
   return (
-    <InputOTP maxLength={6} onChange={setValue} value={value}>
+    <InputOTP maxLength={6} value={value} onChange={setValue}>
       <InputOTPGroup>
-        <InputOTPSlot aria-invalid index={0} />
-        <InputOTPSlot aria-invalid index={1} />
+        <InputOTPSlot index={0} aria-invalid />
+        <InputOTPSlot index={1} aria-invalid />
       </InputOTPGroup>
       <InputOTPSeparator />
       <InputOTPGroup>
-        <InputOTPSlot aria-invalid index={2} />
-        <InputOTPSlot aria-invalid index={3} />
+        <InputOTPSlot index={2} aria-invalid />
+        <InputOTPSlot index={3} aria-invalid />
       </InputOTPGroup>
       <InputOTPSeparator />
       <InputOTPGroup>
-        <InputOTPSlot aria-invalid index={4} />
-        <InputOTPSlot aria-invalid index={5} />
+        <InputOTPSlot index={4} aria-invalid />
+        <InputOTPSlot index={5} aria-invalid />
       </InputOTPGroup>
     </InputOTP>
   );
@@ -246,7 +246,7 @@ const meta = {
 } satisfies Meta<typeof InputOTP>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Alphanumeric: Story = {
   render: () => <InputOtpAlphanumericComponent />,

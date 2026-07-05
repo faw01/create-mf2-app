@@ -11,11 +11,11 @@ function ProgressControlledComponent() {
     <div className="flex w-full max-w-sm flex-col gap-4">
       <Progress value={value[0]} />
       <Slider
-        max={100}
-        min={0}
-        onValueChange={setValue}
-        step={1}
         value={value}
+        onValueChange={setValue}
+        min={0}
+        max={100}
+        step={1}
       />
     </div>
   );
@@ -29,7 +29,7 @@ function ProgressDemoComponent() {
     return () => clearTimeout(timer);
   }, []);
 
-  return <Progress className="w-[60%]" value={progress} />;
+  return <Progress value={progress} className="w-[60%]" />;
 }
 
 function ProgressLabelComponent() {
@@ -39,7 +39,7 @@ function ProgressLabelComponent() {
         <span>Upload progress</span>
         <span className="ml-auto">66%</span>
       </FieldLabel>
-      <Progress id="progress-upload" value={66} />
+      <Progress value={66} id="progress-upload" />
     </Field>
   );
 }
@@ -52,7 +52,7 @@ const meta = {
 } satisfies Meta<typeof Progress>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Controlled: Story = {
   render: () => <ProgressControlledComponent />,

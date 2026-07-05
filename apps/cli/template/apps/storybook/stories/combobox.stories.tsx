@@ -18,12 +18,6 @@ import {
   useComboboxAnchor,
 } from "@repo/design-system/components/ui/combobox";
 import { InputGroupAddon } from "@repo/design-system/components/ui/input-group";
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemTitle,
-} from "@repo/design-system/components/ui/item";
 import type { Meta, StoryObj } from "@storybook/react";
 import { GlobeIcon } from "lucide-react";
 import { Fragment } from "react";
@@ -38,7 +32,7 @@ const frameworksAutoHighlight = [
 
 function ComboboxAutoHighlightComponent() {
   return (
-    <Combobox autoHighlight items={frameworksAutoHighlight}>
+    <Combobox items={frameworksAutoHighlight} autoHighlight>
       <ComboboxInput placeholder="Select a framework" />
       <ComboboxContent>
         <ComboboxEmpty>No items found.</ComboboxEmpty>
@@ -90,7 +84,7 @@ const frameworksClear = [
 
 function ComboboxClearComponent() {
   return (
-    <Combobox defaultValue={frameworksClear[0]} items={frameworksClear}>
+    <Combobox items={frameworksClear} defaultValue={frameworksClear[0]}>
       <ComboboxInput placeholder="Select a framework" showClear />
       <ComboboxContent>
         <ComboboxEmpty>No items found.</ComboboxEmpty>
@@ -98,91 +92,6 @@ function ComboboxClearComponent() {
           {(item) => (
             <ComboboxItem key={item} value={item}>
               {item}
-            </ComboboxItem>
-          )}
-        </ComboboxList>
-      </ComboboxContent>
-    </Combobox>
-  );
-}
-
-const countriesCustom = [
-  { code: "", value: "", continent: "", label: "Select country" },
-  {
-    code: "ar",
-    value: "argentina",
-    label: "Argentina",
-    continent: "South America",
-  },
-  { code: "au", value: "australia", label: "Australia", continent: "Oceania" },
-  { code: "br", value: "brazil", label: "Brazil", continent: "South America" },
-  { code: "ca", value: "canada", label: "Canada", continent: "North America" },
-  { code: "cn", value: "china", label: "China", continent: "Asia" },
-  {
-    code: "co",
-    value: "colombia",
-    label: "Colombia",
-    continent: "South America",
-  },
-  { code: "eg", value: "egypt", label: "Egypt", continent: "Africa" },
-  { code: "fr", value: "france", label: "France", continent: "Europe" },
-  { code: "de", value: "germany", label: "Germany", continent: "Europe" },
-  { code: "it", value: "italy", label: "Italy", continent: "Europe" },
-  { code: "jp", value: "japan", label: "Japan", continent: "Asia" },
-  { code: "ke", value: "kenya", label: "Kenya", continent: "Africa" },
-  { code: "mx", value: "mexico", label: "Mexico", continent: "North America" },
-  {
-    code: "nz",
-    value: "new-zealand",
-    label: "New Zealand",
-    continent: "Oceania",
-  },
-  { code: "ng", value: "nigeria", label: "Nigeria", continent: "Africa" },
-  {
-    code: "za",
-    value: "south-africa",
-    label: "South Africa",
-    continent: "Africa",
-  },
-  { code: "kr", value: "south-korea", label: "South Korea", continent: "Asia" },
-  {
-    code: "gb",
-    value: "united-kingdom",
-    label: "United Kingdom",
-    continent: "Europe",
-  },
-  {
-    code: "us",
-    value: "united-states",
-    label: "United States",
-    continent: "North America",
-  },
-];
-
-function ComboboxCustomComponent() {
-  return (
-    <Combobox
-      items={countriesCustom.filter((country) => country.code !== "")}
-      itemToStringValue={(country: (typeof countriesCustom)[number]) =>
-        country.label
-      }
-    >
-      <ComboboxInput placeholder="Search countriesCustom..." />
-      <ComboboxContent>
-        <ComboboxEmpty>No countriesCustom found.</ComboboxEmpty>
-        <ComboboxList>
-          {(country) => (
-            <ComboboxItem key={country.code} value={country}>
-              <Item className="p-0" size="xs">
-                <ItemContent>
-                  <ItemTitle className="whitespace-nowrap">
-                    {country.label}
-                  </ItemTitle>
-                  <ItemDescription>
-                    {country.continent} ({country.code})
-                  </ItemDescription>
-                </ItemContent>
-              </Item>
             </ComboboxItem>
           )}
         </ComboboxList>
@@ -228,7 +137,7 @@ const frameworksDisabled = [
 function ComboboxDisabledComponent() {
   return (
     <Combobox items={frameworksDisabled}>
-      <ComboboxInput disabled placeholder="Select a framework" />
+      <ComboboxInput placeholder="Select a framework" disabled />
       <ComboboxContent>
         <ComboboxEmpty>No items found.</ComboboxEmpty>
         <ComboboxList>
@@ -287,7 +196,7 @@ function ComboboxGroupsComponent() {
         <ComboboxEmpty>No timezonesGroups found.</ComboboxEmpty>
         <ComboboxList>
           {(group, index) => (
-            <ComboboxGroup items={group.items} key={group.value}>
+            <ComboboxGroup key={group.value} items={group.items}>
               <ComboboxLabel>{group.value}</ComboboxLabel>
               <ComboboxCollection>
                 {(item) => (
@@ -353,7 +262,7 @@ function ComboboxInputGroupComponent() {
         <ComboboxEmpty>No timezonesInputGroup found.</ComboboxEmpty>
         <ComboboxList>
           {(group) => (
-            <ComboboxGroup items={group.items} key={group.value}>
+            <ComboboxGroup key={group.value} items={group.items}>
               <ComboboxLabel>{group.value}</ComboboxLabel>
               <ComboboxCollection>
                 {(item) => (
@@ -381,7 +290,7 @@ const frameworksInvalid = [
 function ComboboxInvalidComponent() {
   return (
     <Combobox items={frameworksInvalid}>
-      <ComboboxInput aria-invalid="true" placeholder="Select a framework" />
+      <ComboboxInput placeholder="Select a framework" aria-invalid="true" />
       <ComboboxContent>
         <ComboboxEmpty>No items found.</ComboboxEmpty>
         <ComboboxList>
@@ -409,12 +318,12 @@ function ComboboxMultipleComponent() {
 
   return (
     <Combobox
-      autoHighlight
-      defaultValue={[frameworksMultiple[0]]}
-      items={frameworksMultiple}
       multiple
+      autoHighlight
+      items={frameworksMultiple}
+      defaultValue={[frameworksMultiple[0]]}
     >
-      <ComboboxChips className="w-full max-w-xs" ref={anchor}>
+      <ComboboxChips ref={anchor} className="w-full max-w-xs">
         <ComboboxValue>
           {(values) => (
             <Fragment>
@@ -440,7 +349,7 @@ function ComboboxMultipleComponent() {
   );
 }
 
-const countriesPopup = [
+const countries = [
   { code: "", value: "", continent: "", label: "Select country" },
   {
     code: "ar",
@@ -496,19 +405,19 @@ const countriesPopup = [
 function ComboboxPopupComponent() {
   return (
     <>
-      <Combobox defaultValue={countriesPopup[0]} items={countriesPopup}>
+      <Combobox items={countries} defaultValue={countries[0]}>
         <ComboboxTrigger
           render={
             <Button
-              className="w-64 justify-between font-normal"
               variant="outline"
+              className="w-64 justify-between font-normal"
             />
           }
         >
           <ComboboxValue />
         </ComboboxTrigger>
         <ComboboxContent>
-          <ComboboxInput placeholder="Search" showTrigger={false} />
+          <ComboboxInput showTrigger={false} placeholder="Search" />
           <ComboboxEmpty>No items found.</ComboboxEmpty>
           <ComboboxList>
             {(item) => (
@@ -531,7 +440,7 @@ const meta = {
 } satisfies Meta<typeof Combobox>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const AutoHighlight: Story = {
   render: () => <ComboboxAutoHighlightComponent />,
@@ -543,10 +452,6 @@ export const Basic: Story = {
 
 export const Clear: Story = {
   render: () => <ComboboxClearComponent />,
-};
-
-export const Custom: Story = {
-  render: () => <ComboboxCustomComponent />,
 };
 
 export const Demo: Story = {

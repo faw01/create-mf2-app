@@ -107,17 +107,17 @@ function DrawerDemoComponent() {
           <div className="p-4 pb-0">
             <div className="flex items-center justify-center space-x-2">
               <Button
-                className="h-8 w-8 shrink-0 rounded-full"
-                disabled={goal <= 200}
-                onClick={() => onClick(-10)}
-                size="icon"
                 variant="outline"
+                size="icon"
+                className="h-8 w-8 shrink-0 rounded-full"
+                onClick={() => onClick(-10)}
+                disabled={goal <= 200}
               >
                 <Minus />
                 <span className="sr-only">Decrease</span>
               </Button>
               <div className="flex-1 text-center">
-                <div className="font-bold text-7xl tracking-tighter">
+                <div className="text-7xl font-bold tracking-tighter">
                   {goal}
                 </div>
                 <div className="text-[0.70rem] text-muted-foreground uppercase">
@@ -125,18 +125,18 @@ function DrawerDemoComponent() {
                 </div>
               </div>
               <Button
-                className="h-8 w-8 shrink-0 rounded-full"
-                disabled={goal >= 400}
-                onClick={() => onClick(10)}
-                size="icon"
                 variant="outline"
+                size="icon"
+                className="h-8 w-8 shrink-0 rounded-full"
+                onClick={() => onClick(10)}
+                disabled={goal >= 400}
               >
                 <Plus />
                 <span className="sr-only">Increase</span>
               </Button>
             </div>
             <div className="mt-3 h-[120px]">
-              <ResponsiveContainer height="100%" width="100%">
+              <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data}>
                   <Bar
                     dataKey="goal"
@@ -168,7 +168,7 @@ function DrawerDialogComponent() {
 
   if (isDesktop) {
     return (
-      <Dialog onOpenChange={setOpen} open={open}>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button variant="outline">Edit Profile</Button>
         </DialogTrigger>
@@ -187,7 +187,7 @@ function DrawerDialogComponent() {
   }
 
   return (
-    <Drawer onOpenChange={setOpen} open={open}>
+    <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
         <Button variant="outline">Edit Profile</Button>
       </DrawerTrigger>
@@ -214,11 +214,11 @@ function ProfileForm({ className }: ComponentProps<"form">) {
     <form className={cn("grid items-start gap-6", className)}>
       <div className="grid gap-3">
         <Label htmlFor="email">Email</Label>
-        <Input defaultValue="shadcn@example.com" id="email" type="email" />
+        <Input type="email" id="email" defaultValue="shadcn@example.com" />
       </div>
       <div className="grid gap-3">
         <Label htmlFor="username">Username</Label>
-        <Input defaultValue="@shadcn" id="username" />
+        <Input id="username" defaultValue="@shadcn" />
       </div>
       <Button type="submit">Save changes</Button>
     </form>
@@ -239,8 +239,8 @@ function DrawerScrollableContentComponent() {
         <div className="no-scrollbar overflow-y-auto px-4">
           {Array.from({ length: 10 }).map((_, index) => (
             <p
-              className="mb-4 style-lyra:mb-2 leading-normal style-lyra:leading-relaxed"
               key={index}
+              className="mb-4 leading-normal style-lyra:mb-2 style-lyra:leading-relaxed"
             >
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
               eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
@@ -270,13 +270,13 @@ function DrawerSidesComponent() {
     <div className="flex flex-wrap gap-2">
       {DRAWER_SIDES.map((side) => (
         <Drawer
+          key={side}
           direction={
             side === "bottom" ? undefined : (side as "top" | "right" | "left")
           }
-          key={side}
         >
           <DrawerTrigger asChild>
-            <Button className="capitalize" variant="outline">
+            <Button variant="outline" className="capitalize">
               {side}
             </Button>
           </DrawerTrigger>
@@ -290,8 +290,8 @@ function DrawerSidesComponent() {
             <div className="no-scrollbar overflow-y-auto px-4">
               {Array.from({ length: 10 }).map((_, index) => (
                 <p
-                  className="mb-4 style-lyra:mb-2 leading-normal style-lyra:leading-relaxed"
                   key={index}
+                  className="mb-4 leading-normal style-lyra:mb-2 style-lyra:leading-relaxed"
                 >
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
                   do eiusmod tempor incididunt ut labore et dolore magna aliqua.
@@ -325,7 +325,7 @@ const meta = {
 } satisfies Meta<typeof Drawer>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Demo: Story = {
   render: () => <DrawerDemoComponent />,

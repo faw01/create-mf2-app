@@ -75,9 +75,9 @@ function NavigationMenuDemoComponent() {
             <ul className="grid w-[400px] gap-2 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
               {components.map((component) => (
                 <ListItem
-                  href={component.href}
                   key={component.title}
                   title={component.title}
+                  href={component.href}
                 >
                   {component.description}
                 </ListItem>
@@ -106,7 +106,7 @@ function ListItem({
       <NavigationMenuLink asChild>
         <Link href={href}>
           <div className="flex flex-col gap-1 text-sm">
-            <div className="font-medium leading-none">{title}</div>
+            <div className="leading-none font-medium">{title}</div>
             <div className="line-clamp-2 text-muted-foreground">{children}</div>
           </div>
         </Link>
@@ -123,7 +123,7 @@ const meta = {
 } satisfies Meta<typeof NavigationMenu>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Demo: Story = {
   render: () => <NavigationMenuDemoComponent />,

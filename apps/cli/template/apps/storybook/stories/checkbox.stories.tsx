@@ -43,9 +43,9 @@ function CheckboxDemoComponent() {
       </Field>
       <Field orientation="horizontal">
         <Checkbox
-          defaultChecked
           id="terms-checkbox-2"
           name="terms-checkbox-2"
+          defaultChecked
         />
         <FieldContent>
           <FieldLabel htmlFor="terms-checkbox-2">
@@ -56,8 +56,8 @@ function CheckboxDemoComponent() {
           </FieldDescription>
         </FieldContent>
       </Field>
-      <Field data-disabled orientation="horizontal">
-        <Checkbox disabled id="toggle-checkbox" name="toggle-checkbox" />
+      <Field orientation="horizontal" data-disabled>
+        <Checkbox id="toggle-checkbox" name="toggle-checkbox" disabled />
         <FieldLabel htmlFor="toggle-checkbox">Enable notifications</FieldLabel>
       </Field>
       <FieldLabel>
@@ -80,9 +80,9 @@ function CheckboxDescriptionComponent() {
     <FieldGroup className="mx-auto w-72">
       <Field orientation="horizontal">
         <Checkbox
-          defaultChecked
           id="terms-checkbox-desc"
           name="terms-checkbox-desc"
+          defaultChecked
         />
         <FieldContent>
           <FieldLabel htmlFor="terms-checkbox-desc">
@@ -100,11 +100,11 @@ function CheckboxDescriptionComponent() {
 function CheckboxDisabledComponent() {
   return (
     <FieldGroup className="mx-auto w-56">
-      <Field data-disabled orientation="horizontal">
+      <Field orientation="horizontal" data-disabled>
         <Checkbox
-          disabled
           id="toggle-checkbox-disabled"
           name="toggle-checkbox-disabled"
+          disabled
         />
         <FieldLabel htmlFor="toggle-checkbox-disabled">
           Enable notifications
@@ -126,26 +126,26 @@ function CheckboxGroupComponent() {
       <FieldGroup className="gap-3">
         <Field orientation="horizontal">
           <Checkbox
-            defaultChecked
             id="finder-pref-9k2-hard-disks-ljj-checkbox"
             name="finder-pref-9k2-hard-disks-ljj-checkbox"
+            defaultChecked
           />
           <FieldLabel
-            className="font-normal"
             htmlFor="finder-pref-9k2-hard-disks-ljj-checkbox"
+            className="font-normal"
           >
             Hard disks
           </FieldLabel>
         </Field>
         <Field orientation="horizontal">
           <Checkbox
-            defaultChecked
             id="finder-pref-9k2-external-disks-1yg-checkbox"
             name="finder-pref-9k2-external-disks-1yg-checkbox"
+            defaultChecked
           />
           <FieldLabel
-            className="font-normal"
             htmlFor="finder-pref-9k2-external-disks-1yg-checkbox"
+            className="font-normal"
           >
             External disks
           </FieldLabel>
@@ -156,8 +156,8 @@ function CheckboxGroupComponent() {
             name="finder-pref-9k2-cds-dvds-fzt-checkbox"
           />
           <FieldLabel
-            className="font-normal"
             htmlFor="finder-pref-9k2-cds-dvds-fzt-checkbox"
+            className="font-normal"
           >
             CDs, DVDs, and iPods
           </FieldLabel>
@@ -168,8 +168,8 @@ function CheckboxGroupComponent() {
             name="finder-pref-9k2-connected-servers-6l2-checkbox"
           />
           <FieldLabel
-            className="font-normal"
             htmlFor="finder-pref-9k2-connected-servers-6l2-checkbox"
+            className="font-normal"
           >
             Connected servers
           </FieldLabel>
@@ -182,11 +182,11 @@ function CheckboxGroupComponent() {
 function CheckboxInvalidComponent() {
   return (
     <FieldGroup className="mx-auto w-56">
-      <Field data-invalid orientation="horizontal">
+      <Field orientation="horizontal" data-invalid>
         <Checkbox
-          aria-invalid
           id="terms-checkbox-invalid"
           name="terms-checkbox-invalid"
+          aria-invalid
         />
         <FieldLabel htmlFor="terms-checkbox-invalid">
           Accept terms and conditions
@@ -252,9 +252,9 @@ function CheckboxTableComponent() {
         <TableRow>
           <TableHead className="w-8">
             <Checkbox
-              checked={selectAll}
               id="select-all-checkbox"
               name="select-all-checkbox"
+              checked={selectAll}
               onCheckedChange={handleSelectAll}
             />
           </TableHead>
@@ -266,14 +266,14 @@ function CheckboxTableComponent() {
       <TableBody>
         {tableData.map((row) => (
           <TableRow
-            data-state={selectedRows.has(row.id) ? "selected" : undefined}
             key={row.id}
+            data-state={selectedRows.has(row.id) ? "selected" : undefined}
           >
             <TableCell>
               <Checkbox
-                checked={selectedRows.has(row.id)}
                 id={`row-${row.id}-checkbox`}
                 name={`row-${row.id}-checkbox`}
+                checked={selectedRows.has(row.id)}
                 onCheckedChange={(checked) =>
                   handleSelectRow(row.id, checked === true)
                 }
@@ -297,7 +297,7 @@ const meta = {
 } satisfies Meta<typeof Checkbox>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
 export const Basic: Story = {
   render: () => <CheckboxBasicComponent />,
