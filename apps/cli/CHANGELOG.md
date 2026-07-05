@@ -1,5 +1,16 @@
 # v2.0.5 (Tue Feb 24 2026)
 
+## 2.6.0
+
+### Minor Changes
+
+- 6a6fa6f: ship agent files and the mf2 skill with scaffolds, proper npm/yarn/pnpm support, `bunx create-mf2-app my-app` just works, env files created for you
+- 6a6fa6f: update everything to latest (ai sdk 7, expo 57, electron 43, convex 1.42, next 16.2), fix security gaps, boot with zero keys, stories regenerate from shadcn demos
+
+### Patch Changes
+
+- 6a6fa6f: fix convex url wiring, convex-lint, story types, docs drift
+
 ## 2.5.0
 
 ### Minor Changes
