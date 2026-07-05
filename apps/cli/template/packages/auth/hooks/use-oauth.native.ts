@@ -1,6 +1,6 @@
 import { useSSO } from "@clerk/clerk-expo";
 import { makeRedirectUri } from "expo-auth-session";
-import { useRouter } from "expo-router";
+import { type Href, useRouter } from "expo-router";
 import { useCallback } from "react";
 
 type OAuthStrategy =
@@ -11,7 +11,7 @@ type OAuthStrategy =
   | "oauth_github";
 
 type UseOAuthFlowOptions = {
-  redirectPath?: string;
+  redirectPath?: Href;
   strategy: OAuthStrategy;
 };
 

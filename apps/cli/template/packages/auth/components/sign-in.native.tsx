@@ -1,6 +1,6 @@
 import { useSignIn } from "@clerk/clerk-expo";
 import type { EmailCodeFactor } from "@clerk/types";
-import { useRouter } from "expo-router";
+import { type Href, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
@@ -11,7 +11,7 @@ import {
 } from "react-native";
 
 type SignInProps = {
-  redirectPath?: string;
+  redirectPath?: Href;
 };
 
 export const SignIn = ({ redirectPath = "/(tabs)" }: SignInProps) => {

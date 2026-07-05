@@ -1,5 +1,5 @@
 import { useSignUp } from "@clerk/clerk-expo";
-import { useRouter } from "expo-router";
+import { type Href, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
@@ -10,7 +10,7 @@ import {
 } from "react-native";
 
 type SignUpProps = {
-  redirectPath?: string;
+  redirectPath?: Href;
 };
 
 export const SignUp = ({ redirectPath = "/(tabs)" }: SignUpProps) => {
