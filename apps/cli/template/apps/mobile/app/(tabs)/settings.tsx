@@ -7,6 +7,10 @@ export default function SettingsScreen() {
   const { signOut } = useClerk();
   const insets = useSafeAreaInsets();
 
+  const handleSignOut = () => {
+    signOut();
+  };
+
   return (
     <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
       <View className="border-border border-b px-4 pt-3 pb-3">
@@ -25,7 +29,7 @@ export default function SettingsScreen() {
         ) : null}
         <Pressable
           className="rounded-lg bg-destructive px-4 py-3"
-          onPress={() => signOut()}
+          onPress={handleSignOut}
         >
           <Text className="text-center font-medium text-destructive-foreground">
             Sign Out

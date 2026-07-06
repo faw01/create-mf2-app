@@ -9,6 +9,9 @@ export const locales = [
 
 export type Dictionary = typeof en;
 
+const loadEnglishDictionary = (): Promise<Dictionary> =>
+  import("./dictionaries/en.json").then((mod) => mod.default);
+
 const dictionaries: Record<string, () => Promise<Dictionary>> =
   Object.fromEntries(
     locales.map((locale) => [
@@ -16,14 +19,12 @@ const dictionaries: Record<string, () => Promise<Dictionary>> =
       () =>
         import(`./dictionaries/${locale}.json`)
           .then((mod) => mod.default)
-          .catch((_err) =>
-            import("./dictionaries/en.json").then((mod) => mod.default)
-          ),
+          .catch(loadEnglishDictionary),
     ])
   );
 
 export const getDictionary = async (locale: string): Promise<Dictionary> => {
-  const normalizedLocale = locale.split("-")[0];
+  const [normalizedLocale] = locale.split("-");
 
   if (!locales.includes(normalizedLocale as (typeof locales)[number])) {
     return dictionaries.en();

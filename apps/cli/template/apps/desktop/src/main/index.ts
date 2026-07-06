@@ -23,12 +23,18 @@ function hasRealUpdateFeed(): boolean {
   return !feedConfig.includes("your-github-username");
 }
 
+function startUpdateCheck(): void {
+  autoUpdater.checkForUpdatesAndNotify().catch((error) => {
+    console.error("Update check failed", error);
+  });
+}
+
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
-    width: 1200,
+    autoHideMenuBar: true,
     height: 800,
     show: false,
-    autoHideMenuBar: true,
+    width: 1200,
     ...(process.platform === "linux" ? { icon } : {}),
     webPreferences: {
       preload: join(import.meta.dirname, "../preload/index.js"),
@@ -66,9 +72,7 @@ app.whenReady().then(() => {
   createWindow();
 
   if (hasRealUpdateFeed()) {
-    autoUpdater.checkForUpdatesAndNotify().catch((error) => {
-      console.error("Update check failed", error);
-    });
+    startUpdateCheck();
   }
 
   app.on("activate", () => {

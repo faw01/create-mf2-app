@@ -4,34 +4,33 @@ import { mustGetCurrentUser } from "../auth/users";
 
 export const generateUploadUrl = mutation({
   args: {},
-  returns: v.string(),
   handler: async (ctx) => {
     await mustGetCurrentUser(ctx);
     return await ctx.storage.generateUploadUrl();
   },
+  returns: v.string(),
 });
 
 export const saveFile = mutation({
   args: {
-    storageId: v.id("_storage"),
-    filename: v.optional(v.string()),
     contentType: v.optional(v.string()),
+    filename: v.optional(v.string()),
+    storageId: v.id("_storage"),
   },
-  returns: v.id("files"),
   handler: async (ctx, args) => {
     const user = await mustGetCurrentUser(ctx);
     return await ctx.db.insert("files", {
+      contentType: args.contentType,
+      filename: args.filename,
       storageId: args.storageId,
       userId: user._id,
-      filename: args.filename,
-      contentType: args.contentType,
     });
   },
+  returns: v.id("files"),
 });
 
 export const getUrl = mutation({
   args: { storageId: v.id("_storage") },
-  returns: v.union(v.string(), v.null()),
   handler: async (ctx, args) => {
     const user = await mustGetCurrentUser(ctx);
     const fileRecord = await ctx.db
@@ -45,11 +44,11 @@ export const getUrl = mutation({
 
     return await ctx.storage.getUrl(args.storageId);
   },
+  returns: v.union(v.string(), v.null()),
 });
 
 export const deleteFile = mutation({
   args: { storageId: v.id("_storage") },
-  returns: v.null(),
   handler: async (ctx, args) => {
     const user = await mustGetCurrentUser(ctx);
     const fileRecord = await ctx.db
@@ -68,4 +67,5 @@ export const deleteFile = mutation({
     await ctx.db.delete("files", fileRecord._id);
     return null;
   },
+  returns: v.null(),
 });

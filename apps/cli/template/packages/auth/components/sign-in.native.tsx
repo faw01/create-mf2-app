@@ -39,13 +39,13 @@ export const SignIn = ({ redirectPath = "/(tabs)" }: SignInProps) => {
 
       if (result.status === "complete" && result.createdSessionId) {
         await setActive({
-          session: result.createdSessionId,
           navigate: ({ session }) => {
             if (session?.currentTask) {
               return;
             }
             router.replace(redirectPath);
           },
+          session: result.createdSessionId,
         });
       } else if (result.status === "needs_second_factor") {
         const emailCodeFactor = result.supportedSecondFactors?.find(
@@ -55,8 +55,8 @@ export const SignIn = ({ redirectPath = "/(tabs)" }: SignInProps) => {
 
         if (emailCodeFactor) {
           await signIn.prepareSecondFactor({
-            strategy: "email_code",
             emailAddressId: emailCodeFactor.emailAddressId,
+            strategy: "email_code",
           });
           setShowEmailCode(true);
         }
@@ -79,19 +79,19 @@ export const SignIn = ({ redirectPath = "/(tabs)" }: SignInProps) => {
 
     try {
       const result = await signIn.attemptSecondFactor({
-        strategy: "email_code",
         code,
+        strategy: "email_code",
       });
 
       if (result.status === "complete" && result.createdSessionId) {
         await setActive({
-          session: result.createdSessionId,
           navigate: ({ session }) => {
             if (session?.currentTask) {
               return;
             }
             router.replace(redirectPath);
           },
+          session: result.createdSessionId,
         });
       }
     } catch (err: unknown) {
@@ -102,6 +102,10 @@ export const SignIn = ({ redirectPath = "/(tabs)" }: SignInProps) => {
       setLoading(false);
     }
   }, [isLoaded, signIn, code, setActive, router, redirectPath]);
+
+  const goToSignUp = useCallback(() => {
+    router.push("/(auth)/sign-up");
+  }, [router]);
 
   if (showEmailCode) {
     return (
@@ -189,10 +193,7 @@ export const SignIn = ({ redirectPath = "/(tabs)" }: SignInProps) => {
         )}
       </Pressable>
 
-      <Pressable
-        className="mt-4"
-        onPress={() => router.push("/(auth)/sign-up")}
-      >
+      <Pressable className="mt-4" onPress={goToSignUp}>
         <Text className="text-center text-muted-foreground text-sm">
           Don't have an account? <Text className="text-primary">Sign Up</Text>
         </Text>

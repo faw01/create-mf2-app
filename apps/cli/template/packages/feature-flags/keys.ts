@@ -3,11 +3,11 @@ import { z } from "zod";
 
 export const keys = () =>
   createEnv({
-    server: {
-      FLAGS_SECRET: z.string().optional(),
-    },
+    emptyStringAsUndefined: true,
     runtimeEnv: {
       FLAGS_SECRET: process.env.FLAGS_SECRET,
     },
-    emptyStringAsUndefined: true,
+    server: {
+      FLAGS_SECRET: z.string().optional(),
+    },
   });

@@ -38,8 +38,8 @@ if (!electronBinaryExists()) {
 }
 
 const dev = spawn("electron-vite", ["dev"], {
-  stdio: "inherit",
   shell: process.platform === "win32",
+  stdio: "inherit",
 });
 
 for (const signal of ["SIGINT", "SIGTERM"] as const) {

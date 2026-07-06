@@ -13,8 +13,8 @@ nextConfig.images = {
   remotePatterns: [
     ...(nextConfig.images?.remotePatterns ?? []),
     {
-      protocol: "https",
       hostname: "assets.basehub.com",
+      protocol: "https",
     },
   ],
 };
@@ -22,8 +22,8 @@ nextConfig.images = {
 if (process.env.NODE_ENV === "production") {
   const redirects: NextConfig["redirects"] = async () => [
     {
-      source: "/legal",
       destination: "/legal/privacy",
+      source: "/legal",
       statusCode: 301,
     },
   ];

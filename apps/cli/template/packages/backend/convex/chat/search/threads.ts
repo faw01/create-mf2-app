@@ -5,17 +5,9 @@ import { getCurrentUser } from "../../auth/users";
 
 export const search = query({
   args: {
-    query: v.string(),
     limit: v.optional(v.number()),
+    query: v.string(),
   },
-  returns: v.array(
-    v.object({
-      _id: v.id("threads"),
-      _creationTime: v.number(),
-      userId: v.id("users"),
-      title: v.optional(v.string()),
-    })
-  ),
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
     if (!user) {
@@ -68,4 +60,12 @@ export const search = query({
 
     return combined.slice(0, limit);
   },
+  returns: v.array(
+    v.object({
+      _creationTime: v.number(),
+      _id: v.id("threads"),
+      title: v.optional(v.string()),
+      userId: v.id("users"),
+    })
+  ),
 });

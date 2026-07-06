@@ -6,8 +6,8 @@ export const keys = () =>
     client: {
       NEXT_PUBLIC_CONVEX_URL: z.string().url().optional(),
     },
+    emptyStringAsUndefined: true,
     runtimeEnv: {
       NEXT_PUBLIC_CONVEX_URL: process.env.NEXT_PUBLIC_CONVEX_URL,
     },
-    emptyStringAsUndefined: true,
   });

@@ -19,8 +19,8 @@ export const generateMetadata = async ({
   const dictionary = await getDictionary(locale);
 
   return createMetadata({
-    title: dictionary.web.header.product.pricing,
     description: dictionary.web.header.product.description,
+    title: dictionary.web.header.product.pricing,
   });
 };
 

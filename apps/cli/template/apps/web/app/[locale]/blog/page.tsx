@@ -29,8 +29,8 @@ const BlogIndex = async ({ params }: BlogProps) => {
   const dictionary = await getDictionary(locale);
 
   const jsonLd: WithContext<Blog> = {
-    "@type": "Blog",
     "@context": "https://schema.org",
+    "@type": "Blog",
   };
 
   return (
@@ -70,8 +70,8 @@ const BlogIndex = async ({ params }: BlogProps) => {
                     <div className="flex flex-row items-center gap-4">
                       <p className="text-muted-foreground text-sm">
                         {new Date(post.date).toLocaleDateString("en-US", {
-                          month: "long",
                           day: "numeric",
+                          month: "long",
                           year: "numeric",
                         })}
                       </p>

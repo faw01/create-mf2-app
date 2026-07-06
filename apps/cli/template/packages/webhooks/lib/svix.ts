@@ -29,14 +29,14 @@ export const send = async (
   }
 
   return svix.message.create(orgId, {
+    application: {
+      name: orgId,
+      uid: orgId,
+    },
     eventType,
     payload: {
       eventType,
       ...payload,
-    },
-    application: {
-      name: orgId,
-      uid: orgId,
     },
   });
 };

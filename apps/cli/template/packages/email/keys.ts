@@ -3,13 +3,13 @@ import { z } from "zod";
 
 export const keys = () =>
   createEnv({
-    server: {
-      RESEND_FROM: z.string().email().optional(),
-      RESEND_TOKEN: z.string().startsWith("re_").optional(),
-    },
+    emptyStringAsUndefined: true,
     runtimeEnv: {
       RESEND_FROM: process.env.RESEND_FROM,
       RESEND_TOKEN: process.env.RESEND_TOKEN,
     },
-    emptyStringAsUndefined: true,
+    server: {
+      RESEND_FROM: z.string().email().optional(),
+      RESEND_TOKEN: z.string().startsWith("re_").optional(),
+    },
   });

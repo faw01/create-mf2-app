@@ -14,28 +14,28 @@ function getAppUrl(): string {
 }
 
 const subscriptionValidator = v.object({
-  stripeSubscriptionId: v.string(),
-  stripeCustomerId: v.string(),
-  status: v.string(),
+  cancelAtPeriodEnd: v.boolean(),
+  currentPeriodEnd: v.number(),
+  metadata: v.optional(v.any()),
+  orgId: v.optional(v.string()),
   priceId: v.string(),
   quantity: v.optional(v.number()),
-  currentPeriodEnd: v.number(),
-  cancelAtPeriodEnd: v.boolean(),
-  metadata: v.optional(v.any()),
+  status: v.string(),
+  stripeCustomerId: v.string(),
+  stripeSubscriptionId: v.string(),
   userId: v.optional(v.string()),
-  orgId: v.optional(v.string()),
 });
 
 const paymentValidator = v.object({
-  stripePaymentIntentId: v.string(),
-  stripeCustomerId: v.optional(v.string()),
   amount: v.number(),
-  currency: v.string(),
-  status: v.string(),
   created: v.number(),
+  currency: v.string(),
   metadata: v.optional(v.any()),
-  userId: v.optional(v.string()),
   orgId: v.optional(v.string()),
+  status: v.string(),
+  stripeCustomerId: v.optional(v.string()),
+  stripePaymentIntentId: v.string(),
+  userId: v.optional(v.string()),
 });
 
 export const createSubscriptionCheckout = action({
@@ -43,10 +43,6 @@ export const createSubscriptionCheckout = action({
     priceId: v.string(),
     quantity: v.optional(v.number()),
   },
-  returns: v.object({
-    sessionId: v.string(),
-    url: v.union(v.string(), v.null()),
-  }),
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
@@ -54,30 +50,30 @@ export const createSubscriptionCheckout = action({
     }
 
     const customer = await stripeClient.getOrCreateCustomer(ctx, {
-      userId: identity.subject,
       email: identity.email,
       name: identity.name,
+      userId: identity.subject,
     });
 
     return stripeClient.createCheckoutSession(ctx, {
-      priceId: args.priceId,
-      customerId: customer.customerId,
-      mode: "subscription",
-      quantity: args.quantity,
-      successUrl: `${getAppUrl()}/settings/billing?success=true`,
       cancelUrl: `${getAppUrl()}/settings/billing?canceled=true`,
-      metadata: { userId: identity.subject, productType: "subscription" },
+      customerId: customer.customerId,
+      metadata: { productType: "subscription", userId: identity.subject },
+      mode: "subscription",
+      priceId: args.priceId,
+      quantity: args.quantity,
       subscriptionMetadata: { userId: identity.subject },
+      successUrl: `${getAppUrl()}/settings/billing?success=true`,
     });
   },
+  returns: v.object({
+    sessionId: v.string(),
+    url: v.union(v.string(), v.null()),
+  }),
 });
 
 export const createPaymentCheckout = action({
   args: { priceId: v.string() },
-  returns: v.object({
-    sessionId: v.string(),
-    url: v.union(v.string(), v.null()),
-  }),
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
@@ -85,26 +81,29 @@ export const createPaymentCheckout = action({
     }
 
     const customer = await stripeClient.getOrCreateCustomer(ctx, {
-      userId: identity.subject,
       email: identity.email,
       name: identity.name,
+      userId: identity.subject,
     });
 
     return stripeClient.createCheckoutSession(ctx, {
-      priceId: args.priceId,
-      customerId: customer.customerId,
-      mode: "payment",
-      successUrl: `${getAppUrl()}/settings/billing?success=true`,
       cancelUrl: `${getAppUrl()}/settings/billing?canceled=true`,
-      metadata: { userId: identity.subject, productType: "payment" },
+      customerId: customer.customerId,
+      metadata: { productType: "payment", userId: identity.subject },
+      mode: "payment",
       paymentIntentMetadata: { userId: identity.subject },
+      priceId: args.priceId,
+      successUrl: `${getAppUrl()}/settings/billing?success=true`,
     });
   },
+  returns: v.object({
+    sessionId: v.string(),
+    url: v.union(v.string(), v.null()),
+  }),
 });
 
 export const createCustomerPortal = action({
   args: {},
-  returns: v.object({ url: v.string() }),
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
@@ -112,9 +111,9 @@ export const createCustomerPortal = action({
     }
 
     const customer = await stripeClient.getOrCreateCustomer(ctx, {
-      userId: identity.subject,
       email: identity.email,
       name: identity.name,
+      userId: identity.subject,
     });
 
     return stripeClient.createCustomerPortalSession(ctx, {
@@ -122,14 +121,14 @@ export const createCustomerPortal = action({
       returnUrl: `${getAppUrl()}/settings/billing`,
     });
   },
+  returns: v.object({ url: v.string() }),
 });
 
 export const cancelSubscription = action({
   args: {
-    subscriptionId: v.string(),
     immediately: v.optional(v.boolean()),
+    subscriptionId: v.string(),
   },
-  returns: v.null(),
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
@@ -145,16 +144,16 @@ export const cancelSubscription = action({
     }
 
     await stripeClient.cancelSubscription(ctx, {
-      stripeSubscriptionId: args.subscriptionId,
       cancelAtPeriodEnd: !args.immediately,
+      stripeSubscriptionId: args.subscriptionId,
     });
     return null;
   },
+  returns: v.null(),
 });
 
 export const getUserSubscriptions = query({
   args: {},
-  returns: v.array(subscriptionValidator),
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
@@ -165,11 +164,11 @@ export const getUserSubscriptions = query({
       userId: identity.subject,
     });
   },
+  returns: v.array(subscriptionValidator),
 });
 
 export const getUserPayments = query({
   args: {},
-  returns: v.array(paymentValidator),
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
@@ -180,4 +179,5 @@ export const getUserPayments = query({
       userId: identity.subject,
     });
   },
+  returns: v.array(paymentValidator),
 });

@@ -13,8 +13,8 @@ export type SecurityErrorReason = "bot" | "rate_limit" | "denied";
 
 const securityErrorMessages: Record<SecurityErrorReason, string> = {
   bot: "No bots allowed",
-  rate_limit: "Rate limit exceeded",
   denied: "Access denied",
+  rate_limit: "Rate limit exceeded",
 };
 
 export class SecurityError extends Error {
@@ -29,8 +29,8 @@ export class SecurityError extends Error {
 
 const base = arcjetKey
   ? arcjet({
-      key: arcjetKey,
       characteristics: ["ip.src"],
+      key: arcjetKey,
       rules: [
         shield({
           // "LIVE" blocks requests; use "DRY_RUN" to log only.
@@ -50,7 +50,7 @@ export const secure = async (
 
   const req = sourceRequest ?? (await request());
   const decision = await base
-    .withRule(detectBot({ mode: "LIVE", allow }))
+    .withRule(detectBot({ allow, mode: "LIVE" }))
     .protect(req);
 
   if (decision.isDenied()) {

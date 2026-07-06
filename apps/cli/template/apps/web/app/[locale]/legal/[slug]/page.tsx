@@ -26,8 +26,8 @@ export const generateMetadata = async ({
   }
 
   return createMetadata({
-    title: post._title,
     description: post.description,
+    title: post._title,
   });
 };
 

@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 import { env } from "@/env";
 
 export const metadata = {
-  title: "Webhooks",
   description: "Send webhooks to your users.",
+  title: "Webhooks",
 };
 
 const WebhooksPage = async () => {

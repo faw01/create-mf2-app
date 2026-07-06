@@ -19,6 +19,22 @@ const languages = [
   { label: "🇵🇹 Português", value: "pt" },
 ];
 
+const LanguageMenuItem = ({
+  label,
+  onSelect,
+  value,
+}: {
+  label: string;
+  onSelect: (locale: string) => void;
+  value: string;
+}) => {
+  const handleClick = () => {
+    onSelect(value);
+  };
+
+  return <DropdownMenuItem onClick={handleClick}>{label}</DropdownMenuItem>;
+};
+
 export const LanguageSwitcher = () => {
   const router = useRouter();
   const pathname = usePathname();
@@ -56,9 +72,12 @@ export const LanguageSwitcher = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         {languages.map(({ label, value }) => (
-          <DropdownMenuItem key={value} onClick={() => switchLanguage(value)}>
-            {label}
-          </DropdownMenuItem>
+          <LanguageMenuItem
+            key={value}
+            label={label}
+            onSelect={switchLanguage}
+            value={value}
+          />
         ))}
       </DropdownMenuContent>
     </DropdownMenu>

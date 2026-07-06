@@ -3,13 +3,13 @@ import { z } from "zod";
 
 export const keys = () =>
   createEnv({
+    emptyStringAsUndefined: true,
+    runtimeEnv: {
+      SVIX_TOKEN: process.env.SVIX_TOKEN,
+    },
     server: {
       SVIX_TOKEN: z
         .union([z.string().startsWith("sk_"), z.string().startsWith("testsk_")])
         .optional(),
     },
-    runtimeEnv: {
-      SVIX_TOKEN: process.env.SVIX_TOKEN,
-    },
-    emptyStringAsUndefined: true,
   });

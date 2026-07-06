@@ -18,8 +18,8 @@ export const searchUsers = async (
     const clerk = await clerkClient();
 
     const members = await clerk.organizations.getOrganizationMembershipList({
-      organizationId: orgId,
       limit: 100,
+      organizationId: orgId,
     });
 
     // Liveblocks resolves mentions by Clerk user ID, not membership ID.

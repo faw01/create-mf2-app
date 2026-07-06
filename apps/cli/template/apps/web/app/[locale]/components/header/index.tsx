@@ -24,36 +24,40 @@ type HeaderProps = {
 export const Header = ({ dictionary }: HeaderProps) => {
   const navigationItems = [
     {
-      title: dictionary.web.header.home,
-      href: "/",
       description: "",
+      href: "/",
+      title: dictionary.web.header.home,
     },
     {
-      title: dictionary.web.header.product.title,
       description: dictionary.web.header.product.description,
       items: [
         {
-          title: dictionary.web.header.product.pricing,
           href: "/pricing",
+          title: dictionary.web.header.product.pricing,
         },
       ],
+      title: dictionary.web.header.product.title,
     },
     {
-      title: dictionary.web.header.blog,
-      href: "/blog",
       description: "",
+      href: "/blog",
+      title: dictionary.web.header.blog,
     },
   ];
 
   if (env.NEXT_PUBLIC_DOCS_URL) {
     navigationItems.push({
-      title: dictionary.web.header.docs,
-      href: env.NEXT_PUBLIC_DOCS_URL,
       description: "",
+      href: env.NEXT_PUBLIC_DOCS_URL,
+      title: dictionary.web.header.docs,
     });
   }
 
   const [isOpen, setOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setOpen((open) => !open);
+  };
   return (
     <header className="sticky top-0 left-0 z-40 w-full border-b bg-background">
       <div className="container relative mx-auto flex min-h-20 flex-row items-center gap-4 lg:grid lg:grid-cols-3">
@@ -148,10 +152,10 @@ export const Header = ({ dictionary }: HeaderProps) => {
           </Button>
         </div>
         <div className="flex w-12 shrink items-end justify-end lg:hidden">
-          <Button onClick={() => setOpen(!isOpen)} variant="ghost">
+          <Button onClick={toggleMenu} variant="ghost">
             {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
-          {isOpen && (
+          {isOpen ? (
             <div className="container absolute top-20 right-0 flex w-full flex-col gap-8 border-t bg-background py-4 shadow-lg">
               {navigationItems.map((item) => (
                 <div key={item.title}>
@@ -191,7 +195,7 @@ export const Header = ({ dictionary }: HeaderProps) => {
                 </div>
               ))}
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </header>

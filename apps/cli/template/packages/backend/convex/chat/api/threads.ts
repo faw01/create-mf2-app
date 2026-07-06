@@ -6,26 +6,18 @@ export const create = mutation({
   args: {
     title: v.optional(v.string()),
   },
-  returns: v.id("threads"),
   handler: async (ctx, args) => {
     const user = await mustGetCurrentUser(ctx);
     return await ctx.db.insert("threads", {
-      userId: user._id,
       title: args.title,
+      userId: user._id,
     });
   },
+  returns: v.id("threads"),
 });
 
 export const list = query({
   args: {},
-  returns: v.array(
-    v.object({
-      _id: v.id("threads"),
-      _creationTime: v.number(),
-      userId: v.id("users"),
-      title: v.optional(v.string()),
-    })
-  ),
   handler: async (ctx) => {
     const user = await mustGetCurrentUser(ctx);
     return await ctx.db
@@ -34,19 +26,18 @@ export const list = query({
       .order("desc")
       .collect();
   },
+  returns: v.array(
+    v.object({
+      _creationTime: v.number(),
+      _id: v.id("threads"),
+      title: v.optional(v.string()),
+      userId: v.id("users"),
+    })
+  ),
 });
 
 export const get = query({
   args: { threadId: v.id("threads") },
-  returns: v.union(
-    v.object({
-      _id: v.id("threads"),
-      _creationTime: v.number(),
-      userId: v.id("users"),
-      title: v.optional(v.string()),
-    }),
-    v.null()
-  ),
   handler: async (ctx, args) => {
     const user = await mustGetCurrentUser(ctx);
     const thread = await ctx.db.get("threads", args.threadId);
@@ -58,11 +49,19 @@ export const get = query({
     }
     return thread;
   },
+  returns: v.union(
+    v.object({
+      _creationTime: v.number(),
+      _id: v.id("threads"),
+      title: v.optional(v.string()),
+      userId: v.id("users"),
+    }),
+    v.null()
+  ),
 });
 
 export const remove = mutation({
   args: { threadId: v.id("threads") },
-  returns: v.null(),
   handler: async (ctx, args) => {
     const user = await mustGetCurrentUser(ctx);
     const thread = await ctx.db.get("threads", args.threadId);
@@ -77,18 +76,18 @@ export const remove = mutation({
       .query("messages")
       .withIndex("by_thread", (q) => q.eq("threadId", args.threadId))
       .collect();
-    for (const message of messages) {
-      await ctx.db.delete("messages", message._id);
-    }
+    await Promise.all(
+      messages.map((message) => ctx.db.delete("messages", message._id))
+    );
 
     await ctx.db.delete("threads", args.threadId);
     return null;
   },
+  returns: v.null(),
 });
 
 export const updateTitle = mutation({
   args: { threadId: v.id("threads"), title: v.string() },
-  returns: v.null(),
   handler: async (ctx, args) => {
     const user = await mustGetCurrentUser(ctx);
     const thread = await ctx.db.get("threads", args.threadId);
@@ -101,13 +100,14 @@ export const updateTitle = mutation({
     await ctx.db.patch("threads", args.threadId, { title: args.title });
     return null;
   },
+  returns: v.null(),
 });
 
 export const updateTitleInternal = internalMutation({
   args: { threadId: v.id("threads"), title: v.string() },
-  returns: v.null(),
   handler: async (ctx, args) => {
     await ctx.db.patch("threads", args.threadId, { title: args.title });
     return null;
   },
+  returns: v.null(),
 });

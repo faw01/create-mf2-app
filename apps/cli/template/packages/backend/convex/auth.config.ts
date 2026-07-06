@@ -16,8 +16,8 @@ export default {
   providers: clerkIssuerDomain
     ? [
         {
-          domain: clerkIssuerDomain,
           applicationID: "convex",
+          domain: clerkIssuerDomain,
         },
       ]
     : [],

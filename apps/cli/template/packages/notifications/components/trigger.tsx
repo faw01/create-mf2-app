@@ -24,23 +24,24 @@ export const NotificationsTrigger = () => {
     setIsVisible(false);
   };
 
+  const handleToggle = () => {
+    setIsVisible((visible) => !visible);
+  };
+
   if (!keys().NEXT_PUBLIC_KNOCK_API_KEY) {
     return null;
   }
 
   return (
     <>
-      <NotificationIconButton
-        onClick={() => setIsVisible(!isVisible)}
-        ref={notifButtonRef}
-      />
-      {notifButtonRef.current && (
+      <NotificationIconButton onClick={handleToggle} ref={notifButtonRef} />
+      {notifButtonRef.current ? (
         <NotificationFeedPopover
           buttonRef={notifButtonRef as RefObject<HTMLElement>}
           isVisible={isVisible}
           onClose={handleClose}
         />
-      )}
+      ) : null}
     </>
   );
 };

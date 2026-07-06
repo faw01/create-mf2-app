@@ -4,8 +4,6 @@ import { flag } from "flags/next";
 
 export const createFlag = (key: string, defaultValue = false) =>
   flag({
-    key,
-    defaultValue,
     async decide() {
       const { userId } = await auth();
 
@@ -23,4 +21,6 @@ export const createFlag = (key: string, defaultValue = false) =>
 
       return flags.isEnabled(key) ?? (this.defaultValue as boolean);
     },
+    defaultValue,
+    key,
   });

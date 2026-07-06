@@ -8,7 +8,7 @@ const SignIn = dynamic(() =>
   import("@repo/auth/components/sign-in").then((mod) => mod.SignIn)
 );
 
-export const metadata: Metadata = createMetadata({ title, description });
+export const metadata: Metadata = createMetadata({ description, title });
 
 const SignInPage = () => <SignIn />;
 

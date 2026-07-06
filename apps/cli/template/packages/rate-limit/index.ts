@@ -14,17 +14,17 @@ export const getRedis = (): Redis => {
   }
 
   redis ??= new Redis({
-    url: UPSTASH_REDIS_REST_URL,
     token: UPSTASH_REDIS_REST_TOKEN,
+    url: UPSTASH_REDIS_REST_URL,
   });
   return redis;
 };
 
 export const createRateLimiter = (props: Omit<RatelimitConfig, "redis">) =>
   new Ratelimit({
-    redis: getRedis(),
     limiter: props.limiter ?? Ratelimit.slidingWindow(10, "10 s"),
     prefix: props.prefix ?? "mf2",
+    redis: getRedis(),
   });
 
 export const { slidingWindow } = Ratelimit;

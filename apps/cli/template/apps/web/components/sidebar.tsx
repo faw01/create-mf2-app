@@ -19,10 +19,10 @@ export const Sidebar = async ({
       <p className="text-muted-foreground text-sm">Published</p>
       <p className="rounded-sm text-foreground text-sm">
         {new Intl.DateTimeFormat("en-US", {
-          month: "short",
           day: "numeric",
-          year: "numeric",
+          month: "short",
           timeZone: "America/New_York",
+          year: "numeric",
         }).format(date)}
       </p>
     </div>
@@ -30,14 +30,14 @@ export const Sidebar = async ({
       <p className="text-muted-foreground text-sm">Reading Time</p>
       <p className="rounded-sm text-foreground text-sm">{readingTime}</p>
     </div>
-    {tags && (
+    {tags ? (
       <div className="grid gap-2">
         <p className="text-muted-foreground text-sm">Tags</p>
         <p className="rounded-sm text-foreground text-sm">
           {tags.map(capitalize).join(", ")}
         </p>
       </div>
-    )}
+    ) : null}
     {Toc ? (
       <div className="-mx-2">
         <div className="grid gap-2 p-2">
@@ -45,6 +45,6 @@ export const Sidebar = async ({
           {Toc}
         </div>
       </div>
-    ) : undefined}
+    ) : null}
   </div>
 );

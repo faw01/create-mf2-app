@@ -8,6 +8,10 @@ import {
 } from "@repo/design-system/components/ui/card";
 import { Monitor } from "lucide-react";
 
+const openDocs = () => {
+  window.api.openExternal("https://mf2.dev");
+};
+
 export const App = () => (
   <div className="flex min-h-screen flex-col items-center justify-center bg-background p-8 text-foreground">
     <Card className="w-full max-w-md">
@@ -25,10 +29,7 @@ export const App = () => (
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
-        <Button
-          onClick={() => window.api.openExternal("https://mf2.dev")}
-          variant="outline"
-        >
+        <Button onClick={openDocs} variant="outline">
           Documentation
         </Button>
       </CardContent>

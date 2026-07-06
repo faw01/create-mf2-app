@@ -48,8 +48,8 @@ const handleCheckoutSessionCompleted = async (
   }
 
   analytics?.capture({
-    event: "User Subscribed",
     distinctId: user.id,
+    event: "User Subscribed",
   });
 };
 
@@ -69,8 +69,8 @@ const handleSubscriptionScheduleCanceled = async (
   }
 
   analytics?.capture({
-    event: "User Unsubscribed",
     distinctId: user.id,
+    event: "User Unsubscribed",
   });
 };
 
@@ -95,10 +95,12 @@ export const POST = async (request: Request): Promise<Response> => {
     );
 
     switch (event.type) {
+      // biome-ignore lint/suspicious/noUnnecessaryConditions: Biome cannot resolve Stripe's Event union across module boundaries and misreads this case as unreachable.
       case "checkout.session.completed": {
         await handleCheckoutSessionCompleted(event.data.object);
         break;
       }
+      // biome-ignore lint/suspicious/noUnnecessaryConditions: Biome cannot resolve Stripe's Event union across module boundaries and misreads this case as unreachable.
       case "subscription_schedule.canceled": {
         await handleSubscriptionScheduleCanceled(event.data.object);
         break;
@@ -110,7 +112,7 @@ export const POST = async (request: Request): Promise<Response> => {
 
     await analytics?.shutdown();
 
-    return NextResponse.json({ result: event, ok: true });
+    return NextResponse.json({ ok: true, result: event });
   } catch (error) {
     const message = parseError(error);
 

@@ -4,27 +4,26 @@ import { keys } from "./keys";
 
 export const initializeSentry = (): ReturnType<typeof Sentry.init> =>
   Sentry.init({
+    debug: false,
     dsn: keys().NEXT_PUBLIC_SENTRY_DSN,
 
     enableLogs: true,
 
-    // Adjust this value in production, or use tracesSampler for greater control
-    tracesSampleRate: 1,
-
-    debug: false,
+    integrations: [
+      Sentry.replayIntegration({
+        blockAllMedia: true,
+        maskAllText: true,
+      }),
+      Sentry.consoleLoggingIntegration({ levels: ["log", "error", "warn"] }),
+    ],
 
     replaysOnErrorSampleRate: 1,
 
     // You may want 100% in development and a lower rate in production.
     replaysSessionSampleRate: 0.1,
 
-    integrations: [
-      Sentry.replayIntegration({
-        maskAllText: true,
-        blockAllMedia: true,
-      }),
-      Sentry.consoleLoggingIntegration({ levels: ["log", "error", "warn"] }),
-    ],
+    // Adjust this value in production, or use tracesSampler for greater control
+    tracesSampleRate: 1,
   });
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;

@@ -7,8 +7,8 @@ export const withAuthImages = (sourceConfig: NextConfig): NextConfig => ({
     remotePatterns: [
       ...(sourceConfig.images?.remotePatterns ?? []),
       {
-        protocol: "https",
         hostname: "img.clerk.com",
+        protocol: "https",
       },
     ],
   },
