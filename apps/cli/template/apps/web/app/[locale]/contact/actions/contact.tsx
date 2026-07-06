@@ -12,6 +12,9 @@ export type ContactFormState = {
   error?: string;
 };
 
+// Contact forms are intentionally reachable by signed-out visitors; abuse is
+// contained by the per-IP rate limit below instead of an auth check.
+// react-doctor-disable-next-line react-doctor/server-auth-actions
 export const contact = async (
   _prevState: ContactFormState,
   formData: FormData

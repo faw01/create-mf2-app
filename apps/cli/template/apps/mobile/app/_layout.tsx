@@ -36,6 +36,9 @@ const ConvexProviderWithAuth = ({
   children,
 }: {
   readonly children: React.ReactNode;
+  // Convex's provider API takes the auth hook itself as a prop; this is the
+  // documented ConvexProviderWithClerk wiring, not a hook called conditionally.
+  // react-doctor-disable-next-line react-hooks-js/hooks
 }) => <ConvexClientProvider useAuth={useAuth}>{children}</ConvexClientProvider>;
 
 function RootLayout() {

@@ -118,7 +118,7 @@ Route-specific components go in a `components/` folder inside the route group (f
 | Security | [Arcjet](https://arcjet.com) -- bot detection, rate limiting, DDoS protection |
 | Monorepo | [Turborepo](https://turbo.build) + [Bun](https://bun.sh) |
 | Deployment | [Vercel](https://vercel.com) |
-| Code Quality | [Biome](https://biomejs.dev) via [Ultracite](https://docs.ultracite.ai) |
+| Code Quality | [Biome](https://biomejs.dev) via [Ultracite](https://docs.ultracite.ai) + [React Doctor](https://react.doctor) |
 
 ## Convex Backend
 
@@ -267,11 +267,12 @@ Backend: `bunx convex deploy`.
 
 ## Code Conventions
 
-Ultracite (Biome) handles formatting and linting. A Lefthook pre-commit hook runs `ultracite fix` on staged files.
+Ultracite (Biome) handles formatting and linting. A Lefthook pre-commit hook runs `ultracite fix` on staged files. [React Doctor](https://react.doctor) covers what generic lint rules miss: the "You Might Not Need an Effect" family, render performance, hydration, server-component, and security checks.
 
 ```bash
 bun run fix             # auto-fix before committing
 bun run check           # verify everything passes
+bun run doctor          # React-specific health scan (react-doctor)
 ```
 
 Key conventions:
