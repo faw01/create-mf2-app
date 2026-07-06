@@ -22,7 +22,7 @@ export const Cases = ({ dictionary }: CasesProps) => {
       return;
     }
 
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       if (api.selectedScrollSnap() + 1 === api.scrollSnapList().length) {
         setCurrent(0);
         api.scrollTo(0);
@@ -31,6 +31,8 @@ export const Cases = ({ dictionary }: CasesProps) => {
         setCurrent(current + 1);
       }
     }, 1000);
+
+    return () => clearTimeout(timeout);
   }, [api, current]);
 
   return (

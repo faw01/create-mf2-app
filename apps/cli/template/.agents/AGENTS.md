@@ -10,6 +10,7 @@ bun run dev     # Start all apps
 bun run build   # Build all apps and packages
 bun run test    # Run all tests
 bun run fix     # Format and lint (ultracite); lefthook runs this on pre-commit
+bun run doctor  # React-specific health scan (react-doctor)
 ```
 
 ## Skills

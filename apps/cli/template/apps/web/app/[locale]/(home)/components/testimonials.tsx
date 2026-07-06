@@ -28,7 +28,7 @@ export const Testimonials = ({ dictionary }: TestimonialsProps) => {
       return;
     }
 
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       if (api.selectedScrollSnap() + 1 === api.scrollSnapList().length) {
         setCurrent(0);
         api.scrollTo(0);
@@ -37,6 +37,8 @@ export const Testimonials = ({ dictionary }: TestimonialsProps) => {
         setCurrent(current + 1);
       }
     }, 4000);
+
+    return () => clearTimeout(timeout);
   }, [api, current]);
 
   return (
