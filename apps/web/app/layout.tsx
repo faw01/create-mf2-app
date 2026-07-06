@@ -8,9 +8,9 @@ import type { ReactNode } from "react";
 import "./styles.css";
 
 export const metadata = createMetadata({
-  title: "Ship your startup in one command",
   description:
     "The production-ready SaaS monorepo with auth, payments, database, AI, analytics, and email.",
+  title: "Ship your startup in one command",
 }) as Metadata;
 
 type RootLayoutProps = {

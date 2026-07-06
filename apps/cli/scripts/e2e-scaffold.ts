@@ -21,18 +21,22 @@ await materializeSkills(projectDir);
 
 await rename(join(projectDir, "gitignore"), join(projectDir, ".gitignore"));
 
-for (const { dir, from, to } of dotfileRenames) {
-  await rename(join(projectDir, dir, from), join(projectDir, dir, to));
-}
+await Promise.all(
+  dotfileRenames.map(({ dir, from, to }) =>
+    rename(join(projectDir, dir, from), join(projectDir, dir, to))
+  )
+);
 
 await updatePackageJson(projectDir, "e2e-test");
 
 await rm(join(projectDir, "pnpm-lock.yaml"), { force: true });
 await rm(join(projectDir, "pnpm-workspace.yaml"), { force: true });
 
-for (const file of devOnlyFiles) {
-  await rm(join(projectDir, file), { recursive: true, force: true });
-}
+await Promise.all(
+  devOnlyFiles.map((file) =>
+    rm(join(projectDir, file), { force: true, recursive: true })
+  )
+);
 
 execSync("git init", { cwd: projectDir, stdio: "ignore" });
 

@@ -37,9 +37,9 @@ const getName = async (): Promise<string> => {
   // No required-name check here: clack runs validation before applying
   // defaultValue, so it would reject the Enter press the default exists for.
   const value = await text({
+    defaultValue: "my-app",
     message: "What is your project named?",
     placeholder: "my-app",
-    defaultValue: "my-app",
   });
 
   if (isCancel(value)) {
@@ -52,12 +52,12 @@ const getName = async (): Promise<string> => {
 
 const getPackageManager = async (): Promise<string> => {
   const value = await select({
+    initialValue: "bun",
     message: "Which package manager would you like to use?",
     options: supportedPackageManagers.map((choice) => ({
-      value: choice,
       label: choice,
+      value: choice,
     })),
-    initialValue: "bun",
   });
 
   if (isCancel(value)) {
@@ -69,9 +69,11 @@ const getPackageManager = async (): Promise<string> => {
 };
 
 const stripDevOnlyFiles = async (projectDir: string): Promise<void> => {
-  for (const file of devOnlyFiles) {
-    await rm(join(projectDir, file), { recursive: true, force: true });
-  }
+  await Promise.all(
+    devOnlyFiles.map((file) =>
+      rm(join(projectDir, file), { force: true, recursive: true })
+    )
+  );
 };
 
 const installDependencies = async (packageManager: string): Promise<void> => {
@@ -130,13 +132,15 @@ export const initialize = async (options: {
 
     await rename(join(projectDir, "gitignore"), join(projectDir, ".gitignore"));
 
-    for (const { dir, from, to } of dotfileRenames) {
-      try {
-        await rename(join(projectDir, dir, from), join(projectDir, dir, to));
-      } catch {
-        // noop
-      }
-    }
+    await Promise.all(
+      dotfileRenames.map(({ dir, from, to }) =>
+        rename(join(projectDir, dir, from), join(projectDir, dir, to)).catch(
+          () => {
+            // noop
+          }
+        )
+      )
+    );
 
     s.message("Creating env files...");
     await createEnvFiles(projectDir);
@@ -190,7 +194,7 @@ export const initialize = async (options: {
     }
 
     if (options.disableGit) {
-      await rm(join(projectDir, ".git"), { recursive: true, force: true });
+      await rm(join(projectDir, ".git"), { force: true, recursive: true });
     } else {
       s.message("Staging files...");
       await run("git add .");
