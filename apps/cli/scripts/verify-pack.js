@@ -121,7 +121,7 @@ const main = () => {
     process.exit(1);
   }
 
-  const manifest = JSON.parse(result.stdout)[0];
+  const [manifest] = JSON.parse(result.stdout);
   const problems = assessPackManifest(manifest);
 
   if (problems.length > 0) {

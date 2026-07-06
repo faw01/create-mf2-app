@@ -15,9 +15,9 @@ setDefaultTimeout(60_000);
 const runCli = (args: string[]) =>
   spawnSync("node", [cliBin, ...args], {
     cwd: cliRoot,
+    encoding: "utf8",
     input: "",
     timeout: hangTimeoutMs,
-    encoding: "utf8",
   });
 
 describe("cli entry without a TTY", () => {

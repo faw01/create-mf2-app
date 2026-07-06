@@ -8,14 +8,14 @@ import {
   stat,
   writeFile,
 } from "node:fs/promises";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join, resolve as resolvePath } from "node:path";
 import { fileURLToPath } from "node:url";
 
 export const run = (command: string, options?: SpawnOptions): Promise<void> =>
   new Promise((resolve, reject) => {
     const child = spawn(command, {
-      stdio: "ignore",
       shell: true,
+      stdio: "ignore",
       ...options,
     });
     child.on("close", (code) => {
@@ -79,7 +79,7 @@ export const dotfileRenames = [
 
 export const getTemplatePath = (): string => {
   const currentDir = dirname(fileURLToPath(import.meta.url));
-  return resolve(currentDir, "..", "template");
+  return resolvePath(currentDir, "..", "template");
 };
 
 export const copyDirectory = async (
@@ -89,20 +89,24 @@ export const copyDirectory = async (
   await mkdir(destination, { recursive: true });
   const entries = await readdir(source, { withFileTypes: true });
 
-  for (const entry of entries) {
-    if (copyExclusions.has(entry.name)) {
-      continue;
-    }
+  await Promise.all(
+    entries.flatMap((entry) => {
+      if (copyExclusions.has(entry.name)) {
+        return [];
+      }
 
-    const srcPath = join(source, entry.name);
-    const destPath = join(destination, entry.name);
+      const srcPath = join(source, entry.name);
+      const destPath = join(destination, entry.name);
 
-    if (entry.isDirectory()) {
-      await copyDirectory(srcPath, destPath);
-    } else if (entry.isFile()) {
-      await copyFile(srcPath, destPath);
-    }
-  }
+      if (entry.isDirectory()) {
+        return [copyDirectory(srcPath, destPath)];
+      }
+      if (entry.isFile()) {
+        return [copyFile(srcPath, destPath)];
+      }
+      return [];
+    })
+  );
 };
 
 export const materializeSkills = async (projectDir: string): Promise<void> => {
@@ -115,7 +119,7 @@ export const materializeSkills = async (projectDir: string): Promise<void> => {
     return;
   }
 
-  await rm(skillsDestDir, { recursive: true, force: true });
+  await rm(skillsDestDir, { force: true, recursive: true });
   await copyDirectory(skillsSourceDir, skillsDestDir);
 };
 
@@ -142,8 +146,8 @@ export const updatePackageManager = async (
 
   const versions: Record<string, string> = {
     npm: "npm@11.18.0",
-    yarn: "yarn@1.22.22",
     pnpm: "pnpm@11.9.0",
+    yarn: "yarn@1.22.22",
   };
 
   if (versions[packageManager]) {
@@ -174,38 +178,41 @@ export const convertWorkspaceDeps = async (filePath: string): Promise<void> => {
 };
 
 const listPackageJsonPaths = async (projectDir: string): Promise<string[]> => {
-  const paths = [join(projectDir, "package.json")];
+  const workspaceGroups = await Promise.all(
+    ["apps", "packages"].map(async (dir) => {
+      const dirPath = join(projectDir, dir);
 
-  for (const dir of ["apps", "packages"]) {
-    const dirPath = join(projectDir, dir);
-
-    let packages: string[];
-    try {
-      packages = await readdir(dirPath);
-    } catch {
-      continue;
-    }
-
-    for (const pkg of packages) {
-      const pkgJsonPath = join(dirPath, pkg, "package.json");
+      let packages: string[];
       try {
-        await stat(pkgJsonPath);
-        paths.push(pkgJsonPath);
+        packages = await readdir(dirPath);
       } catch {
-        // noop
+        return [];
       }
-    }
-  }
 
-  return paths;
+      const candidates = await Promise.all(
+        packages.map(async (pkg) => {
+          const pkgJsonPath = join(dirPath, pkg, "package.json");
+          try {
+            await stat(pkgJsonPath);
+            return [pkgJsonPath];
+          } catch {
+            return [];
+          }
+        })
+      );
+
+      return candidates.flat();
+    })
+  );
+
+  return [join(projectDir, "package.json"), ...workspaceGroups.flat()];
 };
 
 export const convertAllWorkspaceDeps = async (
   projectDir: string
 ): Promise<void> => {
-  for (const path of await listPackageJsonPaths(projectDir)) {
-    await convertWorkspaceDeps(path);
-  }
+  const paths = await listPackageJsonPaths(projectDir);
+  await Promise.all(paths.map((path) => convertWorkspaceDeps(path)));
 };
 
 // Non-bun scaffolds need tsx to run the TS scripts bun executes natively;
@@ -221,14 +228,6 @@ const bunScriptReplacements: Record<string, [string, string][]> = {
     ["bun scripts/", "npx tsx scripts/"],
     ["-p bun", "-p npm"],
   ],
-  yarn: [
-    ["bunx --bun ", "npx "],
-    ["bunx ", "npx "],
-    ["bun --bun ", ""],
-    ["bun install", "yarn install"],
-    ["bun scripts/", "npx tsx scripts/"],
-    ["-p bun", "-p yarn"],
-  ],
   pnpm: [
     ["bunx --bun ", "pnpm dlx "],
     ["bunx ", "pnpm dlx "],
@@ -236,6 +235,14 @@ const bunScriptReplacements: Record<string, [string, string][]> = {
     ["bun install", "pnpm install"],
     ["bun scripts/", "pnpm exec tsx scripts/"],
     ["-p bun", "-p pnpm"],
+  ],
+  yarn: [
+    ["bunx --bun ", "npx "],
+    ["bunx ", "npx "],
+    ["bun --bun ", ""],
+    ["bun install", "yarn install"],
+    ["bun scripts/", "npx tsx scripts/"],
+    ["-p bun", "-p yarn"],
   ],
 };
 
@@ -307,27 +314,31 @@ export const rewriteAllBunScripts = async (
   projectDir: string,
   packageManager: string
 ): Promise<void> => {
-  for (const path of await listPackageJsonPaths(projectDir)) {
-    const content = await readFile(path, "utf8");
-    const packageJson = JSON.parse(content);
+  const paths = await listPackageJsonPaths(projectDir);
 
-    if (!packageJson.scripts) {
-      continue;
-    }
+  await Promise.all(
+    paths.map(async (path) => {
+      const content = await readFile(path, "utf8");
+      const packageJson = JSON.parse(content);
 
-    packageJson.scripts = rewriteBunScripts(
-      packageJson.scripts,
-      packageManager
-    );
+      if (!packageJson.scripts) {
+        return;
+      }
 
-    await writeFile(path, `${JSON.stringify(packageJson, null, 2)}\n`);
-  }
+      packageJson.scripts = rewriteBunScripts(
+        packageJson.scripts,
+        packageManager
+      );
+
+      await writeFile(path, `${JSON.stringify(packageJson, null, 2)}\n`);
+    })
+  );
 };
 
 const packageManagerLinks: Record<string, string> = {
   npm: "[npm](https://www.npmjs.com)",
-  yarn: "[Yarn](https://yarnpkg.com)",
   pnpm: "[pnpm](https://pnpm.io)",
+  yarn: "[Yarn](https://yarnpkg.com)",
 };
 
 export const rewriteBunProse = (
@@ -374,18 +385,20 @@ export const rewriteScaffoldDocs = async (
 ): Promise<void> => {
   // Root CLAUDE.md and AGENTS.md just import .agents/AGENTS.md, which is
   // where the bun prose actually lives.
-  for (const file of [join(".agents", "AGENTS.md"), "README.md"]) {
-    const path = join(projectDir, file);
+  await Promise.all(
+    [join(".agents", "AGENTS.md"), "README.md"].map(async (file) => {
+      const path = join(projectDir, file);
 
-    let content: string;
-    try {
-      content = await readFile(path, "utf8");
-    } catch {
-      continue;
-    }
+      let content: string;
+      try {
+        content = await readFile(path, "utf8");
+      } catch {
+        return;
+      }
 
-    await writeFile(path, rewriteBunProse(content, packageManager));
-  }
+      await writeFile(path, rewriteBunProse(content, packageManager));
+    })
+  );
 };
 
 export const rewriteBunHooks = (
@@ -397,8 +410,8 @@ export const rewriteBunHooks = (
   // and ignores the pinned version.
   const execs: Record<string, string> = {
     npm: "npx ",
-    yarn: "npx ",
     pnpm: "pnpm exec ",
+    yarn: "npx ",
   };
 
   const exec = execs[packageManager];
@@ -468,28 +481,34 @@ export const addWorkspacesField = async (projectDir: string): Promise<void> => {
 // needed before `dev`. Blank values are safe: every env schema treats empty
 // strings as undefined, which just disables that integration.
 export const createEnvFiles = async (projectDir: string): Promise<void> => {
-  for (const dir of ["apps", "packages"]) {
-    const base = join(projectDir, dir);
+  await Promise.all(
+    ["apps", "packages"].map(async (dir) => {
+      const base = join(projectDir, dir);
 
-    let entries: string[];
-    try {
-      entries = await readdir(base);
-    } catch {
-      continue;
-    }
-
-    for (const entry of entries) {
-      const examplePath = join(base, entry, ".env.example");
-
+      let entries: string[];
       try {
-        await stat(examplePath);
+        entries = await readdir(base);
       } catch {
-        continue;
+        return;
       }
 
-      for (const target of [".env.local", ".env.production"]) {
-        await copyFile(examplePath, join(base, entry, target));
-      }
-    }
-  }
+      await Promise.all(
+        entries.map(async (entry) => {
+          const examplePath = join(base, entry, ".env.example");
+
+          try {
+            await stat(examplePath);
+          } catch {
+            return;
+          }
+
+          await Promise.all(
+            [".env.local", ".env.production"].map((target) =>
+              copyFile(examplePath, join(base, entry, target))
+            )
+          );
+        })
+      );
+    })
+  );
 };

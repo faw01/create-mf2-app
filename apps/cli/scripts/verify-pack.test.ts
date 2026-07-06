@@ -27,8 +27,8 @@ const cleanPaths = [
 
 const makeManifest = (paths: string[]): Manifest => ({
   entryCount: paths.length,
-  unpackedSize: paths.length * 1000,
   files: paths.map((path) => ({ path })),
+  unpackedSize: paths.length * 1000,
 });
 
 describe("assessPackManifest", () => {

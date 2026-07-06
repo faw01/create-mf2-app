@@ -7,10 +7,10 @@ export const DashedLine = ({ direction, className = "" }: DashedLineProps) => {
   const isHorizontal = direction === "top" || direction === "bottom";
 
   const positionStyles = {
-    top: "top-0",
     bottom: "bottom-0",
     left: "left-0",
     right: "right-0",
+    top: "top-0",
   };
 
   return (
@@ -27,9 +27,9 @@ export const DashedLine = ({ direction, className = "" }: DashedLineProps) => {
               width: "100vw",
             }
           : {
+              height: "100vh",
               top: "50%",
               transform: "translateY(-50%)",
-              height: "100vh",
             }
       }
       viewBox={isHorizontal ? "0 0 100 1" : "0 0 1 100"}

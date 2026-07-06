@@ -74,7 +74,7 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  await rm(tmpDir, { recursive: true, force: true });
+  await rm(tmpDir, { force: true, recursive: true });
 });
 
 describe("template integrity", () => {
@@ -273,12 +273,12 @@ describe("dotfileRenames", () => {
     const nestedGitignores = findTemplateFiles("gitignore")
       .filter((rel) => rel !== "gitignore")
       .map((rel) => dirname(rel))
-      .sort();
+      .sort((a, b) => a.localeCompare(b));
 
     const renameDirs = dotfileRenames
       .filter((r) => r.from === "gitignore")
       .map((r) => r.dir)
-      .sort();
+      .sort((a, b) => a.localeCompare(b));
 
     expect(nestedGitignores.length).toBeGreaterThan(0);
     expect(renameDirs).toEqual(nestedGitignores);
@@ -424,8 +424,8 @@ describe("rewriteBunScripts", () => {
       "bunx shadcn@latest add --all --overwrite -c packages/design-system",
     "bump-ui-native":
       "bunx --bun @react-native-reusables/cli@latest add --all --overwrite -c apps/mobile",
-    "env:check": "bun scripts/env.ts check",
     dev: "turbo dev",
+    "env:check": "bun scripts/env.ts check",
   };
 
   test("strips the bun runtime prefix from next scripts", () => {
@@ -639,18 +639,20 @@ describe("rewriteEnvScript", () => {
   });
 
   test("rewrites bunx to npx for npm and yarn", async () => {
-    for (const pm of ["npm", "yarn"]) {
-      const dest = join(tmpDir, `env-script-${pm}-test`);
-      await mkdir(dest, { recursive: true });
-      await copyDirectory(templatePath, dest);
+    await Promise.all(
+      ["npm", "yarn"].map(async (pm) => {
+        const dest = join(tmpDir, `env-script-${pm}-test`);
+        await mkdir(dest, { recursive: true });
+        await copyDirectory(templatePath, dest);
 
-      await rewriteEnvScript(dest, pm);
+        await rewriteEnvScript(dest, pm);
 
-      const content = readFileSync(join(dest, "scripts", "env.ts"), "utf8");
-      expect(content).toContain("npx convex ");
-      expect(content).not.toContain("bunx ");
-      expect(content).not.toContain("bun scripts/");
-    }
+        const content = readFileSync(join(dest, "scripts", "env.ts"), "utf8");
+        expect(content).toContain("npx convex ");
+        expect(content).not.toContain("bunx ");
+        expect(content).not.toContain("bun scripts/");
+      })
+    );
   });
 
   test("rewrites bunx to pnpm dlx for pnpm", async () => {
@@ -845,8 +847,8 @@ describe("rewriteBunHooks", () => {
     hooks: {
       PostToolUse: [
         {
+          hooks: [{ command: "bun x ultracite fix", type: "command" }],
           matcher: "Write|Edit",
-          hooks: [{ type: "command", command: "bun x ultracite fix" }],
         },
       ],
     },
@@ -992,9 +994,11 @@ describe("scaffolding simulation", () => {
     const { rename } = await import("node:fs/promises");
     await rename(join(projectDir, "gitignore"), join(projectDir, ".gitignore"));
 
-    for (const { dir, from, to } of dotfileRenames) {
-      await rename(join(projectDir, dir, from), join(projectDir, dir, to));
-    }
+    await Promise.all(
+      dotfileRenames.map(({ dir, from, to }) =>
+        rename(join(projectDir, dir, from), join(projectDir, dir, to))
+      )
+    );
 
     await createEnvFiles(projectDir);
 
@@ -1110,14 +1114,18 @@ describe("scaffolding simulation", () => {
     // devOnlyFiles are gitignored, so fresh checkouts (like CI) do not have
     // them. Recreate the local-only state a dev machine would have, then
     // verify the strip removes it.
-    for (const file of devOnlyFiles) {
-      await mkdir(join(projectDir, dirname(file)), { recursive: true });
-      await writeFile(join(projectDir, file), "{}\n");
-    }
+    await Promise.all(
+      devOnlyFiles.map(async (file) => {
+        await mkdir(join(projectDir, dirname(file)), { recursive: true });
+        await writeFile(join(projectDir, file), "{}\n");
+      })
+    );
 
-    for (const file of devOnlyFiles) {
-      await rm(join(projectDir, file), { recursive: true, force: true });
-    }
+    await Promise.all(
+      devOnlyFiles.map((file) =>
+        rm(join(projectDir, file), { force: true, recursive: true })
+      )
+    );
 
     for (const file of devOnlyFiles) {
       expect(existsSync(join(projectDir, file))).toBe(false);
@@ -1127,9 +1135,11 @@ describe("scaffolding simulation", () => {
   test("agent files land in the scaffold, local settings stripped", async () => {
     const projectDir = await scaffold("agent-files-test");
 
-    for (const file of devOnlyFiles) {
-      await rm(join(projectDir, file), { recursive: true, force: true });
-    }
+    await Promise.all(
+      devOnlyFiles.map((file) =>
+        rm(join(projectDir, file), { force: true, recursive: true })
+      )
+    );
 
     expect(existsSync(join(projectDir, "CLAUDE.md"))).toBe(true);
     expect(existsSync(join(projectDir, "AGENTS.md"))).toBe(true);
@@ -1307,7 +1317,7 @@ describe("init step ordering", () => {
 
   test("renames and env files happen before the commit", () => {
     const commit = orderOf('await run("git add .")');
-    expect(orderOf("of dotfileRenames")).toBeLessThan(commit);
+    expect(orderOf("dotfileRenames.map")).toBeLessThan(commit);
     expect(orderOf("await createEnvFiles(")).toBeLessThan(commit);
   });
 
