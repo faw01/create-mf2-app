@@ -6,7 +6,8 @@
     "./provider": "./provider.tsx",
     "./provider.native": "./provider.native.tsx",
     "./keys": "./keys.ts",
-    "./keys.native": "./keys.native.ts"
+    "./keys.native": "./keys.native.ts",
+    "./http-client": "./http-client.ts"
   },
   "scripts": {
     "clean": "git clean -xdf .cache .turbo dist node_modules",

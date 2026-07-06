@@ -8,6 +8,7 @@ const schema = {
   CLERK_SECRET_KEY: v.optional(v.string()),
   CLERK_WEBHOOK_SECRET: v.optional(v.string()),
   RESEND_API_KEY: v.optional(v.string()),
+  RESEND_FROM: v.optional(v.string()),
   RESEND_WEBHOOK_SECRET: v.optional(v.string()),
 };
 

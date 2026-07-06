@@ -102,6 +102,11 @@ Needed when: chat, generation, or agents with tools. Seam: new tools in
 `packages/ai/tools/`, new agents in `packages/ai/agent/`, persistence via
 the backend chat module.
 
+From Convex functions, do not import `@repo/ai`'s gateway: it reads env
+through a Next-only mechanism. Call `createGateway` from `@ai-sdk/gateway`
+directly against `convex.env`'s `AI_GATEWAY_API_KEY`; `ai` is available in
+the backend for `generateText`.
+
 ## Realtime collaboration
 
 ### packages/collaboration (Liveblocks)
@@ -257,9 +262,11 @@ bases. New apps consume these rather than hand-rolling config.
 - `apps/web`: locale-routed marketing site: home, pricing, blog and legal
   (CMS-backed), contact form (server action with rate limiting and Resend),
   sitemap, OG metadata.
-- `apps/api`: standalone API surface: health check, a Stripe webhook driving
-  analytics events, a Clerk webhook driving analytics identify and capture.
-  Public API routes and inbound integrations go here.
+- `apps/api`: webhooks, cron jobs, and inbound integrations: health check, a
+  Stripe webhook driving analytics events, a Clerk webhook driving analytics
+  identify and capture. It ships lean: building public endpoints here means
+  first adding `@repo/security`, `@repo/rate-limit`, and `@repo/backend`
+  (plus `@repo/convex` for the http client) as workspace deps.
 - `apps/mobile`: Expo Router app with Clerk native auth, Convex provider,
   tab and auth route groups, and `tw/` styled wrappers (view, text,
   animated, image) as the styling convention.

@@ -14,6 +14,12 @@ Backend code lives in `packages/backend/convex/`. Schema at `convex/schema.ts`
 `convex/<module>/`. These conventions are offline: everything here is
 verifiable against the source in this repo.
 
+A folder module's `index.ts` adds an `.index` segment to every function
+reference: `convex/surveys/index.ts` gives `api.surveys.index.create`, NOT
+`api.surveys.create` (this repo's `convex/email/index.ts` is referenced as
+`internal.email.index.send`). Name files after their role (`queries.ts`,
+`mutations.ts`) or expect the `.index` segment.
+
 ## The circular-inference rule (read this first)
 
 An action that calls back into its own deployment via `ctx.runQuery`,

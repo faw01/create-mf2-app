@@ -1,6 +1,7 @@
 # mf²
 
 SaaS monorepo built with Next.js 16, Convex, and Turborepo, managed with **bun** as the package manager.
+Declare every package you import in that workspace's package.json; transitive availability does not resolve under the isolated linker.
 
 ## Commands
 
