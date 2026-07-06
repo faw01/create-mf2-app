@@ -8,7 +8,6 @@ import { env } from "../../convex.env";
 
 export const generateTitle = internalAction({
   args: { threadId: v.id("threads") },
-  returns: v.null(),
   handler: async (ctx, args): Promise<null> => {
     // Threads keep their default title rather than failing the action.
     if (!env.AI_GATEWAY_API_KEY) {
@@ -45,4 +44,5 @@ export const generateTitle = internalAction({
 
     return null;
   },
+  returns: v.null(),
 });

@@ -25,11 +25,6 @@ function getClerkClient() {
 
 export const userLoginStatus = query({
   args: {},
-  returns: v.union(
-    v.object({ status: v.literal("No JWT Token"), user: v.null() }),
-    v.object({ status: v.literal("No Clerk User"), user: v.null() }),
-    v.object({ status: v.literal("Logged In"), user: v.any() })
-  ),
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
@@ -41,23 +36,27 @@ export const userLoginStatus = query({
     }
     return { status: "Logged In" as const, user };
   },
+  returns: v.union(
+    v.object({ status: v.literal("No JWT Token"), user: v.null() }),
+    v.object({ status: v.literal("No Clerk User"), user: v.null() }),
+    v.object({ status: v.literal("Logged In"), user: v.any() })
+  ),
 });
 
 export const currentUser = query({
   args: {},
-  returns: v.union(v.null(), v.any()),
   handler: async (ctx) => getCurrentUser(ctx),
+  returns: v.union(v.null(), v.any()),
 });
 
 export const getUser = internalQuery({
   args: { subject: v.string() },
-  returns: v.union(v.null(), v.any()),
   handler: async (ctx, args) => userQuery(ctx, args.subject),
+  returns: v.union(v.null(), v.any()),
 });
 
 export const updateOrCreateUser = internalMutation({
   args: { clerkUser: v.any() },
-  returns: v.null(),
   handler: async (ctx, { clerkUser }: { clerkUser: UserJSON }) => {
     const userRecord = await userQuery(ctx, clerkUser.id);
     if (userRecord) {
@@ -67,6 +66,7 @@ export const updateOrCreateUser = internalMutation({
     }
     return null;
   },
+  returns: v.null(),
 });
 
 async function cascadeDeleteUserData(
@@ -77,21 +77,22 @@ async function cascadeDeleteUserData(
     .query("threads")
     .withIndex("by_user", (q) => q.eq("userId", userId))
     .collect();
-  for (const thread of threads) {
-    const messages = await ctx.db
-      .query("messages")
-      .withIndex("by_thread", (q) => q.eq("threadId", thread._id))
-      .collect();
-    for (const message of messages) {
-      await ctx.db.delete("messages", message._id);
-    }
-    await ctx.db.delete("threads", thread._id);
-  }
+  await Promise.all(
+    threads.map(async (thread) => {
+      const messages = await ctx.db
+        .query("messages")
+        .withIndex("by_thread", (q) => q.eq("threadId", thread._id))
+        .collect();
+      await Promise.all(
+        messages.map((message) => ctx.db.delete("messages", message._id))
+      );
+      await ctx.db.delete("threads", thread._id);
+    })
+  );
 }
 
 export const deleteUserByClerkId = internalMutation({
   args: { id: v.string() },
-  returns: v.null(),
   handler: async (ctx, { id }) => {
     const userRecord = await userQuery(ctx, id);
     if (!userRecord) {
@@ -103,6 +104,7 @@ export const deleteUserByClerkId = internalMutation({
 
     return null;
   },
+  returns: v.null(),
 });
 
 export function userQuery(
@@ -156,12 +158,11 @@ export async function getOrgContext(ctx: QueryCtx): Promise<{
     typeof (identity as Record<string, unknown>).org_id === "string"
       ? ((identity as Record<string, unknown>).org_id as string)
       : undefined;
-  return { user, orgId };
+  return { orgId, user };
 }
 
 export const deleteUser = action({
   args: {},
-  returns: v.object({ success: v.boolean() }),
   handler: async (ctx): Promise<{ success: boolean }> => {
     // The return annotation above and the type here break a circular type
     // inference: an action that calls its own deployment's functions through
@@ -180,13 +181,14 @@ export const deleteUser = action({
 
     return { success: true };
   },
+  returns: v.object({ success: v.boolean() }),
 });
 
 export const deleteClerkUser = internalAction({
   args: { clerkUserId: v.string() },
-  returns: v.object({ success: v.boolean() }),
   handler: async (_, { clerkUserId }) => {
     await getClerkClient().users.deleteUser(clerkUserId);
     return { success: true };
   },
+  returns: v.object({ success: v.boolean() }),
 });

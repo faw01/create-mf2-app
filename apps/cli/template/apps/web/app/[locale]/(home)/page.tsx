@@ -32,11 +32,11 @@ const Home = async ({ params }: HomeProps) => {
 
   return (
     <>
-      {betaFeature && (
+      {betaFeature ? (
         <div className="w-full bg-black py-2 text-center text-white">
           Beta feature now available
         </div>
-      )}
+      ) : null}
       <Hero dictionary={dictionary} />
       <Cases dictionary={dictionary} />
       <Features dictionary={dictionary} />

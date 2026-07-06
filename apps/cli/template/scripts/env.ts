@@ -30,7 +30,7 @@ const discoverApps = (): string[] => {
     }
   }
 
-  return results.sort();
+  return results.sort((a, b) => a.localeCompare(b));
 };
 
 const parseEnvFile = (path: string): Map<string, string> => {
@@ -261,20 +261,18 @@ const push = (): void => {
   console.log("\nDone.");
 };
 
-const command = process.argv[2];
+const commands: Record<string, () => void> = { check, push };
 
-switch (command) {
-  case "check":
-    check();
-    break;
-  case "push":
-    push();
-    break;
-  default:
-    console.log("Usage: bun scripts/env.ts <check|push>");
-    console.log("");
-    console.log("Commands:");
-    console.log("  check  Validate all env files have required keys filled in");
-    console.log("  push   Sync env vars to Vercel and Convex");
-    process.exit(1);
+const [, , command] = process.argv;
+const runCommand = command ? commands[command] : undefined;
+
+if (runCommand) {
+  runCommand();
+} else {
+  console.log("Usage: bun scripts/env.ts <check|push>");
+  console.log("");
+  console.log("Commands:");
+  console.log("  check  Validate all env files have required keys filled in");
+  console.log("  push   Sync env vars to Vercel and Convex");
+  process.exit(1);
 }

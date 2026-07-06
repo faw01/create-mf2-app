@@ -17,8 +17,8 @@ export const getUsers = async (
     const clerk = await clerkClient();
 
     const members = await clerk.organizations.getOrganizationMembershipList({
-      organizationId: orgId,
       limit: 100,
+      organizationId: orgId,
     });
 
     const membersByUserId = new Map(
@@ -32,9 +32,9 @@ export const getUsers = async (
     const data: Liveblocks["UserMeta"]["info"][] = userIds.map((userId) => {
       const member = membersByUserId.get(userId);
       return {
-        name: member ? getMemberName(member) : undefined,
         avatar: member?.publicUserData?.imageUrl,
         color: getUserColor(userId),
+        name: member ? getMemberName(member) : undefined,
       };
     });
 

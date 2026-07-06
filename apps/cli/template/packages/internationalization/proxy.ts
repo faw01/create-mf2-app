@@ -7,9 +7,8 @@ import languine from "./languine.json" with { type: "json" };
 const locales = [languine.locale.source, ...languine.locale.targets];
 
 const I18nMiddleware = createI18nMiddleware({
-  locales,
   defaultLocale: "en",
-  urlMappingStrategy: "rewriteDefault",
+  locales,
   resolveLocaleFromRequest: (request: NextRequest) => {
     try {
       const headers = Object.fromEntries(request.headers.entries());
@@ -27,6 +26,7 @@ const I18nMiddleware = createI18nMiddleware({
       return "en";
     }
   },
+  urlMappingStrategy: "rewriteDefault",
 });
 
 // rewriteDefault rewrites every unprefixed path under /<locale>, which 404s

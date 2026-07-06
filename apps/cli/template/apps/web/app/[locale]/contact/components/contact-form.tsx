@@ -17,7 +17,7 @@ const initialState: ContactFormState = { status: "idle" };
 
 export const ContactForm = ({ dictionary }: ContactFormProps) => {
   const [state, formAction, isPending] = useActionState(contact, initialState);
-  const form = dictionary.web.contact.hero.form;
+  const { form } = dictionary.web.contact.hero;
 
   return (
     <div className="w-full py-20 lg:py-40">

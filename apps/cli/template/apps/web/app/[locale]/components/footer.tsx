@@ -8,34 +8,34 @@ export const Footer = async () => {
 
   const navigationItems = [
     {
-      title: "Home",
-      href: "/",
       description: "",
+      href: "/",
+      title: "Home",
     },
     {
-      title: "Pages",
       description: "Managing a small business today is already tough.",
       items: [
         {
-          title: "Blog",
           href: "/blog",
+          title: "Blog",
         },
       ],
+      title: "Pages",
     },
     {
-      title: "Legal",
       description: "We stay on top of the latest legal requirements.",
       items: legalPages.map((post) => ({
-        title: post._title,
         href: `/legal/${post._slug}`,
+        title: post._title,
       })),
+      title: "Legal",
     },
   ];
 
   if (env.NEXT_PUBLIC_DOCS_URL) {
     navigationItems.at(1)?.items?.push({
-      title: "Docs",
       href: env.NEXT_PUBLIC_DOCS_URL,
+      title: "Docs",
     });
   }
 

@@ -7,13 +7,13 @@ import { createEnv } from "convex-env";
 // log what to set. The convex-env clerk/resend presets are not used because
 // they hard-require their variables.
 const schema = {
+  AI_GATEWAY_API_KEY: v.optional(v.string()),
+  AI_GATEWAY_URL: v.optional(v.string()),
   CLERK_JWT_ISSUER_DOMAIN: v.optional(v.string()),
   CLERK_SECRET_KEY: v.optional(v.string()),
   CLERK_WEBHOOK_SECRET: v.optional(v.string()),
   RESEND_API_KEY: v.optional(v.string()),
   RESEND_WEBHOOK_SECRET: v.optional(v.string()),
-  AI_GATEWAY_API_KEY: v.optional(v.string()),
-  AI_GATEWAY_URL: v.optional(v.string()),
 };
 
 // convex-env rejects variables that are set to an empty string, even when

@@ -15,16 +15,13 @@ export const defaultGatewayOptions = {
 } satisfies GatewayProviderOptions;
 
 export const gatewayPresets = {
-  vertex: {
-    ...defaultGatewayOptions,
-    only: ["vertex"],
-  },
-  openai: {
-    only: ["openai"],
-  },
   baseten: {
     ...defaultGatewayOptions,
     only: ["baseten"],
+  },
+  cerebras: {
+    ...defaultGatewayOptions,
+    only: ["cerebras"],
   },
   deepinfra: {
     ...defaultGatewayOptions,
@@ -33,15 +30,18 @@ export const gatewayPresets = {
   fireworks: {
     only: ["fireworks"],
   },
+  none: {},
+  openai: {
+    only: ["openai"],
+  },
+  vertex: {
+    ...defaultGatewayOptions,
+    only: ["vertex"],
+  },
   xai: {
     ...defaultGatewayOptions,
     only: ["xai"],
   },
-  cerebras: {
-    ...defaultGatewayOptions,
-    only: ["cerebras"],
-  },
-  none: {},
 } as const satisfies Record<string, GatewayProviderOptions>;
 
 export type GatewayPresetKey = keyof typeof gatewayPresets;
@@ -67,7 +67,7 @@ export const openaiThinkingOptions: OpenAIThinkingOptions = {
 };
 
 export const anthropicThinkingOptions: AnthropicThinkingOptions = {
-  thinking: { type: "enabled", budgetTokens: DEFAULT_THINKING_BUDGET },
+  thinking: { budgetTokens: DEFAULT_THINKING_BUDGET, type: "enabled" },
 };
 
 export const googleThinkingOptions: GoogleThinkingOptions = {
@@ -88,53 +88,53 @@ export type ChatModelEntry = Pick<
 
 export const CHAT_MODELS: ChatModelEntry[] = [
   {
+    chef: "Anthropic",
+    chefSlug: "anthropic",
+    gatewayPreset: "vertex",
     id: CLAUDE_SONNET,
     name: "Claude Sonnet 4.6",
+  },
+  {
     chef: "Anthropic",
     chefSlug: "anthropic",
     gatewayPreset: "vertex",
-  },
-  {
     id: CLAUDE_HAIKU,
     name: "Claude Haiku 4.5",
+  },
+  {
     chef: "Anthropic",
     chefSlug: "anthropic",
     gatewayPreset: "vertex",
-  },
-  {
     id: CLAUDE_OPUS,
     name: "Claude Opus 4.6",
-    chef: "Anthropic",
-    chefSlug: "anthropic",
-    gatewayPreset: "vertex",
   },
   {
+    chef: "OpenAI",
+    chefSlug: "openai",
+    gatewayPreset: "openai",
     id: GPT_4O,
     name: "GPT-4o",
+  },
+  {
     chef: "OpenAI",
     chefSlug: "openai",
     gatewayPreset: "openai",
-  },
-  {
     id: GPT_4O_MINI,
     name: "GPT-4o Mini",
-    chef: "OpenAI",
-    chefSlug: "openai",
-    gatewayPreset: "openai",
   },
   {
+    chef: "Google",
+    chefSlug: "google",
+    gatewayPreset: "vertex",
     id: GEMINI_FLASH,
     name: "Gemini 3 Flash",
-    chef: "Google",
-    chefSlug: "google",
-    gatewayPreset: "vertex",
   },
   {
-    id: GEMINI_PRO,
-    name: "Gemini 3 Pro",
     chef: "Google",
     chefSlug: "google",
     gatewayPreset: "vertex",
+    id: GEMINI_PRO,
+    name: "Gemini 3 Pro",
   },
 ];
 

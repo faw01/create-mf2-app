@@ -5,7 +5,7 @@ const { STRIPE_SECRET_KEY } = keys();
 
 export const paymentsAgentToolkit = STRIPE_SECRET_KEY
   ? new StripeAgentToolkit({
-      secretKey: STRIPE_SECRET_KEY,
       configuration: {},
+      secretKey: STRIPE_SECRET_KEY,
     })
   : undefined;

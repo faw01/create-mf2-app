@@ -6,7 +6,7 @@ const { withNativewind } = require("nativewind/metro");
 const config = getSentryExpoConfig(__dirname);
 
 module.exports = withNativewind(config, {
-  inlineVariables: false,
   globalClassNamePolyfill: false,
   inlineRem: 16,
+  inlineVariables: false,
 });

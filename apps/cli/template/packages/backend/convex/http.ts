@@ -10,8 +10,6 @@ import { resend } from "./email/index";
 const http = httpRouter();
 
 http.route({
-  path: "/webhooks/clerk",
-  method: "POST",
   handler: httpAction(async (ctx, request) => {
     // Without the signing secret no event can be verified, so the route
     // reports itself unconfigured instead of failing verification.
@@ -50,11 +48,11 @@ http.route({
 
     return new Response("OK", { status: 200 });
   }),
+  method: "POST",
+  path: "/webhooks/clerk",
 });
 
 http.route({
-  path: "/webhooks/resend",
-  method: "POST",
   handler: httpAction(async (ctx, req) => {
     // The resend component throws on a missing secret; answer 503 instead.
     if (!env.RESEND_WEBHOOK_SECRET) {
@@ -65,6 +63,8 @@ http.route({
     }
     return await resend.handleResendEventWebhook(ctx, req);
   }),
+  method: "POST",
+  path: "/webhooks/resend",
 });
 
 registerRoutes(http, components.stripe, {

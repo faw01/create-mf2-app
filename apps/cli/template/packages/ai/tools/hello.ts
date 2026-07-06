@@ -11,20 +11,11 @@ import { createChatAgent } from "../agent/chat";
 // setting, keyed by tool name; it is NOT a `generate()` argument and is
 // separate from `runtimeContext`.
 const helloTool = tool({
-  description:
-    "A simple hello world tool. Use this to greet someone and see the current simulation step.",
-  inputSchema: z.object({
-    name: z.string().describe("The name to greet"),
-    enthusiastic: z
-      .boolean()
-      .optional()
-      .default(false)
-      .describe("Add extra enthusiasm to the greeting"),
-  }),
   contextSchema: z.object({
     step: z.number().optional(),
   }),
-  strict: true,
+  description:
+    "A simple hello world tool. Use this to greet someone and see the current simulation step.",
   execute: ({ name, enthusiastic }, { context }) => {
     const currentStep = context?.step ?? "unknown";
 
@@ -38,6 +29,15 @@ const helloTool = tool({
       timestamp: new Date().toISOString(),
     };
   },
+  inputSchema: z.object({
+    enthusiastic: z
+      .boolean()
+      .optional()
+      .default(false)
+      .describe("Add extra enthusiasm to the greeting"),
+    name: z.string().describe("The name to greet"),
+  }),
+  strict: true,
 });
 
 /**

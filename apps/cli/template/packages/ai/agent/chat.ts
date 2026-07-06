@@ -20,7 +20,7 @@ function getProviderOptions(modelId: string): ProviderOptions {
   const gatewayOptions = { only, zeroDataRetention };
 
   if (modelId.startsWith("anthropic/")) {
-    return { gateway: gatewayOptions, anthropic: anthropicThinkingOptions };
+    return { anthropic: anthropicThinkingOptions, gateway: gatewayOptions };
   }
   if (modelId.startsWith("openai/")) {
     return { gateway: gatewayOptions, openai: openaiThinkingOptions };
@@ -61,18 +61,18 @@ export const createChatAgent = <TOOLS extends ToolSet>(
       ]
     : [options?: ChatAgentOptions<TOOLS>]
 ) => {
-  const options = rest[0];
+  const [options] = rest;
   const model = options?.modelId ?? DEFAULT_CHAT_MODEL;
   // ToolLoopAgentSettings types toolsContext with a conditional on TOOLS that
   // TypeScript cannot resolve for an unbound generic, so the settings object
   // is asserted once here; call sites stay fully typed via the rest parameter.
   const settings = {
-    model: gateway(model),
     instructions: SYSTEM_PROMPT(options?.promptParams),
+    model: gateway(model),
+    providerOptions: getProviderOptions(model),
+    runtimeContext: context,
     tools,
     toolsContext: options?.toolsContext,
-    runtimeContext: context,
-    providerOptions: getProviderOptions(model),
   } as ToolLoopAgentSettings<never, TOOLS, { token: string; orgId?: string }>;
   return new ToolLoopAgent(settings);
 };

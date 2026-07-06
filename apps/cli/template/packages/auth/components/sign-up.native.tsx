@@ -55,13 +55,13 @@ export const SignUp = ({ redirectPath = "/(tabs)" }: SignUpProps) => {
 
       if (result.status === "complete" && result.createdSessionId) {
         await setActive({
-          session: result.createdSessionId,
           navigate: ({ session }) => {
             if (session?.currentTask) {
               return;
             }
             router.replace(redirectPath);
           },
+          session: result.createdSessionId,
         });
       }
     } catch (err: unknown) {
@@ -72,6 +72,10 @@ export const SignUp = ({ redirectPath = "/(tabs)" }: SignUpProps) => {
       setLoading(false);
     }
   }, [isLoaded, signUp, code, setActive, router, redirectPath]);
+
+  const goToSignIn = useCallback(() => {
+    router.push("/(auth)/sign-in");
+  }, [router]);
 
   if (pendingVerification) {
     return (
@@ -161,10 +165,7 @@ export const SignUp = ({ redirectPath = "/(tabs)" }: SignUpProps) => {
         )}
       </Pressable>
 
-      <Pressable
-        className="mt-4"
-        onPress={() => router.push("/(auth)/sign-in")}
-      >
+      <Pressable className="mt-4" onPress={goToSignIn}>
         <Text className="text-center text-muted-foreground text-sm">
           Already have an account? <Text className="text-primary">Sign In</Text>
         </Text>

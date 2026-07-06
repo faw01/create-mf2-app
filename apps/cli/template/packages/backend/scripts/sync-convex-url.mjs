@@ -53,12 +53,12 @@ const convexUrl = readEnvValue(join(backendDir, ".env.local"), "CONVEX_URL");
 
 const targets = [
   {
-    path: join(rootDir, "apps", "app", ".env.local"),
     key: "NEXT_PUBLIC_CONVEX_URL",
+    path: join(rootDir, "apps", "app", ".env.local"),
   },
   {
-    path: join(rootDir, "apps", "mobile", ".env.local"),
     key: "EXPO_PUBLIC_CONVEX_URL",
+    path: join(rootDir, "apps", "mobile", ".env.local"),
   },
 ];
 

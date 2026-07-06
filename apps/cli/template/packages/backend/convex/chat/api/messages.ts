@@ -11,13 +11,9 @@ import { messagePart } from "../tables";
 
 export const send = mutation({
   args: {
-    threadId: v.id("threads"),
     content: v.string(),
+    threadId: v.id("threads"),
   },
-  returns: v.object({
-    userMessageId: v.id("messages"),
-    assistantMessageId: v.id("messages"),
-  }),
   handler: async (ctx, args) => {
     const user = await mustGetCurrentUser(ctx);
     const thread = await ctx.db.get("threads", args.threadId);
@@ -29,34 +25,27 @@ export const send = mutation({
     }
 
     const userMessageId = await ctx.db.insert("messages", {
-      threadId: args.threadId,
-      role: "user",
       content: args.content,
+      role: "user",
+      threadId: args.threadId,
     });
 
     const assistantMessageId = await ctx.db.insert("messages", {
-      threadId: args.threadId,
-      role: "assistant",
       content: "",
+      role: "assistant",
+      threadId: args.threadId,
     });
 
-    return { userMessageId, assistantMessageId };
+    return { assistantMessageId, userMessageId };
   },
+  returns: v.object({
+    assistantMessageId: v.id("messages"),
+    userMessageId: v.id("messages"),
+  }),
 });
 
 export const list = query({
   args: { threadId: v.id("threads") },
-  returns: v.array(
-    v.object({
-      _id: v.id("messages"),
-      _creationTime: v.number(),
-      threadId: v.id("threads"),
-      role: v.union(v.literal("user"), v.literal("assistant")),
-      content: v.string(),
-      parts: v.optional(v.array(messagePart)),
-      model: v.optional(v.string()),
-    })
-  ),
   handler: async (ctx, args) => {
     const user = await mustGetCurrentUser(ctx);
     const thread = await ctx.db.get("threads", args.threadId);
@@ -73,16 +62,21 @@ export const list = query({
       .order("asc")
       .collect();
   },
+  returns: v.array(
+    v.object({
+      _creationTime: v.number(),
+      _id: v.id("messages"),
+      content: v.string(),
+      model: v.optional(v.string()),
+      parts: v.optional(v.array(messagePart)),
+      role: v.union(v.literal("user"), v.literal("assistant")),
+      threadId: v.id("threads"),
+    })
+  ),
 });
 
 export const getHistory = internalQuery({
   args: { threadId: v.id("threads") },
-  returns: v.array(
-    v.object({
-      role: v.union(v.literal("user"), v.literal("assistant")),
-      content: v.string(),
-    })
-  ),
   handler: async (ctx, args) => {
     const messages = await ctx.db
       .query("messages")
@@ -92,31 +86,36 @@ export const getHistory = internalQuery({
 
     return messages
       .filter((m) => m.role === "user" || m.content.length > 0)
-      .map((m) => ({ role: m.role, content: m.content }));
+      .map((m) => ({ content: m.content, role: m.role }));
   },
+  returns: v.array(
+    v.object({
+      content: v.string(),
+      role: v.union(v.literal("user"), v.literal("assistant")),
+    })
+  ),
 });
 
 export const updateContent = internalMutation({
   args: {
-    messageId: v.id("messages"),
     content: v.string(),
+    messageId: v.id("messages"),
   },
-  returns: v.null(),
   handler: async (ctx, args) => {
     await ctx.db.patch("messages", args.messageId, { content: args.content });
     return null;
   },
+  returns: v.null(),
 });
 
 export const persistExchange = mutation({
   args: {
+    assistantContent: v.string(),
+    model: v.optional(v.string()),
+    parts: v.optional(v.array(messagePart)),
     threadId: v.id("threads"),
     userContent: v.string(),
-    assistantContent: v.string(),
-    parts: v.optional(v.array(messagePart)),
-    model: v.optional(v.string()),
   },
-  returns: v.id("messages"),
   handler: async (ctx, args) => {
     const user = await mustGetCurrentUser(ctx);
     const thread = await ctx.db.get("threads", args.threadId);
@@ -128,27 +127,27 @@ export const persistExchange = mutation({
     }
 
     await ctx.db.insert("messages", {
-      threadId: args.threadId,
-      role: "user",
       content: args.userContent,
-      parts: [{ type: "text", text: args.userContent }],
+      parts: [{ text: args.userContent, type: "text" }],
+      role: "user",
+      threadId: args.threadId,
     });
 
     const assistantMessageId = await ctx.db.insert("messages", {
-      threadId: args.threadId,
-      role: "assistant",
       content: args.assistantContent,
-      parts: args.parts,
       model: args.model,
+      parts: args.parts,
+      role: "assistant",
+      threadId: args.threadId,
     });
 
     return assistantMessageId;
   },
+  returns: v.id("messages"),
 });
 
 export const scheduleTitle = mutation({
   args: { threadId: v.id("threads") },
-  returns: v.null(),
   handler: async (ctx, args) => {
     const user = await mustGetCurrentUser(ctx);
     const thread = await ctx.db.get("threads", args.threadId);
@@ -165,4 +164,5 @@ export const scheduleTitle = mutation({
 
     return null;
   },
+  returns: v.null(),
 });

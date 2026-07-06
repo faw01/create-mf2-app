@@ -23,30 +23,30 @@ export const AuthProvider = ({
   const isDark = resolvedTheme === "dark";
 
   const appearance: ClerkAppearance = {
-    theme: isDark ? dark : undefined,
+    elements: {
+      dividerLine: "bg-border",
+      navbarButton: "text-foreground",
+      organizationPreview__organizationSwitcherTrigger: "gap-2",
+      organizationPreviewAvatarContainer: "shrink-0",
+      organizationPreviewMainIdentifier: "text-foreground",
+      organizationSwitcherTrigger__open: "bg-background",
+      organizationSwitcherTriggerIcon: "text-muted-foreground",
+      socialButtonsIconButton: "bg-card",
+    },
     options: {
+      helpPageUrl: helpUrl,
       privacyPageUrl: privacyUrl,
       termsPageUrl: termsUrl,
-      helpPageUrl: helpUrl,
     },
+    theme: isDark ? dark : undefined,
     variables: {
       fontFamily: "var(--font-sans)",
       fontFamilyButtons: "var(--font-sans)",
       fontWeight: {
         bold: "var(--font-weight-bold)",
-        normal: "var(--font-weight-normal)",
         medium: "var(--font-weight-medium)",
+        normal: "var(--font-weight-normal)",
       },
-    },
-    elements: {
-      dividerLine: "bg-border",
-      socialButtonsIconButton: "bg-card",
-      navbarButton: "text-foreground",
-      organizationSwitcherTrigger__open: "bg-background",
-      organizationPreviewMainIdentifier: "text-foreground",
-      organizationSwitcherTriggerIcon: "text-muted-foreground",
-      organizationPreview__organizationSwitcherTrigger: "gap-2",
-      organizationPreviewAvatarContainer: "shrink-0",
     },
   };
 

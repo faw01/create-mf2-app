@@ -2,29 +2,29 @@ import { defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export const textPart = v.object({
-  type: v.literal("text"),
   text: v.string(),
+  type: v.literal("text"),
 });
 
 export const reasoningPart = v.object({
-  type: v.literal("reasoning"),
-  text: v.string(),
   duration: v.optional(v.number()),
+  text: v.string(),
+  type: v.literal("reasoning"),
 });
 
 export const toolCallPart = v.object({
-  type: v.literal("tool-call"),
+  args: v.any(),
   toolCallId: v.string(),
   toolName: v.string(),
-  args: v.any(),
+  type: v.literal("tool-call"),
 });
 
 export const toolResultPart = v.object({
-  type: v.literal("tool-result"),
+  errorText: v.optional(v.string()),
+  output: v.optional(v.any()),
   toolCallId: v.string(),
   toolName: v.string(),
-  output: v.optional(v.any()),
-  errorText: v.optional(v.string()),
+  type: v.literal("tool-result"),
 });
 
 export const messagePart = v.union(
@@ -35,26 +35,25 @@ export const messagePart = v.union(
 );
 
 export const chatTables = {
-  threads: defineTable({
-    userId: v.id("users"),
-    title: v.optional(v.string()),
-  })
-    .index("by_user", ["userId"])
-    .searchIndex("search_title", {
-      searchField: "title",
-      filterFields: ["userId"],
-    }),
-
   messages: defineTable({
-    threadId: v.id("threads"),
-    role: v.union(v.literal("user"), v.literal("assistant")),
     content: v.string(),
-    parts: v.optional(v.array(messagePart)),
     model: v.optional(v.string()),
+    parts: v.optional(v.array(messagePart)),
+    role: v.union(v.literal("user"), v.literal("assistant")),
+    threadId: v.id("threads"),
   })
     .index("by_thread", ["threadId"])
     .searchIndex("search_content", {
-      searchField: "content",
       filterFields: ["threadId"],
+      searchField: "content",
+    }),
+  threads: defineTable({
+    title: v.optional(v.string()),
+    userId: v.id("users"),
+  })
+    .index("by_user", ["userId"])
+    .searchIndex("search_title", {
+      filterFields: ["userId"],
+      searchField: "title",
     }),
 };

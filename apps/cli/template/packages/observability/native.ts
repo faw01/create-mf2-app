@@ -11,10 +11,10 @@ export const initSentry = (): void => {
 
   init({
     dsn,
-    sendDefaultPii: true,
-    tracesSampleRate: 1.0,
+    integrations: [mobileReplayIntegration()],
     replaysOnErrorSampleRate: 1.0,
     replaysSessionSampleRate: 0.1,
-    integrations: [mobileReplayIntegration()],
+    sendDefaultPii: true,
+    tracesSampleRate: 1.0,
   });
 };

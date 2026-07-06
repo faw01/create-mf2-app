@@ -86,6 +86,27 @@ const fetchCredits = async (): Promise<CreditsData | null> => {
   }
 };
 
+const fetchGenerationCostWithRetry = async (
+  id: string,
+  maxAttempts: number,
+  initialDelayMs: number,
+  maxDelayMs: number
+): Promise<GenerationData | null> => {
+  let delay = initialDelayMs;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    // biome-ignore lint/performance/noAwaitInLoops: polling with backoff is inherently sequential
+    const data = await fetchGenerationCost(id);
+    if (data) {
+      return data;
+    }
+    await new Promise((r) => setTimeout(r, delay));
+    delay = Math.min(delay * BACKOFF_MULTIPLIER, maxDelayMs);
+  }
+
+  return null;
+};
+
 const fetchAllGenerationCosts = async (
   genIds: string[],
   options?: {
@@ -100,22 +121,22 @@ const fetchAllGenerationCosts = async (
     maxDelayMs = 30_000,
   } = options ?? {};
 
+  const outcomes = await Promise.all(
+    genIds.map(async (id) => ({
+      data: await fetchGenerationCostWithRetry(
+        id,
+        maxAttempts,
+        initialDelayMs,
+        maxDelayMs
+      ),
+      id,
+    }))
+  );
+
   const results: GenerationData[] = [];
   const failed: string[] = [];
 
-  for (const id of genIds) {
-    let data: GenerationData | null = null;
-    let delay = initialDelayMs;
-
-    for (let attempt = 0; attempt < maxAttempts; attempt++) {
-      data = await fetchGenerationCost(id);
-      if (data) {
-        break;
-      }
-      await new Promise((r) => setTimeout(r, delay));
-      delay = Math.min(delay * BACKOFF_MULTIPLIER, maxDelayMs);
-    }
-
+  for (const { data, id } of outcomes) {
     if (data) {
       results.push(data);
     } else {
@@ -124,9 +145,9 @@ const fetchAllGenerationCosts = async (
   }
 
   return {
-    totalCost: results.reduce((sum, g) => sum + g.total_cost, 0),
-    generations: results,
     failed,
+    generations: results,
+    totalCost: results.reduce((sum, g) => sum + g.total_cost, 0),
   };
 };
 
@@ -136,7 +157,7 @@ const createUsageTracker = () => {
   const onStepFinish = ({
     providerMetadata,
   }: {
-    providerMetadata?: Record<string, Record<string, unknown>>;
+    providerMetadata?: Record<string, Record<string, unknown> | undefined>;
   }) => {
     const genId = providerMetadata?.gateway?.generationId;
     if (typeof genId === "string" && !generationIds.includes(genId)) {
@@ -150,7 +171,7 @@ const createUsageTracker = () => {
     generationIds.length = 0;
   };
 
-  return { onStepFinish, getGenerationIds, clear };
+  return { clear, getGenerationIds, onStepFinish };
 };
 
 export type { BatchCostResult, CreditsData, GenerationData };

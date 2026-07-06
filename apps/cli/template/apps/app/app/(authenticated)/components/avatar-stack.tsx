@@ -46,13 +46,14 @@ export const AvatarStack = () => {
       {hasMoreUsers && (
         <PresenceAvatar
           info={{
-            name: `+${others.length - 3}`,
             color: "var(--color-muted-foreground)",
+            name: `+${others.length - 3}`,
           }}
         />
       )}
 
-      {self && <PresenceAvatar info={self.info} />}
+      {/* biome-ignore lint/suspicious/noUnnecessaryConditions: Liveblocks' useSelf() returns null before the connection is ready; Biome cannot resolve that union across module boundaries. */}
+      {self ? <PresenceAvatar info={self.info} /> : null}
     </div>
   );
 };

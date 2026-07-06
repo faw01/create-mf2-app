@@ -227,7 +227,7 @@ function splitImportsAndBody(content: string): {
       trimmed === '"use client"' ||
       trimmed === "'use client'"
     ) {
-      i++;
+      i += 1;
       continue;
     }
 
@@ -235,12 +235,12 @@ function splitImportsAndBody(content: string): {
       let stmt = lines[i];
 
       while (!isImportComplete(stmt) && i + 1 < lines.length) {
-        i++;
+        i += 1;
         stmt += `\n${lines[i]}`;
       }
 
       importStatements.push(stmt.trim());
-      i++;
+      i += 1;
       continue;
     }
 
@@ -248,7 +248,7 @@ function splitImportsAndBody(content: string): {
   }
 
   const body = lines.slice(i).join("\n");
-  return { importStatements, body };
+  return { body, importStatements };
 }
 
 function parseImport(raw: string): ParsedImport | null {
@@ -257,10 +257,10 @@ function parseImport(raw: string): ParsedImport | null {
   const sideEffectMatch = s.match(SIDE_EFFECT_IMPORT_RE);
   if (sideEffectMatch) {
     return {
-      source: sideEffectMatch[1],
-      named: [],
-      isTypeOnly: false,
       isSideEffect: true,
+      isTypeOnly: false,
+      named: [],
+      source: sideEffectMatch[1],
     };
   }
 
@@ -268,7 +268,7 @@ function parseImport(raw: string): ParsedImport | null {
   if (!fromMatch) {
     return null;
   }
-  const source = fromMatch[1];
+  const [, source] = fromMatch;
 
   let specPart = s
     .replace(IMPORT_PREFIX_RE, "")
@@ -283,11 +283,11 @@ function parseImport(raw: string): ParsedImport | null {
   const nsMatch = specPart.match(NS_IMPORT_RE);
   if (nsMatch) {
     return {
-      source,
-      namespaceName: nsMatch[1],
-      named: [],
-      isTypeOnly,
       isSideEffect: false,
+      isTypeOnly,
+      named: [],
+      namespaceName: nsMatch[1],
+      source,
     };
   }
 
@@ -319,22 +319,22 @@ function parseImport(raw: string): ParsedImport | null {
       const aliasMatch = cleanPart.match(ALIAS_RE);
       if (aliasMatch) {
         named.push({
-          name: aliasMatch[1],
           alias: aliasMatch[2],
           isType: isTypeOnly || isTypeImport,
+          name: aliasMatch[1],
         });
       } else {
-        named.push({ name: cleanPart, isType: isTypeOnly || isTypeImport });
+        named.push({ isType: isTypeOnly || isTypeImport, name: cleanPart });
       }
     }
   }
 
   return {
-    source,
     defaultName,
-    named,
-    isTypeOnly,
     isSideEffect: false,
+    isTypeOnly,
+    named,
+    source,
   };
 }
 
@@ -422,10 +422,10 @@ function renderImport(pi: ParsedImport): string {
 
 function mergeImportGroup(source: string, group: ParsedImport[]): ParsedImport {
   const merged: ParsedImport = {
-    source,
-    named: [],
-    isTypeOnly: false,
     isSideEffect: false,
+    isTypeOnly: false,
+    named: [],
+    source,
   };
 
   const namedMap = new Map<string, NamedImport>();
@@ -486,7 +486,7 @@ function transformReactNamespace(body: string): {
   const types = new Set<string>();
 
   for (const match of body.matchAll(REACT_DOT_G_RE)) {
-    const name = match[1];
+    const [, name] = match;
     if (REACT_TYPES.has(name)) {
       types.add(name);
     } else {
@@ -495,7 +495,7 @@ function transformReactNamespace(body: string): {
   }
 
   const transformed = body.replace(REACT_DOT_G_RE, "$1");
-  return { body: transformed, values, types };
+  return { body: transformed, types, values };
 }
 
 function deduplicateSegments(bodies: string[]): string[] {
@@ -675,23 +675,23 @@ function buildReactImport(
   }
   const named: NamedImport[] = [];
   for (const v of reactValues) {
-    named.push({ name: v, isType: false });
+    named.push({ isType: false, name: v });
   }
   for (const t of reactTypes) {
-    named.push({ name: t, isType: true });
+    named.push({ isType: true, name: t });
   }
   if (needsHooks) {
     if (!reactValues.has("useState")) {
-      named.push({ name: "useState", isType: false });
+      named.push({ isType: false, name: "useState" });
     }
     if (
       (hooks.needsMediaQuery || hooks.needsIsMobile) &&
       !reactValues.has("useEffect")
     ) {
-      named.push({ name: "useEffect", isType: false });
+      named.push({ isType: false, name: "useEffect" });
     }
   }
-  return { source: "react", named, isTypeOnly: false, isSideEffect: false };
+  return { isSideEffect: false, isTypeOnly: false, named, source: "react" };
 }
 
 function collectImportedValueNames(merged: ParsedImport[]): Set<string> {
@@ -715,7 +715,7 @@ function renameConflictingBodyFunctions(
 ): void {
   for (const story of stories) {
     for (const m of story.body.matchAll(FUNC_NAME_GM_RE)) {
-      const name = m[1];
+      const [, name] = m;
       if (name === story.funcName) {
         continue;
       }
@@ -865,14 +865,14 @@ function generateStoryFile(
   const allImports: ParsedImport[] = [];
   const stories: StoryEntry[] = [];
   const hooks: HookFlags = {
-    needsMediaQuery: false,
-    needsIsMobile: false,
     needsCopyToClipboard: false,
+    needsIsMobile: false,
+    needsMediaQuery: false,
   };
   const reactValues = new Set<string>();
   const reactTypes = new Set<string>();
 
-  for (const file of exampleFiles.sort()) {
+  for (const file of exampleFiles.sort((a, b) => a.localeCompare(b))) {
     const variant = getVariant(file, group);
     const funcName = `${toPascalCase(group)}${variant}Component`;
     funcToFile.set(funcName, file);
@@ -890,16 +890,16 @@ function generateStoryFile(
     }
 
     stories.push({
-      variant,
-      funcName,
       body: processExampleBody(reactResult.body, funcName),
+      funcName,
+      variant,
     });
   }
 
   disambiguateDeclarations(stories);
 
   const dedupedBodies = deduplicateSegments(stories.map((s) => s.body));
-  for (let i = 0; i < stories.length; i++) {
+  for (let i = 0; i < stories.length; i += 1) {
     stories[i].body = dedupedBodies[i];
   }
 
@@ -911,13 +911,13 @@ function generateStoryFile(
   }
 
   allImports.push({
-    source: "@storybook/react",
-    named: [
-      { name: "Meta", isType: true },
-      { name: "StoryObj", isType: true },
-    ],
-    isTypeOnly: false,
     isSideEffect: false,
+    isTypeOnly: false,
+    named: [
+      { isType: true, name: "Meta" },
+      { isType: true, name: "StoryObj" },
+    ],
+    source: "@storybook/react",
   });
 
   const merged = mergeImports(allImports);
@@ -937,11 +937,11 @@ function generateStoryFile(
   const storyPath = join(STORIES_DIR, `${group}.stories.tsx`);
   writeFileSync(storyPath, output);
   console.log(`  ${group}.stories.tsx (${stories.length} stories)`);
-  return { storyPath, funcToFile };
+  return { funcToFile, storyPath };
 }
 
 async function resolveSourceDir(): Promise<string> {
-  const override = process.argv[2];
+  const [, , override] = process.argv;
   if (override) {
     const nested = join(override, "apps", "v4", "examples", "radix");
     if (existsSync(nested)) {
@@ -955,7 +955,7 @@ async function resolveSourceDir(): Promise<string> {
   }
 
   const workDir = join(tmpdir(), "mf2-shadcn-examples");
-  rmSync(workDir, { recursive: true, force: true });
+  rmSync(workDir, { force: true, recursive: true });
   mkdirSync(workDir, { recursive: true });
 
   console.log("Downloading shadcn/ui (main) demo examples...");
@@ -1015,9 +1015,9 @@ function formatStories(files: string[]): void {
   writeFileSync(
     join(configDir, "biome.json"),
     JSON.stringify({
-      linter: { enabled: false },
-      formatter: { enabled: true, indentStyle: "space" },
       assist: { actions: { source: { organizeImports: "on" } } },
+      formatter: { enabled: true, indentStyle: "space" },
+      linter: { enabled: false },
     })
   );
   execSync(
@@ -1041,14 +1041,14 @@ function typecheckStorybook(): TypecheckResult {
   const failures = new Map<string, Set<number>>();
 
   for (const match of output.matchAll(TSC_ERROR_LINE_RE)) {
-    const group = match[1];
+    const [, group] = match;
     if (!failures.has(group)) {
       failures.set(group, new Set());
     }
     failures.get(group)?.add(Number(match[2]));
   }
 
-  return { green: result.status === 0, output, failures };
+  return { failures, green: result.status === 0, output };
 }
 
 function resolveFuncForLine(
@@ -1060,7 +1060,7 @@ function resolveFuncForLine(
   if (renderMatch) {
     return renderMatch[1];
   }
-  for (let i = index; i >= 0; i--) {
+  for (let i = index; i >= 0; i -= 1) {
     const funcMatch = storyLines[i].match(TOP_LEVEL_FUNC_RE);
     if (funcMatch) {
       return funcMatch[1];
@@ -1126,7 +1126,7 @@ function reportRun(
 
   if (withoutExamples.length > 0) {
     console.log(
-      `\nNo upstream demos for: ${withoutExamples.sort().join(", ")} (existing stories left untouched)`
+      `\nNo upstream demos for: ${withoutExamples.sort((a, b) => a.localeCompare(b)).join(", ")} (existing stories left untouched)`
     );
   }
 
@@ -1165,7 +1165,7 @@ async function main(): Promise<void> {
   const dropped = new Map<string, string[]>();
   let lastOutput = "";
 
-  for (let pass = 0; pass < MAX_HEAL_PASSES; pass++) {
+  for (let pass = 0; pass < MAX_HEAL_PASSES; pass += 1) {
     console.log("\nTypechecking storybook workspace...");
     const check = typecheckStorybook();
     lastOutput = check.output;

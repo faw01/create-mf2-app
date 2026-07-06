@@ -3,15 +3,15 @@ import { z } from "zod";
 
 export const keys = () =>
   createEnv({
-    server: {
-      AI_GATEWAY_API_KEY: z.string().min(1).optional(),
-      AI_GATEWAY_URL: z.url().default("https://ai-gateway.vercel.sh/v3"),
-      PERPLEXITY_API_KEY: z.string().min(1).optional(),
-    },
+    emptyStringAsUndefined: true,
     runtimeEnv: {
       AI_GATEWAY_API_KEY: process.env.AI_GATEWAY_API_KEY,
       AI_GATEWAY_URL: process.env.AI_GATEWAY_URL,
       PERPLEXITY_API_KEY: process.env.PERPLEXITY_API_KEY,
     },
-    emptyStringAsUndefined: true,
+    server: {
+      AI_GATEWAY_API_KEY: z.string().min(1).optional(),
+      AI_GATEWAY_URL: z.url().default("https://ai-gateway.vercel.sh/v3"),
+      PERPLEXITY_API_KEY: z.string().min(1).optional(),
+    },
   });

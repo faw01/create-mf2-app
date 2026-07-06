@@ -25,28 +25,28 @@ export const useOAuthFlow = ({
   const startOAuth = useCallback(async () => {
     try {
       const { createdSessionId, setActive } = await startSSOFlow({
-        strategy,
         redirectUrl: makeRedirectUri(),
+        strategy,
       });
 
       if (createdSessionId && setActive) {
         await setActive({
-          session: createdSessionId,
           navigate: ({ session }) => {
             if (session?.currentTask) {
               return;
             }
             router.replace(redirectPath);
           },
+          session: createdSessionId,
         });
         return { success: true as const };
       }
 
-      return { success: false as const, reason: "missing_requirements" };
+      return { reason: "missing_requirements", success: false as const };
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "OAuth sign-in failed";
-      return { success: false as const, reason: message };
+      return { reason: message, success: false as const };
     }
   }, [startSSOFlow, strategy, router, redirectPath]);
 

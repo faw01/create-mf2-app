@@ -61,15 +61,8 @@ type GlobalSidebarProperties = {
 };
 
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
     {
-      title: "Playground",
-      url: "#",
       icon: SquareTerminalIcon,
       isActive: true,
       items: [
@@ -86,10 +79,10 @@ const data = {
           url: "#",
         },
       ],
+      title: "Playground",
+      url: "#",
     },
     {
-      title: "Models",
-      url: "#",
       icon: BotIcon,
       items: [
         {
@@ -105,10 +98,10 @@ const data = {
           url: "#",
         },
       ],
+      title: "Models",
+      url: "#",
     },
     {
-      title: "Documentation",
-      url: "#",
       icon: BookOpenIcon,
       items: [
         {
@@ -128,10 +121,10 @@ const data = {
           url: "#",
         },
       ],
+      title: "Documentation",
+      url: "#",
     },
     {
-      title: "Settings",
-      url: "#",
       icon: Settings2Icon,
       items: [
         {
@@ -151,42 +144,49 @@ const data = {
           url: "#",
         },
       ],
+      title: "Settings",
+      url: "#",
     },
   ],
   navSecondary: [
     {
+      icon: AnchorIcon,
       title: "Webhooks",
       url: "/webhooks",
-      icon: AnchorIcon,
     },
     {
+      icon: LifeBuoyIcon,
       title: "Support",
       url: "#",
-      icon: LifeBuoyIcon,
     },
     {
+      icon: SendIcon,
       title: "Feedback",
       url: "#",
-      icon: SendIcon,
     },
   ],
   projects: [
     {
+      icon: FrameIcon,
       name: "Design Engineering",
       url: "#",
-      icon: FrameIcon,
     },
     {
+      icon: PieChartIcon,
       name: "Sales & Marketing",
       url: "#",
-      icon: PieChartIcon,
     },
     {
+      icon: MapIcon,
       name: "Travel",
       url: "#",
-      icon: MapIcon,
     },
   ],
+  user: {
+    avatar: "/avatars/shadcn.jpg",
+    email: "m@example.com",
+    name: "shadcn",
+  },
 };
 
 export const GlobalSidebar = ({ children }: GlobalSidebarProperties) => {

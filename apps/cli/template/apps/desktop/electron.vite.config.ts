@@ -12,12 +12,12 @@ export default defineConfig({
   },
   preload: {},
   renderer: {
+    plugins: [react()],
     resolve: {
       alias: {
         "@renderer": resolve("src/renderer/src"),
         "@repo": resolve("../../packages"),
       },
     },
-    plugins: [react()],
   },
 });
