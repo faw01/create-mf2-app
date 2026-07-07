@@ -3,15 +3,15 @@ type DashedLineProps = {
   className?: string;
 };
 
+const positionStyles = {
+  bottom: "bottom-0",
+  left: "left-0",
+  right: "right-0",
+  top: "top-0",
+};
+
 export const DashedLine = ({ direction, className = "" }: DashedLineProps) => {
   const isHorizontal = direction === "top" || direction === "bottom";
-
-  const positionStyles = {
-    bottom: "bottom-0",
-    left: "left-0",
-    right: "right-0",
-    top: "top-0",
-  };
 
   return (
     <svg

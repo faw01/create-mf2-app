@@ -4,10 +4,10 @@ import { z } from "zod";
 export const keys = () =>
   createEnv({
     client: {
-      NEXT_PUBLIC_API_URL: z.string().url().optional(),
-      NEXT_PUBLIC_APP_URL: z.string().url().optional(),
-      NEXT_PUBLIC_DOCS_URL: z.string().url().optional(),
-      NEXT_PUBLIC_WEB_URL: z.string().url().optional(),
+      NEXT_PUBLIC_API_URL: z.url().optional(),
+      NEXT_PUBLIC_APP_URL: z.url().optional(),
+      NEXT_PUBLIC_DOCS_URL: z.url().optional(),
+      NEXT_PUBLIC_WEB_URL: z.url().optional(),
     },
     runtimeEnv: {
       ANALYZE: process.env.ANALYZE,

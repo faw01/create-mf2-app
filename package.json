@@ -11,6 +11,7 @@
     "build": "turbo build",
     "dev": "turbo dev",
     "check": "biome check apps/cli/scripts/ packages/",
+    "doctor": "react-doctor --offline",
     "fix": "biome check --write apps/cli/scripts/ packages/",
     "clean": "git clean -xdf node_modules",
     "ci:version": "changeset version && bun update",
@@ -19,6 +20,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.5.2",
     "@changesets/cli": "^2.31.0",
+    "react-doctor": "^0.7.1",
     "turbo": "^2.10.3",
     "typescript": "^6.0.3",
     "ultracite": "7.9.2"

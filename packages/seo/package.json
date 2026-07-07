@@ -8,8 +8,7 @@
   },
   "dependencies": {
     "lodash.merge": "^4.6.2",
-    "react": "19.2.7",
-    "schema-dts": "^2.0.0"
+    "react": "19.2.7"
   },
   "devDependencies": {
     "@repo/typescript-config": "*",
