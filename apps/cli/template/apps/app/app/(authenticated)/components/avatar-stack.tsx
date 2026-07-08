@@ -52,7 +52,7 @@ export const AvatarStack = () => {
         />
       )}
 
-      {/* biome-ignore lint/suspicious/noUnnecessaryConditions: Liveblocks' useSelf() returns null before the connection is ready; Biome cannot resolve that union across module boundaries. */}
+      {/* biome-ignore lint/suspicious/noUnnecessaryConditions: false positive, useSelf() is null until connected */}
       {self ? <PresenceAvatar info={self.info} /> : null}
     </div>
   );

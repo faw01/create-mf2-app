@@ -12,8 +12,6 @@ const escapeJsonForHtml = (json: string): string =>
     .replace(/\u2028/g, "\\u2028")
     .replace(/\u2029/g, "\\u2029");
 
-// The serialized JSON is HTML-escaped by escapeJsonForHtml, which is exactly
-// the mitigation react-doctor/unsafe-json-in-html asks for.
 const buildJsonLdHtml = (code: WithContext<Thing>) => ({
   __html: escapeJsonForHtml(JSON.stringify(code)),
 });
