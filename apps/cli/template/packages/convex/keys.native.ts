@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const envSchema = z.object({
-  EXPO_PUBLIC_CONVEX_URL: z.string().url().optional(),
+  EXPO_PUBLIC_CONVEX_URL: z.url().optional(),
 });
 
 export const keys = () =>

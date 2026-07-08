@@ -138,6 +138,9 @@ const legalPostMetaFragment = fragmentOn("LegalPagesItem", {
 
 const legalPostFragment = fragmentOn("LegalPagesItem", {
   ...legalPostMetaFragment,
+  _sys: {
+    lastModifiedAt: true,
+  },
   body: {
     json: {
       content: true,

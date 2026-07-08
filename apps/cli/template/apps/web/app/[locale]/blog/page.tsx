@@ -24,14 +24,14 @@ export const generateMetadata = async ({
   return createMetadata(dictionary.web.blog.meta);
 };
 
+const jsonLd: WithContext<Blog> = {
+  "@context": "https://schema.org",
+  "@type": "Blog",
+};
+
 const BlogIndex = async ({ params }: BlogProps) => {
   const { locale } = await params;
   const dictionary = await getDictionary(locale);
-
-  const jsonLd: WithContext<Blog> = {
-    "@context": "https://schema.org",
-    "@type": "Blog",
-  };
 
   return (
     <>

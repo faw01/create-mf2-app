@@ -1,6 +1,8 @@
 import type { Dictionary } from "@repo/internationalization";
 import { MoveDownLeft, MoveUpRight } from "lucide-react";
 
+const numberFormatter = new Intl.NumberFormat();
+
 type StatsProps = {
   dictionary: Dictionary;
 };
@@ -33,9 +35,7 @@ export const Stats = ({ dictionary }: StatsProps) => (
                 )}
                 <h2 className="flex max-w-xl flex-row items-end gap-4 text-left font-regular text-4xl tracking-tighter">
                   {item.type === "currency" && "$"}
-                  {new Intl.NumberFormat().format(
-                    Number.parseFloat(item.metric)
-                  )}
+                  {numberFormatter.format(Number.parseFloat(item.metric))}
                   <span className="text-muted-foreground text-sm tracking-normal">
                     {Number.parseFloat(item.delta) > 0 ? "+" : ""}
                     {item.delta}%

@@ -20,8 +20,7 @@ export const generateMetadata = async ({
 };
 
 const SearchPage = async ({ searchParams }: SearchPageProperties) => {
-  const { q } = await searchParams;
-  const { orgId } = await auth();
+  const [{ q }, { orgId }] = await Promise.all([searchParams, auth()]);
 
   if (!orgId) {
     notFound();

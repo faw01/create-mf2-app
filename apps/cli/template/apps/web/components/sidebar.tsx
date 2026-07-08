@@ -1,29 +1,31 @@
 import { capitalize } from "@repo/design-system/lib/utils";
 import type { ReactNode } from "react";
 
+const publishedDateFormatter = new Intl.DateTimeFormat("en-US", {
+  day: "numeric",
+  month: "short",
+  timeZone: "America/New_York",
+  year: "numeric",
+});
+
 type SidebarProperties = {
   readonly date: Date;
   readonly readingTime: string;
   readonly tags?: string[];
-  readonly toc?: ReactNode;
+  readonly children?: ReactNode;
 };
 
 export const Sidebar = async ({
   date,
   readingTime,
   tags,
-  toc: Toc,
+  children,
 }: SidebarProperties) => (
   <div className="col-span-4 flex w-72 flex-col items-start gap-8 border-foreground/10 border-l px-6 lg:col-span-2">
     <div className="grid gap-2">
       <p className="text-muted-foreground text-sm">Published</p>
       <p className="rounded-sm text-foreground text-sm">
-        {new Intl.DateTimeFormat("en-US", {
-          day: "numeric",
-          month: "short",
-          timeZone: "America/New_York",
-          year: "numeric",
-        }).format(date)}
+        {publishedDateFormatter.format(date)}
       </p>
     </div>
     <div className="grid gap-2">
@@ -38,11 +40,11 @@ export const Sidebar = async ({
         </p>
       </div>
     ) : null}
-    {Toc ? (
+    {children ? (
       <div className="-mx-2">
         <div className="grid gap-2 p-2">
           <p className="text-muted-foreground text-sm">Sections</p>
-          {Toc}
+          {children}
         </div>
       </div>
     ) : null}

@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@repo/design-system/components/ui/dropdown-menu";
 import { Languages } from "lucide-react";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const languages = [
   { label: "🇬🇧 English", value: "en" },
@@ -37,25 +37,24 @@ const LanguageMenuItem = ({
 
 export const LanguageSwitcher = () => {
   const router = useRouter();
-  const pathname = usePathname();
-  const params = useParams();
 
+  // The URL is read inside the handler instead of usePathname/useParams so
+  // the component does not re-render on every navigation.
   const switchLanguage = (locale: string) => {
     const defaultLocale = "en";
-    let newPathname = pathname;
+    const { pathname } = window.location;
+    const [, firstSegment] = pathname.split("/");
+    const currentLocale = languages.some((l) => l.value === firstSegment)
+      ? firstSegment
+      : defaultLocale;
 
     // The default locale is omitted from URLs; prefix it so the replace
     // below has a locale segment to swap.
-    if (
-      !pathname.startsWith(`/${params.locale}`) &&
-      params.locale === defaultLocale
-    ) {
-      newPathname = `/${params.locale}${pathname}`;
-    }
+    const newPathname = pathname.startsWith(`/${currentLocale}`)
+      ? pathname
+      : `/${currentLocale}${pathname}`;
 
-    newPathname = newPathname.replace(`/${params.locale}`, `/${locale}`);
-
-    router.push(newPathname);
+    router.push(newPathname.replace(`/${currentLocale}`, `/${locale}`));
   };
 
   return (
