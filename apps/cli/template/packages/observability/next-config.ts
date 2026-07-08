@@ -49,6 +49,10 @@ const betterStackEnvVars = [
   "NEXT_PUBLIC_BETTER_STACK_INGESTING_URL",
   "BETTER_STACK_INGESTING_URL",
   "BETTER_STACK_INGEST_ENDPOINT",
+  // This is a vendor-defined env var *name* that @logtail/next reads, not a
+  // secret value; BetterStack source tokens are designed for client-side
+  // ingestion (like PostHog keys) and the SDK looks for this exact spelling.
+  // react-doctor-disable-next-line react-doctor/public-env-secret-name
   "NEXT_PUBLIC_BETTER_STACK_SOURCE_TOKEN",
   "BETTER_STACK_SOURCE_TOKEN",
   "NEXT_PUBLIC_BETTER_STACK_CUSTOM_ENDPOINT",

@@ -26,9 +26,10 @@ export const generateMetadata = async ({
 };
 
 const Home = async ({ params }: HomeProps) => {
-  const { locale } = await params;
-  const dictionary = await getDictionary(locale);
-  const betaFeature = await showBetaFeature();
+  const [dictionary, betaFeature] = await Promise.all([
+    params.then(({ locale }) => getDictionary(locale)),
+    showBetaFeature(),
+  ]);
 
   return (
     <>

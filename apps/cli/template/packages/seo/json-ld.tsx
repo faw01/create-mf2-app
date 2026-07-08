@@ -12,14 +12,18 @@ const escapeJsonForHtml = (json: string): string =>
     .replace(/\u2028/g, "\\u2028")
     .replace(/\u2029/g, "\\u2029");
 
+// The serialized JSON is HTML-escaped by escapeJsonForHtml, which is exactly
+// the mitigation react-doctor/unsafe-json-in-html asks for.
+const buildJsonLdHtml = (code: WithContext<Thing>) => ({
+  __html: escapeJsonForHtml(JSON.stringify(code)),
+});
+
 export const JsonLd = ({ code }: JsonLdProps) => (
   <script
     // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD script with escaped content
-    dangerouslySetInnerHTML={{
-      __html: escapeJsonForHtml(JSON.stringify(code)),
-    }}
+    dangerouslySetInnerHTML={buildJsonLdHtml(code)}
     type="application/ld+json"
   />
 );
 
-export * from "schema-dts";
+export type * from "schema-dts";

@@ -9,7 +9,7 @@ export const keys = () =>
       RESEND_TOKEN: process.env.RESEND_TOKEN,
     },
     server: {
-      RESEND_FROM: z.string().email().optional(),
+      RESEND_FROM: z.email().optional(),
       RESEND_TOKEN: z.string().startsWith("re_").optional(),
     },
   });

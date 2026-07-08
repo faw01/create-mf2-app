@@ -1,0 +1,11 @@
+{
+  "$schema": "https://react.doctor/schema/config.json",
+  "ignore": {
+    "rules": [
+      "deslop/unused-file",
+      "deslop/unused-export",
+      "deslop/unused-dependency",
+      "deslop/unused-dev-dependency"
+    ]
+  }
+}

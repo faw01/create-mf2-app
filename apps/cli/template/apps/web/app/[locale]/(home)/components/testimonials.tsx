@@ -21,25 +21,22 @@ type TestimonialsProps = {
 
 export const Testimonials = ({ dictionary }: TestimonialsProps) => {
   const [api, setApi] = useState<CarouselApi>();
-  const [current, setCurrent] = useState(0);
 
   useEffect(() => {
     if (!api) {
       return;
     }
 
-    const timeout = setTimeout(() => {
+    const interval = setInterval(() => {
       if (api.selectedScrollSnap() + 1 === api.scrollSnapList().length) {
-        setCurrent(0);
         api.scrollTo(0);
       } else {
         api.scrollNext();
-        setCurrent(current + 1);
       }
     }, 4000);
 
-    return () => clearTimeout(timeout);
-  }, [api, current]);
+    return () => clearInterval(interval);
+  }, [api]);
 
   return (
     <div className="w-full py-20 lg:py-40">

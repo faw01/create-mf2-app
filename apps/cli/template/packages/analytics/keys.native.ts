@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const envSchema = z.object({
-  EXPO_PUBLIC_POSTHOG_HOST: z.string().url().optional(),
+  EXPO_PUBLIC_POSTHOG_HOST: z.url().optional(),
   EXPO_PUBLIC_POSTHOG_KEY: z.string().optional(),
 });
 

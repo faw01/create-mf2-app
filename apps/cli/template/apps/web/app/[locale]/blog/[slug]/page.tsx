@@ -123,8 +123,9 @@ const BlogPost = async ({ params }: BlogPostProperties) => {
                   <Sidebar
                     date={new Date(page.date)}
                     readingTime={`${page.body.readingTime} min read`}
-                    toc={<TableOfContents data={page.body.json.toc} />}
-                  />
+                  >
+                    <TableOfContents data={page.body.json.toc} />
+                  </Sidebar>
                 </div>
               </div>
             </div>
