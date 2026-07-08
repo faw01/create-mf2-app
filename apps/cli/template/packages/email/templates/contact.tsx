@@ -16,8 +16,6 @@ type ContactTemplateProps = {
   readonly name: string;
 };
 
-// React Email's preview/export CLI requires templates to be default exports,
-// so this is the only export; consumers default-import it.
 const ContactTemplate = ({ name, email, message }: ContactTemplateProps) => (
   <Tailwind>
     <Html>

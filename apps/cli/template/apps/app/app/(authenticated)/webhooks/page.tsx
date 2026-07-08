@@ -24,10 +24,6 @@ const WebhooksPage = async () => {
         allow="clipboard-write"
         className="h-full w-full border-none"
         loading="lazy"
-        // The Svix-hosted portal is cross-origin and needs scripts plus its
-        // own cookies/storage (allow-same-origin refers to the portal's
-        // origin, not ours), so this pairing cannot escape into our page.
-        // The sandbox still blocks top-navigation and pointer capture.
         // react-doctor-disable-next-line react-doctor/iframe-missing-sandbox
         sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads"
         src={response.url}

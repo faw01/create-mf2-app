@@ -38,8 +38,6 @@ const LanguageMenuItem = ({
 export const LanguageSwitcher = () => {
   const router = useRouter();
 
-  // The URL is read inside the handler instead of usePathname/useParams so
-  // the component does not re-render on every navigation.
   const switchLanguage = (locale: string) => {
     const defaultLocale = "en";
     const { pathname } = window.location;

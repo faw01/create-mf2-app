@@ -95,12 +95,12 @@ export const POST = async (request: Request): Promise<Response> => {
     );
 
     switch (event.type) {
-      // biome-ignore lint/suspicious/noUnnecessaryConditions: Biome cannot resolve Stripe's Event union across module boundaries and misreads this case as unreachable.
+      // biome-ignore lint/suspicious/noUnnecessaryConditions: false positive, Stripe's event union is unresolved cross-module
       case "checkout.session.completed": {
         await handleCheckoutSessionCompleted(event.data.object);
         break;
       }
-      // biome-ignore lint/suspicious/noUnnecessaryConditions: Biome cannot resolve Stripe's Event union across module boundaries and misreads this case as unreachable.
+      // biome-ignore lint/suspicious/noUnnecessaryConditions: false positive, Stripe's event union is unresolved cross-module
       case "subscription_schedule.canceled": {
         await handleSubscriptionScheduleCanceled(event.data.object);
         break;
