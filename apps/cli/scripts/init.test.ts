@@ -37,6 +37,7 @@ import {
   tsxVersion,
   updatePackageJson,
   updatePackageManager,
+  writeNpmrc,
   writePnpmWorkspace,
 } from "./utils.js";
 
@@ -947,6 +948,35 @@ describe("writePnpmWorkspace", () => {
     const yaml = readFileSync(join(dest, "pnpm-workspace.yaml"), "utf8");
     expect(yaml).toContain("strictDepBuilds: false");
     expect(yaml).not.toContain("onlyBuiltDependencies");
+  });
+
+  test("sets a three-day minimum release age (minutes)", async () => {
+    const dest = join(tmpDir, "pnpm-mra-test");
+    await mkdir(dest, { recursive: true });
+
+    await writePnpmWorkspace(dest);
+
+    const yaml = readFileSync(join(dest, "pnpm-workspace.yaml"), "utf8");
+    expect(yaml).toContain("minimumReleaseAge: 4320");
+  });
+});
+
+describe("writeNpmrc", () => {
+  test("sets a three-day minimum release age (days)", async () => {
+    const dest = join(tmpDir, "npmrc-test");
+    await mkdir(dest, { recursive: true });
+
+    await writeNpmrc(dest);
+
+    const npmrc = readFileSync(join(dest, ".npmrc"), "utf8");
+    expect(npmrc).toContain("min-release-age=3");
+  });
+});
+
+describe("minimum release age parity", () => {
+  test("template bunfig matches the pnpm and npm cooldowns (seconds)", () => {
+    const bunfig = readFileSync(join(templatePath, "bunfig.toml"), "utf8");
+    expect(bunfig).toContain("minimumReleaseAge = 259200");
   });
 });
 

@@ -28,6 +28,7 @@ import {
   supportedPackageManagers,
   updatePackageJson,
   updatePackageManager,
+  writeNpmrc,
   writePnpmWorkspace,
 } from "./utils.js";
 
@@ -160,6 +161,10 @@ export const initialize = async (options: {
       } else {
         await convertAllWorkspaceDeps(projectDir);
         await addWorkspacesField(projectDir);
+      }
+
+      if (packageManager === "npm") {
+        await writeNpmrc(projectDir);
       }
 
       await rm(join(projectDir, "bunfig.toml"), { force: true });
