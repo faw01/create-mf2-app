@@ -15,7 +15,7 @@
     },
     "apps/cli": {
       "name": "create-mf2-app",
-      "version": "2.7.0",
+      "version": "2.7.1",
       "bin": {
         "create-mf2-app": "dist/index.js",
       },
