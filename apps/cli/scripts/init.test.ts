@@ -169,7 +169,7 @@ describe("template integrity", () => {
       "utf8"
     );
 
-    expect(rootClaude.trim()).toBe("@.claude/CLAUDE.md");
+    expect(rootClaude.trim()).toBe("@.agents/AGENTS.md");
     expect(rootAgents.trim()).toBe("@.agents/AGENTS.md");
     expect(claudeDir.trim()).toBe("@../.agents/AGENTS.md");
   });

@@ -281,16 +281,18 @@ Key conventions:
 - All Convex functions require argument and return validators
 - `const` by default, `let` only when reassignment is needed
 
-`.agents/AGENTS.md` is the agent entry point with the essential commands. `AGENTS.md`, `CLAUDE.md`, and `.claude/CLAUDE.md` all resolve to it. Conventions live in the vendored skills under `.agents/skills/`.
+Conventions live in the vendored skills under `.agents/skills/`.
 
 ## AI Agent Setup
 
+`.agents/AGENTS.md` is the single agent entry point. `AGENTS.md`, `CLAUDE.md`, and `.claude/CLAUDE.md` are one-line anchors that resolve to it, so every agent lands on the same instructions.
+
 | File | Purpose |
 |------|---------|
-| `.agents/AGENTS.md` | Agent entry point: essential commands, points to the vendored skills |
-| `AGENTS.md` | Anchor that imports `.agents/AGENTS.md` |
-| `CLAUDE.md` → `.claude/CLAUDE.md` | Anchor chain for Claude Code, resolves to `.agents/AGENTS.md` |
-| `.claude/skills/`, `.agents/skills/` | Pre-built skills for Convex, Clerk, Expo, Stripe, shadcn, Turborepo, and more |
+| `.agents/AGENTS.md` | Canonical agent instructions: essential commands, conventions, skills |
+| `AGENTS.md`, `CLAUDE.md`, `.claude/CLAUDE.md` | Anchors that resolve to `.agents/AGENTS.md` |
+| `.agents/skills/` | 40+ vendored skills: Convex, Clerk, Expo, Stripe, shadcn, Turborepo, and more |
+| `.claude/skills/` | Mirror of `.agents/skills/` for Claude Code |
 | `.mcp.json` | MCP servers: Convex, Stripe, Clerk, PostHog, Vercel, Context7, Ultracite |
 
 Agents get typed schema in `packages/backend/convex/`, type-safe env via `@/env`, and colocated components in route-group `components/` folders. The `mf2` skill is the entry point for building: tell your agent to use it with your product idea and it maps the requirements onto the scaffold and plans a parallelized build.
