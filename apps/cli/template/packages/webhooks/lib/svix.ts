@@ -17,9 +17,6 @@ export const send = async (
     return;
   }
 
-  // An explicit orgId lets server-side callers without a Next request
-  // context (crons, Convex-triggered handlers) emit events; by default the
-  // org comes from the Clerk session.
   const orgId = options?.orgId ?? (await auth()).orgId;
 
   if (!orgId) {

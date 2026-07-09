@@ -1,8 +1,3 @@
-// `convex dev` records the deployment URL in packages/backend/.env.local,
-// but the web and mobile apps read that URL from their own env files. Copy
-// it over so the apps point at the dev deployment without hand-wiring. Runs
-// before `convex dev` in the backend dev script; a missing env file or URL
-// is a silent no-op. Plain node so every package manager runs it unchanged.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";

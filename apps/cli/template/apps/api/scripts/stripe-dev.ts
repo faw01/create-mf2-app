@@ -1,11 +1,6 @@
 import { spawn } from "node:child_process";
 import { readFileSync } from "node:fs";
 
-// `stripe listen` normally authenticates with machine-global `stripe login`
-// state, which on an unconfigured machine is missing or stale and crashes the
-// dev task. Gate on the project's own STRIPE_SECRET_KEY (shell env or
-// apps/api/.env.local) so zero-config dev skips with one clear line instead.
-
 const readKeyFromEnvLocal = (): string => {
   try {
     for (const line of readFileSync(".env.local", "utf8").split("\n")) {

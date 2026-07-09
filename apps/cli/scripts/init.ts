@@ -32,10 +32,6 @@ import {
 } from "./utils.js";
 
 const getName = async (): Promise<string> => {
-  // placeholder is just a greyed hint; defaultValue is what an empty Enter
-  // submits. Keep them identical so the prompt delivers what it shows.
-  // No required-name check here: clack runs validation before applying
-  // defaultValue, so it would reject the Enter press the default exists for.
   const value = await text({
     defaultValue: "my-app",
     message: "What is your project named?",
@@ -183,12 +179,6 @@ export const initialize = async (options: {
     await setupConvex(packageManager);
 
     if (packageManager === "bun") {
-      // bun 1.3.14's lockfile save is not idempotent: the fresh-resolve save
-      // and the next load-and-resave disagree on hoisted slots, converging
-      // from the second save onward. Re-running install (a ~1s warm no-op)
-      // commits the converged bun.lock so the user's first install stays
-      // clean. npm/yarn/pnpm showed no drift and their no-op installs are
-      // slow, so this stays bun-only.
       s.message("Converging lockfile...");
       await run("bun install");
     }

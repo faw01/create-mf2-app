@@ -6,8 +6,6 @@ import { join } from "node:path";
 const cliRoot = join(import.meta.dirname, "..");
 const cliBin = join(cliRoot, "dist", "index.js");
 
-// Generous ceiling: only reached when the CLI hangs, which is the regression
-// this suite guards against. A passing run exits in well under a second.
 const hangTimeoutMs = 15_000;
 
 setDefaultTimeout(60_000);
@@ -34,7 +32,6 @@ describe("cli entry without a TTY", () => {
   test("bare invocation exits promptly with help instead of hanging", () => {
     const result = runCli([]);
 
-    // A hang would hit the spawnSync timeout and surface as a kill signal.
     expect(result.signal).toBeNull();
     expect(result.status).toBe(1);
     expect(result.stderr).toContain("interactive terminal");
@@ -52,12 +49,10 @@ describe("cli entry without a TTY", () => {
   });
 
   test("positional name reaches init through the default command", () => {
-    // The standard scaffolder invocation: `create-mf2-app my-app`. Commander
-    // must route the operand to init's [name] argument, not reject it.
     const result = runCli(["my-app"]);
 
     expect(result.signal).toBeNull();
-    expect(result.status).toBe(1); // still needs a package manager without a TTY
+    expect(result.status).toBe(1);
     expect(result.stderr).toContain("interactive terminal");
     expect(result.stderr).not.toContain("unknown command");
     expect(result.stderr).not.toContain("too many arguments");
@@ -98,9 +93,6 @@ describe("cli entry without a TTY", () => {
 });
 
 describe("positional name precedence", () => {
-  // Exercising flag-over-positional end to end needs a full network install,
-  // so pin the merge at the source level, like init.test.ts does for step
-  // ordering.
   const source = readFileSync(join(import.meta.dirname, "index.ts"), "utf8");
 
   test("--name wins when both the flag and the positional are given", () => {

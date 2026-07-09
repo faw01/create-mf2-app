@@ -1,26 +1,3 @@
-/**
- * Regenerates Storybook stories from the shadcn/ui demo examples.
- *
- * shadcn/ui publishes demo sources for every component (apps/v4/examples/radix
- * in the shadcn-ui/ui repo). This script downloads them, keeps the demos whose
- * component exists locally in packages/design-system/components/ui/, rewrites
- * their imports to @repo/design-system, and merges each component's demos into
- * one <name>.stories.tsx file. Run it after `bump-ui` so stories track the
- * upstream components (`bump-ui` chains it automatically).
- *
- * Behavior:
- * - Overwrites the story file for every local ui component that has demos.
- * - Leaves alone: the composite showcases with no matching component
- *   (data-table, date-picker, typography), components with no upstream demos,
- *   and any story file containing a "generate-stories: skip" marker.
- * - Self-heals drift: upstream demos can exercise APIs the local components
- *   do not have yet (or no longer have). After generating, the script
- *   typechecks the storybook workspace and drops the demos that fail,
- *   regenerating until green, and reports what it dropped.
- * - Pass a path to a local shadcn-ui/ui checkout to skip the download:
- *   `bun scripts/generate-stories.ts ~/Downloads/ui-main`
- */
-
 import { execSync, spawnSync } from "node:child_process";
 import {
   existsSync,
@@ -44,10 +21,8 @@ const SHADCN_TARBALL_URL =
   "https://codeload.github.com/shadcn-ui/ui/tar.gz/refs/heads/main";
 const TARBALL_EXAMPLES_PATH = "ui-main/apps/v4/examples/radix";
 
-// Hand-crafted composite showcases with no matching ui component file.
 const SKIP_PREFIXES = ["data-table", "date-picker", "typography"];
 
-// Story files containing this marker are never overwritten.
 const SKIP_MARKER = "generate-stories: skip";
 
 const WIDE_GROUPS = new Set([
@@ -339,14 +314,12 @@ function parseImport(raw: string): ParsedImport | null {
 }
 
 function transformImportSource(source: string): string | "SKIP" {
-  // Current upstream layout (apps/v4/examples/radix imports).
   if (source.startsWith("@/styles/radix-nova/ui/")) {
     return source.replace(
       "@/styles/radix-nova/ui/",
       "@repo/design-system/components/ui/"
     );
   }
-  // Older upstream layouts, kept for checkouts that predate radix-nova.
   if (source.startsWith("@/examples/radix/ui/")) {
     return source.replace(
       "@/examples/radix/ui/",
@@ -826,8 +799,6 @@ function buildStoryFileContent(
   parts.push("");
 
   parts.push("export default meta;");
-  // Stories are render-only. Deriving Story from meta would force per-story
-  // args whenever the primary component has required props (e.g. chart).
   parts.push("type Story = StoryObj;");
   parts.push("");
 
@@ -843,8 +814,6 @@ function buildStoryFileContent(
 
 function processExampleBody(body: string, funcName: string): string {
   let processed = body.replace(EXPORT_DESCRIPTION_LINE_RE, "");
-  // Named exports in a stories file would be picked up as stories by CSF, so
-  // demote the demos' data exports to plain declarations.
   processed = processed.replace(EXPORT_CONST_PREFIX_GM_RE, "const ");
   processed = processed.replace(EXPORT_DEFAULT_FUNC_RE, `function ${funcName}`);
   processed = processed.replace(EXPORT_FUNC_RE, `function ${funcName}`);
@@ -1008,8 +977,6 @@ function formatStories(files: string[]): void {
   if (files.length === 0) {
     return;
   }
-  // apps/storybook is excluded from the template biome config, so format the
-  // regenerated stories with a standalone config to match repo style.
   const configDir = join(tmpdir(), "mf2-stories-biome");
   mkdirSync(configDir, { recursive: true });
   writeFileSync(
@@ -1069,11 +1036,6 @@ function resolveFuncForLine(
   return null;
 }
 
-/**
- * Maps typecheck failures back to the demo files that caused them and removes
- * those demos from their groups. Returns the groups needing regeneration, or
- * null when a failure cannot be attributed to a demo (manual fix needed).
- */
 function dropFailingDemos(
   failures: Map<string, Set<number>>,
   groups: Map<string, string[]>,

@@ -26,10 +26,8 @@ export const keys = () =>
     server: {
       ANALYZE: z.string().optional(),
 
-      // Added by Vercel
       NEXT_RUNTIME: z.enum(["nodejs", "edge"]).optional(),
 
-      // Vercel environment variables
       VERCEL: z.string().optional(),
       VERCEL_ENV: z.enum(["development", "preview", "production"]).optional(),
       VERCEL_PROJECT_PRODUCTION_URL: z.string().optional(),

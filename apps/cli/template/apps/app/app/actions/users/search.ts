@@ -22,7 +22,6 @@ export const searchUsers = async (
       organizationId: orgId,
     });
 
-    // Liveblocks resolves mentions by Clerk user ID, not membership ID.
     const users = members.data.flatMap((member) => {
       const userId = member.publicUserData?.userId;
       if (!userId) {

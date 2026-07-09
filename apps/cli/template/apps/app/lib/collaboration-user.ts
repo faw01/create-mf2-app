@@ -32,8 +32,6 @@ const colors = [
   "var(--color-rose-500)",
 ];
 
-// Hash the user ID so a user keeps the same color across mentions,
-// presence, and repeated resolver calls.
 export const getUserColor = (userId: string): string => {
   let hash = 0;
   for (const char of userId) {

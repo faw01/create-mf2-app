@@ -46,8 +46,6 @@ export const LanguageSwitcher = () => {
       ? firstSegment
       : defaultLocale;
 
-    // The default locale is omitted from URLs; prefix it so the replace
-    // below has a locale segment to swap.
     const newPathname = pathname.startsWith(`/${currentLocale}`)
       ? pathname
       : `/${currentLocale}${pathname}`;

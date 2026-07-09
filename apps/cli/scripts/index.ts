@@ -44,8 +44,6 @@ program
       const needsPrompts = !(name && options.packageManager);
       const canPrompt = Boolean(process.stdin.isTTY && process.stdout.isTTY);
 
-      // Without a terminal the clack prompts would wait forever on stdin that
-      // never answers, so fail fast with the flags that skip the prompts.
       if (needsPrompts && !canPrompt) {
         console.error(
           "create-mf2-app needs an interactive terminal to ask for project details."

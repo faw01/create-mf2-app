@@ -29,8 +29,6 @@ const I18nMiddleware = createI18nMiddleware({
   urlMappingStrategy: "rewriteDefault",
 });
 
-// rewriteDefault rewrites every unprefixed path under /<locale>, which 404s
-// routes that live outside the [locale] segment (e.g. /.well-known/*).
 const defaultNonLocalizedPaths = ["/.well-known"];
 
 export const internationalizationMiddleware = (

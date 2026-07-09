@@ -1,21 +1,12 @@
 #!/usr/bin/env node
-// Prepack tripwire. The `files` allowlist in package.json (with its negation
-// patterns) is the real exclusion mechanism; this guard makes pack/publish
-// fail loudly if that mechanism regresses and dev-tree state (installed
-// template node_modules, build caches, env files) is about to ship. Runs
-// under plain node because npm lifecycle scripts drive publishing.
 import { spawnSync } from "node:child_process";
 import { resolve } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 
-// A clean tree packs ~850 entries / ~3.5 MB unpacked (measured 2026-07).
-// A leaked template node_modules jumps to ~246k entries / ~2.9 GB, so this
-// headroom tolerates normal template growth while catching real incidents.
 export const MAX_ENTRY_COUNT = 5000;
 export const MAX_UNPACKED_BYTES = 25 * 1024 * 1024;
 
-// Mirrors the negation patterns in package.json `files`.
 const forbiddenSegments = new Set([
   "node_modules",
   ".turbo",
@@ -38,7 +29,6 @@ const forbiddenSegments = new Set([
   "settings.local.json",
 ]);
 
-// env.example is the tracked source; every other env variant is dev state.
 const forbiddenBasenamePatterns = [
   /\.log$/,
   /\.tsbuildinfo$/,
@@ -46,8 +36,6 @@ const forbiddenBasenamePatterns = [
   /^env\.(local|production)$/,
 ];
 
-// Sentinels that must exist for the published package to work at all, so an
-// under-packed tarball (missing build output or template) also fails.
 const requiredPaths = [
   "dist/index.js",
   "template/package.json",
@@ -107,8 +95,6 @@ export const assessPackManifest = (manifest) => {
 };
 
 const main = () => {
-  // --ignore-scripts keeps this dry-run from re-triggering prepack (verified
-  // empirically; without it, npm pack inside prepack recurses forever).
   const result = spawnSync(
     "npm",
     ["pack", "--dry-run", "--json", "--ignore-scripts"],

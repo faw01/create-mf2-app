@@ -28,7 +28,6 @@ export const send = internalMutation({
     to: v.union(v.string(), v.array(v.string())),
   },
   handler: async (ctx, args): Promise<EmailId> => {
-    // The resend component throws a bare "API key is not set" otherwise.
     if (!env.RESEND_API_KEY) {
       throw new Error("Email is not configured: set RESEND_API_KEY to enable");
     }

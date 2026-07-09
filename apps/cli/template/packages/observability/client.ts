@@ -19,10 +19,8 @@ export const initializeSentry = (): ReturnType<typeof Sentry.init> =>
 
     replaysOnErrorSampleRate: 1,
 
-    // You may want 100% in development and a lower rate in production.
     replaysSessionSampleRate: 0.1,
 
-    // Adjust this value in production, or use tracesSampler for greater control
     tracesSampleRate: 1,
   });
 
