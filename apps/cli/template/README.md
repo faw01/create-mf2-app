@@ -252,6 +252,17 @@ Without `BASEHUB_TOKEN`, the marketing site (`apps/web`) still renders; blog and
 
 Full reference at [mf2.dev/docs/setup/env](https://mf2.dev/docs/setup/env).
 
+## Security
+
+Supply-chain protections ship enabled:
+
+- **Three-day cooldown on new package versions** — `minimumReleaseAge` in `bunfig.toml` (pnpm and npm scaffolds get the equivalent in `pnpm-workspace.yaml` / `.npmrc`), so compromised releases can be caught and unpublished before they reach you
+- **Install scripts blocked by default** — bun and pnpm only run postinstall scripts from an explicit allowlist
+- **Registry-only transitive dependencies** — pnpm scaffolds set `blockExoticSubdeps` and `trustPolicy: no-downgrade`; npm scaffolds set `allow-git=root` and `allow-remote=root`
+- **Runtime protection** — Arcjet bot detection, rate limiting, and secure headers via `packages/security`
+
+For active malware blocking at install time, run installs through [Socket Firewall](https://docs.socket.dev/docs/socket-firewall-free): `sfw bun install`.
+
 ## Deploy
 
 Each app deploys as a separate Vercel project:

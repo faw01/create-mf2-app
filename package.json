@@ -7,6 +7,9 @@
     "apps/*",
     "packages/*"
   ],
+  "overrides": {
+    "postcss": "^8.5.10"
+  },
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",

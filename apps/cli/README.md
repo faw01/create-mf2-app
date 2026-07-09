@@ -85,6 +85,10 @@ Each app imports only the packages it needs. Five Convex Components (Stripe, Res
 
 Tell your agent to use the `mf2` skill with your product idea: it maps the requirements onto the scaffold and plans a parallelized build.
 
+## Security
+
+Scaffolds ship with supply-chain defenses on: a three-day cooldown on newly published package versions (bun, pnpm, and npm), install scripts blocked by default, registry-only transitive resolution, and Arcjet bot detection with rate limiting at runtime.
+
 ## CLI
 
 Pass the project name and flags to skip the interactive prompts:
