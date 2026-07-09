@@ -1,5 +1,11 @@
 # v2.0.5 (Tue Feb 24 2026)
 
+## 2.7.1
+
+### Patch Changes
+
+- a8238d6: export the convex http client, add RESEND_FROM and ai to the backend, sharpen skill docs
+
 ## 2.7.0
 
 ### Minor Changes
