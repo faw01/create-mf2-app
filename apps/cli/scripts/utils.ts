@@ -56,9 +56,6 @@ export const copyExclusions = new Set([
   ".env.production",
 ]);
 
-// npm pack unconditionally drops files named .gitignore, so the template
-// stores these un-dotted and the CLI renames them at scaffold time. Nested
-// gitignores must be listed here or published scaffolds silently lose them.
 export const dotfileRenames = [
   { dir: join("apps", "api"), from: "env.example", to: ".env.example" },
   { dir: join("apps", "app"), from: "env.example", to: ".env.example" },
@@ -215,8 +212,6 @@ export const convertAllWorkspaceDeps = async (
   await Promise.all(paths.map((path) => convertWorkspaceDeps(path)));
 };
 
-// Non-bun scaffolds need tsx to run the TS scripts bun executes natively;
-// a real devDependency makes npx/pnpm use the lockfile-pinned binary.
 export const tsxVersion = "^4.23.0";
 
 const bunScriptReplacements: Record<string, [string, string][]> = {
@@ -383,8 +378,6 @@ export const rewriteScaffoldDocs = async (
   projectDir: string,
   packageManager: string
 ): Promise<void> => {
-  // Root CLAUDE.md and AGENTS.md just import .agents/AGENTS.md, which is
-  // where the bun prose actually lives.
   await Promise.all(
     [join(".agents", "AGENTS.md"), "README.md"].map(async (file) => {
       const path = join(projectDir, file);
@@ -405,9 +398,6 @@ export const rewriteBunHooks = (
   content: string,
   packageManager: string
 ): string => {
-  // Hooks run a locally pinned devDependency. npx resolves node_modules/.bin
-  // first; pnpm needs `exec`, not `dlx`, which always fetches registry-latest
-  // and ignores the pinned version.
   const execs: Record<string, string> = {
     npm: "npx ",
     pnpm: "pnpm exec ",
@@ -477,9 +467,6 @@ export const addWorkspacesField = async (projectDir: string): Promise<void> => {
   await writeFile(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
 };
 
-// The scaffold ships ready-to-fill env files so no manual env command is
-// needed before `dev`. Blank values are safe: every env schema treats empty
-// strings as undefined, which just disables that integration.
 export const createEnvFiles = async (projectDir: string): Promise<void> => {
   await Promise.all(
     ["apps", "packages"].map(async (dir) => {

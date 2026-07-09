@@ -13,6 +13,5 @@ export const initializeSentry = (): ReturnType<typeof Sentry.init> =>
       Sentry.consoleLoggingIntegration({ levels: ["log", "error", "warn"] }),
     ],
 
-    // Adjust this value in production, or use tracesSampler for greater control
     tracesSampleRate: 1,
   });

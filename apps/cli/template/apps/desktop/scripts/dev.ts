@@ -3,18 +3,8 @@ import { existsSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 
-// Electron 42+ no longer downloads its binary at install time; the first
-// `require("electron")` does. electron-vite does not require electron, it
-// resolves path.txt itself and dies with "Error: Electron uninstall" when the
-// binary is absent, taking the whole `turbo dev` session down with it. The
-// desktop postinstall normally downloads the binary; this guard covers the
-// states where that step failed (offline or interrupted install) by skipping
-// with one clear line instead of crashing dev for every other app.
-
 const require = createRequire(import.meta.url);
 
-// Mirrors electron-vite's getElectronPath check without requiring electron,
-// because requiring it would start a download as a side effect.
 const electronBinaryExists = (): boolean => {
   try {
     const electronDir = dirname(require.resolve("electron/package.json"));

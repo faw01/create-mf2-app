@@ -8,7 +8,6 @@ import type { RefObject } from "react";
 import { useRef, useState } from "react";
 import { keys } from "../keys";
 
-// Required CSS import, unless you're overriding the styling
 import "@knocklabs/react/dist/index.css";
 import "../styles.css";
 

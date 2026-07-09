@@ -4,7 +4,6 @@ import type { StorybookConfig } from "@storybook/nextjs";
 
 const require = createRequire(import.meta.url);
 
-// Resolves the package's absolute path; needed under Yarn PnP and monorepos.
 const getAbsolutePath = (value: string) =>
   dirname(require.resolve(join(value, "package.json")));
 

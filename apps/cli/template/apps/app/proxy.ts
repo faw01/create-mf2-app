@@ -13,18 +13,10 @@ const securityHeaders = env.FLAGS_SECRET
   ? securityMiddleware(noseconeOptionsWithToolbar)
   : securityMiddleware(noseconeOptions);
 
-// Clerk middleware wraps other middleware in its callback
 export default authMiddleware(async (_auth, request) => {
   if (env.ARCJET_KEY) {
     try {
-      await secure(
-        [
-          // See https://docs.arcjet.com/bot-protection/identifying-bots
-          "CATEGORY:PREVIEW",
-          "CATEGORY:MONITOR",
-        ],
-        request
-      );
+      await secure(["CATEGORY:PREVIEW", "CATEGORY:MONITOR"], request);
     } catch (error) {
       const message = parseError(error);
       return NextResponse.json({ error: message }, { status: 403 });

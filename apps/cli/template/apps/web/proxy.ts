@@ -24,12 +24,7 @@ export default authMiddleware(async (_auth, request) => {
   if (env.ARCJET_KEY) {
     try {
       await secure(
-        [
-          // See https://docs.arcjet.com/bot-protection/identifying-bots
-          "CATEGORY:SEARCH_ENGINE", // Allow search engines
-          "CATEGORY:PREVIEW", // Allow preview links to show OG images
-          "CATEGORY:MONITOR", // Allow uptime monitoring services
-        ],
+        ["CATEGORY:SEARCH_ENGINE", "CATEGORY:PREVIEW", "CATEGORY:MONITOR"],
         request
       );
     } catch (error) {

@@ -9,7 +9,6 @@ import { env } from "../../convex.env";
 export const generateTitle = internalAction({
   args: { threadId: v.id("threads") },
   handler: async (ctx, args): Promise<null> => {
-    // Threads keep their default title rather than failing the action.
     if (!env.AI_GATEWAY_API_KEY) {
       console.info(
         "Skipping chat title generation: set AI_GATEWAY_API_KEY to enable"
@@ -17,10 +16,6 @@ export const generateTitle = internalAction({
       return null;
     }
 
-    // The return annotation above and the type here break a circular type
-    // inference: an action that calls its own deployment's functions through
-    // `internal` (or `api`) otherwise collapses the whole generated api type
-    // to `any` for every consumer.
     const messages: Array<{ role: "user" | "assistant"; content: string }> =
       await ctx.runQuery(internal.chat.api.messages.getHistory, {
         threadId: args.threadId,

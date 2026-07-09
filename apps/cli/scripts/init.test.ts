@@ -45,7 +45,6 @@ const tmpDir = join(import.meta.dirname, "..", ".tmp-test");
 const exactVersionRe = /^\d+\.\d+\.\d+$/;
 const expoEnvIgnoreLineRe = /^expo-env\.d\.ts$/m;
 
-// Walks with copyDirectory's exclusions so matches reflect what ships.
 const findTemplateFiles = (fileName: string): string[] => {
   const matches: string[] = [];
 
@@ -88,9 +87,6 @@ describe("template integrity", () => {
   });
 
   test("no .gitignore anywhere in the template (npm pack drops them)", () => {
-    // npm pack unconditionally excludes files named .gitignore, so a dotted
-    // gitignore in the template silently vanishes from the published package.
-    // Store them un-dotted and rename at scaffold time instead.
     expect(findTemplateFiles(".gitignore")).toEqual([]);
   });
 
@@ -268,8 +264,6 @@ describe("dotfileRenames", () => {
   });
 
   test("covers every un-dotted gitignore in the template", () => {
-    // The root gitignore is renamed by a dedicated step in init.ts; every
-    // nested one must have a dotfileRenames entry or scaffolds lose it.
     const nestedGitignores = findTemplateFiles("gitignore")
       .filter((rel) => rel !== "gitignore")
       .map((rel) => dirname(rel))
@@ -295,10 +289,6 @@ describe("dotfileRenames", () => {
   });
 
   test("mobile gitignore covers expo generated files", () => {
-    // expo start (typed routes) upserts expo-env.d.ts into apps/mobile's
-    // .gitignore, creating the file when missing; that showed up as an
-    // untracked file right after scaffolding. Keeping the rule in the
-    // template means expo leaves the file untouched.
     const content = readFileSync(
       join(templatePath, "apps", "mobile", "gitignore"),
       "utf8"
@@ -718,8 +708,6 @@ describe("backend convex url sync", () => {
 
   test("backend dev and setup scripts run the sync", () => {
     const { scripts } = backendPackageJson();
-    // The sync must run before `convex dev` so the app env files carry the
-    // deployment URL by the time the app dev servers read them.
     expect(scripts.dev).toContain(
       "node scripts/sync-convex-url.mjs; convex dev"
     );
@@ -728,8 +716,6 @@ describe("backend convex url sync", () => {
 
   test("sync invocation survives package manager rewrites", () => {
     const { scripts } = backendPackageJson();
-    // The script runs via plain `node` precisely so no bun-token rewrite
-    // pair can mangle it; guard against a future pair matching it anyway.
     for (const pm of ["npm", "yarn", "pnpm"]) {
       const rewritten = rewriteBunScripts(scripts, pm);
       expect(rewritten.dev).toContain("node scripts/sync-convex-url.mjs");
@@ -746,8 +732,6 @@ describe("template desktop app", () => {
         "utf8"
       )
     );
-    // electron-builder install-app-deps (postinstall) requires an exact
-    // version; a range aborts the whole install on npm/yarn/pnpm.
     expect(desktop.devDependencies.electron).toMatch(exactVersionRe);
     expect(desktop.scripts.postinstall).toContain("install-app-deps");
   });
@@ -759,10 +743,6 @@ describe("template desktop app", () => {
         "utf8"
       )
     );
-    // install-app-deps crashes when node_modules is mid-repair (broken store
-    // symlinks). A hard failure makes bun abort the rest of the install and
-    // skip remaining lifecycle scripts, so the script must swallow the error
-    // and explain itself instead.
     expect(desktop.scripts.postinstall).toContain("install-app-deps || echo ");
   });
 });
@@ -1111,9 +1091,6 @@ describe("scaffolding simulation", () => {
   test("dev-only files can be stripped", async () => {
     const projectDir = await scaffold("dev-strip-test");
 
-    // devOnlyFiles are gitignored, so fresh checkouts (like CI) do not have
-    // them. Recreate the local-only state a dev machine would have, then
-    // verify the strip removes it.
     await Promise.all(
       devOnlyFiles.map(async (file) => {
         await mkdir(join(projectDir, dirname(file)), { recursive: true });
@@ -1262,7 +1239,6 @@ describe("edge cases", () => {
     const content = JSON.parse(
       readFileSync(join(templatePath, "package.json"), "utf8")
     );
-    // env:init is gone: the CLI creates env files at scaffold time.
     expect(content.scripts["env:init"]).toBeUndefined();
     expect(content.scripts["env:check"]).toBeDefined();
     expect(content.scripts["env:push"]).toBeDefined();
@@ -1270,12 +1246,6 @@ describe("edge cases", () => {
 });
 
 describe("name prompt", () => {
-  // The prompt is interactive (clack under a TTY), so guard it at the source
-  // level like the ordering suite below. The regression: a placeholder-only
-  // prompt renders "my-app" as if prefilled, but Enter submits an empty
-  // value. clack only applies defaultValue at finalize, after validate has
-  // run, so the prompt needs a real defaultValue and no required-name
-  // validator for Enter to accept what the prompt displays.
   const source = readFileSync(join(import.meta.dirname, "init.ts"), "utf8");
   const getNameSource = source.slice(
     source.indexOf("const getName"),
@@ -1297,10 +1267,6 @@ describe("name prompt", () => {
 });
 
 describe("init step ordering", () => {
-  // The initial commit must capture the fully settled tree: the lockfile
-  // written by install and anything generated by the Convex build. Running
-  // the real flow needs a network install, so guard the ordering at the
-  // source level instead.
   const source = readFileSync(join(import.meta.dirname, "init.ts"), "utf8");
 
   const orderOf = (marker: string): number => {
@@ -1322,10 +1288,6 @@ describe("init step ordering", () => {
   });
 
   test("lockfile convergence reinstall sits between install and commit", () => {
-    // bun's lockfile serializer only converges from the second save onward
-    // (the fresh-resolve save and the next load-and-resave disagree on
-    // hoisted slots), so the committed bun.lock must come from a re-install
-    // after the first one, and before the commit captures it.
     const converge = orderOf('await run("bun install")');
 
     expect(orderOf("await installDependencies(")).toBeLessThan(converge);
@@ -1333,8 +1295,6 @@ describe("init step ordering", () => {
   });
 
   test("convergence reinstall is guarded to bun", () => {
-    // The drift is in bun's serializer; npm, yarn, and pnpm lockfiles showed
-    // none, and their no-op installs are slow enough to hurt scaffold time.
     const between = source.slice(
       orderOf("await setupConvex("),
       orderOf('await run("git add .")')
@@ -1352,8 +1312,6 @@ describe("init step ordering", () => {
     expect(orderOf("await setupConvex(")).toBeLessThan(add);
     expect(add).toBeLessThan(commit);
 
-    // Nothing after the commit may touch the project tree; only user-facing
-    // output is allowed to follow.
     const tail = source.slice(commit);
     for (const sideEffect of [
       "await run(",

@@ -92,7 +92,6 @@ const Pricing = () => (
           <div />
           <div />
           <div />
-          {/* New Line */}
           <div className="col-span-3 px-3 py-4 lg:col-span-1 lg:px-6">SSO</div>
           <div className="flex justify-center px-3 py-1 md:px-6 md:py-4">
             <Check className="h-4 w-4 text-primary" />
@@ -103,7 +102,6 @@ const Pricing = () => (
           <div className="flex justify-center px-3 py-1 md:px-6 md:py-4">
             <Check className="h-4 w-4 text-primary" />
           </div>
-          {/* New Line */}
           <div className="col-span-3 px-3 py-4 lg:col-span-1 lg:px-6">
             AI Assistant
           </div>
@@ -116,7 +114,6 @@ const Pricing = () => (
           <div className="flex justify-center px-3 py-1 md:px-6 md:py-4">
             <Check className="h-4 w-4 text-primary" />
           </div>
-          {/* New Line */}
           <div className="col-span-3 px-3 py-4 lg:col-span-1 lg:px-6">
             Version Control
           </div>
@@ -129,7 +126,6 @@ const Pricing = () => (
           <div className="flex justify-center px-3 py-1 md:px-6 md:py-4">
             <Check className="h-4 w-4 text-primary" />
           </div>
-          {/* New Line */}
           <div className="col-span-3 px-3 py-4 lg:col-span-1 lg:px-6">
             Members
           </div>
@@ -142,7 +138,6 @@ const Pricing = () => (
           <div className="flex justify-center px-3 py-1 md:px-6 md:py-4">
             <p className="text-muted-foreground text-sm">100+ members</p>
           </div>
-          {/* New Line */}
           <div className="col-span-3 px-3 py-4 lg:col-span-1 lg:px-6">
             Multiplayer Mode
           </div>
@@ -155,7 +150,6 @@ const Pricing = () => (
           <div className="flex justify-center px-3 py-1 md:px-6 md:py-4">
             <Check className="h-4 w-4 text-primary" />
           </div>
-          {/* New Line */}
           <div className="col-span-3 px-3 py-4 lg:col-span-1 lg:px-6">
             Orchestration
           </div>

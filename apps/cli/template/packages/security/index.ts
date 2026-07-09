@@ -33,7 +33,6 @@ const base = arcjetKey
       key: arcjetKey,
       rules: [
         shield({
-          // "LIVE" blocks requests; use "DRY_RUN" to log only.
           mode: "LIVE",
         }),
       ],

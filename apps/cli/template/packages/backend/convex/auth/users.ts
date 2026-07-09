@@ -164,10 +164,6 @@ export async function getOrgContext(ctx: QueryCtx): Promise<{
 export const deleteUser = action({
   args: {},
   handler: async (ctx): Promise<{ success: boolean }> => {
-    // The return annotation above and the type here break a circular type
-    // inference: an action that calls its own deployment's functions through
-    // `api` (or `internal`) otherwise collapses the whole generated api type
-    // to `any` for every consumer.
     const user: Doc<"users"> | null = await ctx.runQuery(
       api.auth.users.currentUser
     );

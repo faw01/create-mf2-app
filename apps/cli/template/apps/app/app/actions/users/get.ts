@@ -28,7 +28,6 @@ export const getUsers = async (
       })
     );
 
-    // Liveblocks expects one info entry per requested ID, in order.
     const data: Liveblocks["UserMeta"]["info"][] = userIds.map((userId) => {
       const member = membersByUserId.get(userId);
       return {

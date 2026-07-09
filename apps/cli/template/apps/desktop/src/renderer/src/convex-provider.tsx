@@ -8,8 +8,6 @@ type DesktopConvexProviderProps = {
   readonly children: ReactNode;
 };
 
-// TODO: Wire up Clerk auth for desktop once @clerk/electron is available.
-// For now, Convex connects without auth.
 export const DesktopConvexProvider = ({
   children,
 }: DesktopConvexProviderProps) => {
@@ -20,9 +18,6 @@ export const DesktopConvexProvider = ({
   return <ConvexProvider client={convex}>{children}</ConvexProvider>;
 };
 
-// When VITE_CONVEX_URL is unset the provider renders children without a
-// Convex context, so any useQuery/useMutation/useAction descendant throws
-// at runtime. These let UI degrade instead of crashing.
 export const useConvexConfigured = (): boolean => convex !== null;
 
 type ConvexGateProps = {

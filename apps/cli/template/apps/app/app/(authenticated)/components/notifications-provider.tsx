@@ -14,7 +14,6 @@ export const NotificationsProvider = ({
   userId,
 }: NotificationsProviderProperties) => {
   const { resolvedTheme } = useTheme();
-  // resolvedTheme is undefined until next-themes hydrates.
   const theme = resolvedTheme === "dark" ? "dark" : "light";
 
   return (

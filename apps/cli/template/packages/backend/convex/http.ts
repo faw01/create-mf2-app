@@ -11,8 +11,6 @@ const http = httpRouter();
 
 http.route({
   handler: httpAction(async (ctx, request) => {
-    // Without the signing secret no event can be verified, so the route
-    // reports itself unconfigured instead of failing verification.
     const signingSecret = env.CLERK_WEBHOOK_SECRET;
     if (!signingSecret) {
       console.warn(
@@ -54,7 +52,6 @@ http.route({
 
 http.route({
   handler: httpAction(async (ctx, req) => {
-    // The resend component throws on a missing secret; answer 503 instead.
     if (!env.RESEND_WEBHOOK_SECRET) {
       console.warn(
         "Skipping Resend webhook: set RESEND_WEBHOOK_SECRET to enable"

@@ -23,7 +23,6 @@ export const authenticate = async ({
 
   const session = liveblocks.prepareSession(userId, { userInfo });
 
-  // Write access to every room in the user's organization.
   session.allow(`${orgId}:*`, ["*:write"]);
 
   const { status, body } = await session.authorize();
