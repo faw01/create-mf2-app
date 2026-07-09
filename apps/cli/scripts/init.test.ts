@@ -959,6 +959,17 @@ describe("writePnpmWorkspace", () => {
     const yaml = readFileSync(join(dest, "pnpm-workspace.yaml"), "utf8");
     expect(yaml).toContain("minimumReleaseAge: 4320");
   });
+
+  test("blocks exotic subdeps and trust downgrades", async () => {
+    const dest = join(tmpDir, "pnpm-exotic-test");
+    await mkdir(dest, { recursive: true });
+
+    await writePnpmWorkspace(dest);
+
+    const yaml = readFileSync(join(dest, "pnpm-workspace.yaml"), "utf8");
+    expect(yaml).toContain("blockExoticSubdeps: true");
+    expect(yaml).toContain("trustPolicy: no-downgrade");
+  });
 });
 
 describe("writeNpmrc", () => {
@@ -970,6 +981,17 @@ describe("writeNpmrc", () => {
 
     const npmrc = readFileSync(join(dest, ".npmrc"), "utf8");
     expect(npmrc).toContain("min-release-age=3");
+  });
+
+  test("restricts git and tarball-url deps to the root package.json", async () => {
+    const dest = join(tmpDir, "npmrc-git-test");
+    await mkdir(dest, { recursive: true });
+
+    await writeNpmrc(dest);
+
+    const npmrc = readFileSync(join(dest, ".npmrc"), "utf8");
+    expect(npmrc).toContain("allow-git=root");
+    expect(npmrc).toContain("allow-remote=root");
   });
 });
 

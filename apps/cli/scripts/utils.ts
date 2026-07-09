@@ -442,6 +442,10 @@ strictDepBuilds: false
 
 minimumReleaseAge: 4320
 
+blockExoticSubdeps: true
+
+trustPolicy: no-downgrade
+
 allowBuilds:
   "@sentry/cli": true
   "@tailwindcss/oxide": true
@@ -459,9 +463,13 @@ allowBuilds:
   await writeFile(join(projectDir, "pnpm-workspace.yaml"), contents);
 };
 
-// npm 11.10+ honors min-release-age (days); older versions ignore it.
 export const writeNpmrc = async (projectDir: string): Promise<void> => {
-  await writeFile(join(projectDir, ".npmrc"), "min-release-age=3\n");
+  const contents = `min-release-age=3
+allow-git=root
+allow-remote=root
+`;
+
+  await writeFile(join(projectDir, ".npmrc"), contents);
 };
 
 export const addWorkspacesField = async (projectDir: string): Promise<void> => {
