@@ -39,18 +39,12 @@ export const LanguageSwitcher = () => {
   const router = useRouter();
 
   const switchLanguage = (locale: string) => {
-    const defaultLocale = "en";
     const { pathname } = window.location;
-    const [, firstSegment] = pathname.split("/");
-    const currentLocale = languages.some((l) => l.value === firstSegment)
-      ? firstSegment
-      : defaultLocale;
+    const segments = pathname.split("/").filter(Boolean);
+    const hasLocalePrefix = languages.some((l) => l.value === segments[0]);
+    const rest = hasLocalePrefix ? segments.slice(1) : segments;
 
-    const newPathname = pathname.startsWith(`/${currentLocale}`)
-      ? pathname
-      : `/${currentLocale}${pathname}`;
-
-    router.push(newPathname.replace(`/${currentLocale}`, `/${locale}`));
+    router.push(`/${[locale, ...rest].join("/")}`);
   };
 
   return (
