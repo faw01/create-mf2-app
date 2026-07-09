@@ -40,33 +40,33 @@ apps/
 
 ```
 packages/
-  backend/        Convex database, auth sync, AI agents, workflows
-  convex/         Convex + Clerk React provider
-  storage/        Convex file storage and Vercel Blob
+  backend/               Convex database, auth sync, AI agents, workflows
+  convex/                Convex + Clerk React provider
+  storage/               Convex file storage and Vercel Blob
 
-  design-system/  50+ shadcn/ui components with dark mode
-  design-system-native/ React Native UI components (NativeWind)
+  design-system/         50+ shadcn/ui components with dark mode
+  design-system-native/  React Native UI components (NativeWind)
 
-  auth/           Clerk authentication and route protection
-  payments/       Stripe via @convex-dev/stripe
-  ai/             Vercel AI SDK, multi-model routing
+  auth/                  Clerk authentication and route protection
+  payments/              Stripe via @convex-dev/stripe
+  ai/                    Vercel AI SDK, multi-model routing
 
-  analytics/      PostHog event tracking and sessions
-  cms/            BaseHub headless CMS
-  collaboration/  Liveblocks cursors and presence
-  email/          Resend transactional email
-  feature-flags/  Vercel feature flags with overrides
-  internationalization/ next-intl translations
-  notifications/  Knock in-app notification feeds
-  seo/            Metadata, JSON-LD, Open Graph
-  webhooks/       Svix outbound webhook delivery
+  analytics/             PostHog event tracking and sessions
+  cms/                   BaseHub headless CMS
+  collaboration/         Liveblocks cursors and presence
+  email/                 Resend transactional email
+  feature-flags/         Vercel feature flags with overrides
+  internationalization/  next-intl translations
+  notifications/         Knock in-app notification feeds
+  seo/                   Metadata, JSON-LD, Open Graph
+  webhooks/              Svix outbound webhook delivery
 
-  observability/  Sentry error tracking, BetterStack logging
-  rate-limit/     Upstash Redis rate limiting
-  security/       Arcjet bot detection, Nosecone secure headers
+  observability/         Sentry error tracking, BetterStack logging
+  rate-limit/            Upstash Redis rate limiting
+  security/              Arcjet bot detection, Nosecone secure headers
 
-  next-config/    Shared Next.js configuration
-  typescript-config/ Shared tsconfig
+  next-config/           Shared Next.js configuration
+  typescript-config/     Shared tsconfig
 ```
 
 Each app imports only the packages it needs. Five Convex Components (Stripe, Resend, Workflow, Action Retrier, Migrations) ship pre-installed. Stack details at [mf2.dev/docs/structure](https://mf2.dev/docs/structure).
