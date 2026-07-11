@@ -30,7 +30,6 @@ Commits are always a single line. No body. No footer.
 - **Description**: Use imperative mood ("add" not "added"), lowercase, no period
 - **No body or footer**: NEVER add a body or footer. Keep commits to a single line header only, regardless of complexity.
 - **No co-authoring**: Never add `Co-Authored-By` or similar footers.
-- **Code review first**: Before committing, run `coderabbit review --prompt-only` for AI-driven code review.
 
 ## Examples
 
