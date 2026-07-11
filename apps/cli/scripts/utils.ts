@@ -241,10 +241,7 @@ const bunScriptReplacements: Record<string, [string, string][]> = {
   ],
 };
 
-export const rewriteBunTokens = (
-  content: string,
-  packageManager: string
-): string => {
+const rewriteBunTokens = (content: string, packageManager: string): string => {
   const replacements = bunScriptReplacements[packageManager];
   if (!replacements) {
     return content;
