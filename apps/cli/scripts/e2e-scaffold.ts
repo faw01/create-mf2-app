@@ -1,12 +1,10 @@
 import { execSync } from "node:child_process";
-import { mkdir, rename, rm } from "node:fs/promises";
+import { rm } from "node:fs/promises";
 import { join } from "node:path";
 import {
-  copyDirectory,
   devOnlyFiles,
-  dotfileRenames,
   getTemplatePath,
-  materializeSkills,
+  scaffoldTemplate,
   updatePackageJson,
 } from "./utils";
 
@@ -15,17 +13,7 @@ const templatePath = getTemplatePath();
 
 console.log(`Scaffolding project to ${projectDir}...`);
 
-await mkdir(projectDir, { recursive: true });
-await copyDirectory(templatePath, projectDir);
-await materializeSkills(projectDir);
-
-await rename(join(projectDir, "gitignore"), join(projectDir, ".gitignore"));
-
-await Promise.all(
-  dotfileRenames.map(({ dir, from, to }) =>
-    rename(join(projectDir, dir, from), join(projectDir, dir, to))
-  )
-);
+await scaffoldTemplate({ projectDir, templatePath });
 
 await updatePackageJson(projectDir, "e2e-test");
 

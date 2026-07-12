@@ -1,4 +1,4 @@
-import { mkdir, rename, rm } from "node:fs/promises";
+import { rm } from "node:fs/promises";
 import { join } from "node:path";
 import {
   cancel,
@@ -14,17 +14,15 @@ import {
   addTsxDevDependency,
   addWorkspacesField,
   convertAllWorkspaceDeps,
-  copyDirectory,
   createEnvFiles,
   devOnlyFiles,
-  dotfileRenames,
   getTemplatePath,
-  materializeSkills,
   rewriteAllBunScripts,
   rewriteClaudeSettings,
   rewriteEnvScript,
   rewriteScaffoldDocs,
   run,
+  scaffoldTemplate,
   supportedPackageManagers,
   updatePackageJson,
   updatePackageManager,
@@ -123,21 +121,11 @@ export const initialize = async (options: {
     const s = spinner();
 
     s.start("Copying template...");
-    await mkdir(projectDir, { recursive: true });
-    await copyDirectory(templatePath, projectDir);
-    await materializeSkills(projectDir);
-
-    await rename(join(projectDir, "gitignore"), join(projectDir, ".gitignore"));
-
-    await Promise.all(
-      dotfileRenames.map(({ dir, from, to }) =>
-        rename(join(projectDir, dir, from), join(projectDir, dir, to)).catch(
-          () => {
-            // noop
-          }
-        )
-      )
-    );
+    await scaffoldTemplate({
+      projectDir,
+      templatePath,
+      tolerateDotfileRenameErrors: true,
+    });
 
     s.message("Creating env files...");
     await createEnvFiles(projectDir);
