@@ -24,7 +24,7 @@
     "@biomejs/biome": "2.5.2",
     "@changesets/cli": "^2.31.0",
     "react-doctor": "^0.7.1",
-    "turbo": "^2.10.3",
+    "turbo": "^2.10.4",
     "typescript": "^6.0.3",
     "ultracite": "7.9.2"
   }
