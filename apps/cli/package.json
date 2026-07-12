@@ -1,6 +1,6 @@
 {
   "name": "create-mf2-app",
-  "version": "2.7.1",
+  "version": "2.7.2",
   "description": "Create a production-ready SaaS app with Next.js, Convex, and AI",
   "license": "MIT",
   "repository": {

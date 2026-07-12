@@ -1,5 +1,11 @@
 # v2.0.5 (Tue Feb 24 2026)
 
+## 2.7.2
+
+### Patch Changes
+
+- ccdb1ce: Remove unused dependencies across the template, consolidate the Convex client providers behind a shared factory, and simplify the story generation script
+
 ## 2.7.1
 
 ### Patch Changes
