@@ -95,29 +95,22 @@ const TSC_ERROR_LINE_RE = /^stories\/([\w-]+)\.stories\.tsx\((\d+),\d+\):/gm;
 const RENDER_FUNC_REF_RE = /<(\w+Component)\s*\/>/;
 const TOP_LEVEL_FUNC_RE = /^function (\w+Component)\b/;
 
+const SKIP_EXACT_FILES = new Set([
+  "mode-toggle.tsx",
+  "calendar-hijri.tsx",
+  "alert-action.tsx",
+]);
+
+const SKIP_FILE_PREFIXES = ["form-tanstack-", "form-next-"];
+
 function shouldSkipExample(filename: string): boolean {
   if (!filename.endsWith(".tsx")) {
     return true;
   }
-  if (filename === "mode-toggle.tsx") {
+  if (SKIP_EXACT_FILES.has(filename) || filename.endsWith("-rtl.tsx")) {
     return true;
   }
-  if (filename === "calendar-hijri.tsx") {
-    return true;
-  }
-  if (filename === "alert-action.tsx") {
-    return true;
-  }
-  if (filename.endsWith("-rtl.tsx")) {
-    return true;
-  }
-  if (filename.startsWith("form-tanstack-")) {
-    return true;
-  }
-  if (filename.startsWith("form-next-")) {
-    return true;
-  }
-  return false;
+  return SKIP_FILE_PREFIXES.some((prefix) => filename.startsWith(prefix));
 }
 
 function toPascalCase(str: string): string {
@@ -226,6 +219,46 @@ function splitImportsAndBody(content: string): {
   return { body, importStatements };
 }
 
+function extractDefaultName(specPart: string): string | undefined {
+  const beforeBraces = specPart
+    .replace(BRACES_RE, "")
+    .replace(TRAILING_COMMA_RE, "")
+    .trim();
+  if (!beforeBraces) {
+    return;
+  }
+  const name = beforeBraces.replace(TRAILING_COMMA_RE, "").trim();
+  return name === "" ? undefined : name;
+}
+
+function parseNamedSpecifiers(
+  bracesContent: string,
+  isTypeOnly: boolean
+): NamedImport[] {
+  const named: NamedImport[] = [];
+  const parts = bracesContent
+    .split(",")
+    .map((p) => p.trim())
+    .filter(Boolean);
+
+  for (const part of parts) {
+    const isTypeImport = part.startsWith("type ");
+    const cleanPart = isTypeImport ? part.replace(TYPE_PREFIX_RE, "") : part;
+    const aliasMatch = cleanPart.match(ALIAS_RE);
+    if (aliasMatch) {
+      named.push({
+        alias: aliasMatch[2],
+        isType: isTypeOnly || isTypeImport,
+        name: aliasMatch[1],
+      });
+    } else {
+      named.push({ isType: isTypeOnly || isTypeImport, name: cleanPart });
+    }
+  }
+
+  return named;
+}
+
 function parseImport(raw: string): ParsedImport | null {
   const s = raw.replace(WHITESPACE_G_RE, " ").trim();
 
@@ -266,90 +299,71 @@ function parseImport(raw: string): ParsedImport | null {
     };
   }
 
-  let defaultName: string | undefined;
-  const named: NamedImport[] = [];
-
   const bracesMatch = specPart.match(BRACES_CONTENT_RE);
-  const bracesContent = bracesMatch ? bracesMatch[1] : "";
-
-  const beforeBraces = specPart
-    .replace(BRACES_RE, "")
-    .replace(TRAILING_COMMA_RE, "")
-    .trim();
-  if (beforeBraces) {
-    defaultName = beforeBraces.replace(TRAILING_COMMA_RE, "").trim();
-    if (defaultName === "") {
-      defaultName = undefined;
-    }
-  }
-
-  if (bracesContent) {
-    const parts = bracesContent
-      .split(",")
-      .map((p) => p.trim())
-      .filter(Boolean);
-    for (const part of parts) {
-      const isTypeImport = part.startsWith("type ");
-      const cleanPart = isTypeImport ? part.replace(TYPE_PREFIX_RE, "") : part;
-      const aliasMatch = cleanPart.match(ALIAS_RE);
-      if (aliasMatch) {
-        named.push({
-          alias: aliasMatch[2],
-          isType: isTypeOnly || isTypeImport,
-          name: aliasMatch[1],
-        });
-      } else {
-        named.push({ isType: isTypeOnly || isTypeImport, name: cleanPart });
-      }
-    }
-  }
 
   return {
-    defaultName,
+    defaultName: extractDefaultName(specPart),
     isSideEffect: false,
     isTypeOnly,
-    named,
+    named: bracesMatch ? parseNamedSpecifiers(bracesMatch[1], isTypeOnly) : [],
     source,
   };
 }
 
+const IMPORT_SOURCE_PREFIX_REWRITES: [string, string][] = [
+  ["@/styles/radix-nova/ui/", "@repo/design-system/components/ui/"],
+  ["@/examples/radix/ui/", "@repo/design-system/components/ui/"],
+  ["@/registry/new-york-v4/ui/", "@repo/design-system/components/ui/"],
+];
+
+const IMPORT_SOURCE_EXACT_REWRITES = new Map([
+  ["@/registry/icons/__lucide__", "lucide-react"],
+  ["@/examples/radix/lib/utils", "@repo/design-system/lib/utils"],
+  ["@/lib/utils", "@repo/design-system/lib/utils"],
+]);
+
+const SKIPPED_IMPORT_SOURCES = new Set([
+  "@/hooks/use-media-query",
+  "@/hooks/use-copy-to-clipboard",
+  "@/examples/radix/hooks/use-mobile",
+  "@/registry/new-york-v4/hooks/use-mobile",
+  "@/components/language-selector",
+]);
+
 function transformImportSource(source: string): string | "SKIP" {
-  if (source.startsWith("@/styles/radix-nova/ui/")) {
-    return source.replace(
-      "@/styles/radix-nova/ui/",
-      "@repo/design-system/components/ui/"
-    );
+  for (const [prefix, replacement] of IMPORT_SOURCE_PREFIX_REWRITES) {
+    if (source.startsWith(prefix)) {
+      return source.replace(prefix, replacement);
+    }
   }
-  if (source.startsWith("@/examples/radix/ui/")) {
-    return source.replace(
-      "@/examples/radix/ui/",
-      "@repo/design-system/components/ui/"
-    );
+  const exact = IMPORT_SOURCE_EXACT_REWRITES.get(source);
+  if (exact) {
+    return exact;
   }
-  if (source.startsWith("@/registry/new-york-v4/ui/")) {
-    return source.replace(
-      "@/registry/new-york-v4/ui/",
-      "@repo/design-system/components/ui/"
-    );
-  }
-  if (source === "@/registry/icons/__lucide__") {
-    return "lucide-react";
-  }
-  if (source === "@/examples/radix/lib/utils" || source === "@/lib/utils") {
-    return "@repo/design-system/lib/utils";
-  }
-  if (
-    source === "@/hooks/use-media-query" ||
-    source === "@/hooks/use-copy-to-clipboard" ||
-    source === "@/examples/radix/hooks/use-mobile" ||
-    source === "@/registry/new-york-v4/hooks/use-mobile"
-  ) {
-    return "SKIP";
-  }
-  if (source === "@/components/language-selector") {
+  if (SKIPPED_IMPORT_SOURCES.has(source)) {
     return "SKIP";
   }
   return source;
+}
+
+function renderNamedSegment(named: NamedImport[]): {
+  allType: boolean;
+  text: string;
+} {
+  const allType = named.every((n) => n.isType);
+  const names = named.map((n) => {
+    const typePrefix = !allType && n.isType ? "type " : "";
+    return n.alias
+      ? `${typePrefix}${n.name} as ${n.alias}`
+      : `${typePrefix}${n.name}`;
+  });
+
+  const text =
+    names.length > 3
+      ? `{\n  ${names.join(",\n  ")},\n}`
+      : `{ ${names.join(", ")} }`;
+
+  return { allType, text };
 }
 
 function renderImport(pi: ParsedImport): string {
@@ -358,10 +372,8 @@ function renderImport(pi: ParsedImport): string {
   }
 
   if (pi.namespaceName && !pi.defaultName && pi.named.length === 0) {
-    if (pi.isTypeOnly) {
-      return `import type * as ${pi.namespaceName} from "${pi.source}";`;
-    }
-    return `import * as ${pi.namespaceName} from "${pi.source}";`;
+    const typeKeyword = pi.isTypeOnly ? "type " : "";
+    return `import ${typeKeyword}* as ${pi.namespaceName} from "${pi.source}";`;
   }
 
   const segments: string[] = [];
@@ -370,49 +382,22 @@ function renderImport(pi: ParsedImport): string {
   }
 
   if (pi.named.length > 0) {
-    const allType = pi.named.every((n) => n.isType);
-    const names = pi.named.map((n) => {
-      const typePrefix = !allType && n.isType ? "type " : "";
-      return n.alias
-        ? `${typePrefix}${n.name} as ${n.alias}`
-        : `${typePrefix}${n.name}`;
-    });
-
-    const namedStr =
-      names.length > 3
-        ? `{\n  ${names.join(",\n  ")},\n}`
-        : `{ ${names.join(", ")} }`;
-
+    const { allType, text } = renderNamedSegment(pi.named);
     if (allType && !pi.defaultName) {
-      return `import type ${namedStr} from "${pi.source}";`;
+      return `import type ${text} from "${pi.source}";`;
     }
-
-    segments.push(namedStr);
+    segments.push(text);
   }
 
   return `import ${segments.join(", ")} from "${pi.source}";`;
 }
 
-function mergeImportGroup(source: string, group: ParsedImport[]): ParsedImport {
-  const merged: ParsedImport = {
-    isSideEffect: false,
-    isTypeOnly: false,
-    named: [],
-    source,
-  };
-
+function mergeNamedImports(group: ParsedImport[]): NamedImport[] {
   const namedMap = new Map<string, NamedImport>();
 
   for (const imp of group) {
     if (imp.isSideEffect) {
-      merged.isSideEffect = true;
       continue;
-    }
-    if (imp.defaultName && !merged.defaultName) {
-      merged.defaultName = imp.defaultName;
-    }
-    if (imp.namespaceName && !merged.namespaceName) {
-      merged.namespaceName = imp.namespaceName;
     }
     for (const n of imp.named) {
       const existing = namedMap.get(n.name);
@@ -424,7 +409,26 @@ function mergeImportGroup(source: string, group: ParsedImport[]): ParsedImport {
     }
   }
 
-  merged.named = Array.from(namedMap.values());
+  return Array.from(namedMap.values());
+}
+
+function mergeImportGroup(source: string, group: ParsedImport[]): ParsedImport {
+  const merged: ParsedImport = {
+    isSideEffect: false,
+    isTypeOnly: false,
+    named: mergeNamedImports(group),
+    source,
+  };
+
+  for (const imp of group) {
+    if (imp.isSideEffect) {
+      merged.isSideEffect = true;
+      continue;
+    }
+    merged.defaultName ??= imp.defaultName;
+    merged.namespaceName ??= imp.namespaceName;
+  }
+
   return merged;
 }
 
@@ -549,6 +553,23 @@ type HookFlags = {
   needsCopyToClipboard: boolean;
 };
 
+const HOOK_SOURCE_FLAGS: [string, keyof HookFlags][] = [
+  ["@/hooks/use-media-query", "needsMediaQuery"],
+  ["@/examples/radix/hooks/use-mobile", "needsIsMobile"],
+  ["@/registry/new-york-v4/hooks/use-mobile", "needsIsMobile"],
+  ["@/hooks/use-copy-to-clipboard", "needsCopyToClipboard"],
+];
+
+function markHookSource(source: string, hooks: HookFlags): boolean {
+  for (const [hookSource, flag] of HOOK_SOURCE_FLAGS) {
+    if (source === hookSource) {
+      hooks[flag] = true;
+      return true;
+    }
+  }
+  return false;
+}
+
 function processExampleImports(
   importStatements: string[],
   allImports: ParsedImport[],
@@ -562,19 +583,7 @@ function processExampleImports(
     if (parsed.namespaceName === "React" && parsed.source === "react") {
       continue;
     }
-    if (parsed.source === "@/hooks/use-media-query") {
-      hooks.needsMediaQuery = true;
-      continue;
-    }
-    if (
-      parsed.source === "@/examples/radix/hooks/use-mobile" ||
-      parsed.source === "@/registry/new-york-v4/hooks/use-mobile"
-    ) {
-      hooks.needsIsMobile = true;
-      continue;
-    }
-    if (parsed.source === "@/hooks/use-copy-to-clipboard") {
-      hooks.needsCopyToClipboard = true;
+    if (markHookSource(parsed.source, hooks)) {
       continue;
     }
     const newSource = transformImportSource(parsed.source);
@@ -646,24 +655,24 @@ function buildReactImport(
   if (reactValues.size === 0 && reactTypes.size === 0 && !needsHooks) {
     return null;
   }
-  const named: NamedImport[] = [];
-  for (const v of reactValues) {
-    named.push({ isType: false, name: v });
+
+  const hookNames: string[] = [];
+  if (needsHooks && !reactValues.has("useState")) {
+    hookNames.push("useState");
   }
-  for (const t of reactTypes) {
-    named.push({ isType: true, name: t });
+  if (
+    (hooks.needsMediaQuery || hooks.needsIsMobile) &&
+    !reactValues.has("useEffect")
+  ) {
+    hookNames.push("useEffect");
   }
-  if (needsHooks) {
-    if (!reactValues.has("useState")) {
-      named.push({ isType: false, name: "useState" });
-    }
-    if (
-      (hooks.needsMediaQuery || hooks.needsIsMobile) &&
-      !reactValues.has("useEffect")
-    ) {
-      named.push({ isType: false, name: "useEffect" });
-    }
-  }
+
+  const named: NamedImport[] = [
+    ...[...reactValues].map((name) => ({ isType: false, name })),
+    ...[...reactTypes].map((name) => ({ isType: true, name })),
+    ...hookNames.map((name) => ({ isType: false, name })),
+  ];
+
   return { isSideEffect: false, isTypeOnly: false, named, source: "react" };
 }
 
@@ -1036,6 +1045,33 @@ function resolveFuncForLine(
   return null;
 }
 
+function dropFailingDemosForGroup(
+  group: string,
+  failingLines: Set<number>,
+  files: string[],
+  gen: GeneratedGroup,
+  dropped: Map<string, string[]>
+): boolean {
+  const storyLines = readFileSync(gen.storyPath, "utf8").split("\n");
+
+  for (const line of failingLines) {
+    const funcName = resolveFuncForLine(storyLines, line);
+    const demoFile = funcName ? gen.funcToFile.get(funcName) : undefined;
+    if (!demoFile) {
+      return false;
+    }
+    if (files.includes(demoFile)) {
+      files.splice(files.indexOf(demoFile), 1);
+      if (!dropped.has(group)) {
+        dropped.set(group, []);
+      }
+      dropped.get(group)?.push(demoFile);
+    }
+  }
+
+  return true;
+}
+
 function dropFailingDemos(
   failures: Map<string, Set<number>>,
   groups: Map<string, string[]>,
@@ -1050,22 +1086,10 @@ function dropFailingDemos(
     if (!(gen && files)) {
       return null;
     }
-    const storyLines = readFileSync(gen.storyPath, "utf8").split("\n");
-    for (const line of lines) {
-      const funcName = resolveFuncForLine(storyLines, line);
-      const demoFile = funcName ? gen.funcToFile.get(funcName) : undefined;
-      if (!demoFile) {
-        return null;
-      }
-      if (files.includes(demoFile)) {
-        files.splice(files.indexOf(demoFile), 1);
-        if (!dropped.has(group)) {
-          dropped.set(group, []);
-        }
-        dropped.get(group)?.push(demoFile);
-      }
-      regenerate.add(group);
+    if (!dropFailingDemosForGroup(group, lines, files, gen, dropped)) {
+      return null;
     }
+    regenerate.add(group);
   }
 
   return regenerate;
@@ -1097,15 +1121,7 @@ function reportRun(
   );
 }
 
-async function main(): Promise<void> {
-  const sourceDir = await resolveSourceDir();
-
-  const componentNames = readdirSync(UI_DIR)
-    .filter((file) => file.endsWith(".tsx"))
-    .map((file) => file.replace(TSX_EXT_RE, ""))
-    .sort((a, b) => b.length - a.length);
-
-  const groups = collectGroups(sourceDir, componentNames);
+function removeMarkerSkippedGroups(groups: Map<string, string[]>): Set<string> {
   const markerSkipped = new Set<string>();
   for (const group of [...groups.keys()]) {
     if (hasSkipMarker(group)) {
@@ -1114,17 +1130,36 @@ async function main(): Promise<void> {
       groups.delete(group);
     }
   }
+  return markerSkipped;
+}
 
+function regenerateGroups(
+  regenerate: Set<string>,
+  sourceDir: string,
+  groups: Map<string, string[]>,
+  generated: Map<string, GeneratedGroup>
+): void {
   console.log(
-    `\nRegenerating stories for ${groups.size} of ${componentNames.length} local components...`
+    `Dropping demos with API drift and regenerating: ${[...regenerate].sort().join(", ")}`
   );
-
-  const generated = new Map<string, GeneratedGroup>();
-  for (const [group, files] of [...groups.entries()].sort()) {
+  for (const group of regenerate) {
+    const files = groups.get(group) ?? [];
+    if (files.length === 0) {
+      rmSync(join(STORIES_DIR, `${group}.stories.tsx`), { force: true });
+      generated.delete(group);
+      console.log(`  ${group}: all demos dropped, story file removed`);
+      continue;
+    }
     generated.set(group, generateStoryFile(sourceDir, group, files));
   }
+}
 
-  const dropped = new Map<string, string[]>();
+function healUntilTypecheckPasses(
+  sourceDir: string,
+  groups: Map<string, string[]>,
+  generated: Map<string, GeneratedGroup>,
+  dropped: Map<string, string[]>
+): string {
   let lastOutput = "";
 
   for (let pass = 0; pass < MAX_HEAL_PASSES; pass += 1) {
@@ -1132,8 +1167,7 @@ async function main(): Promise<void> {
     const check = typecheckStorybook();
     lastOutput = check.output;
     if (check.green) {
-      lastOutput = "";
-      break;
+      return "";
     }
 
     const regenerate = dropFailingDemos(
@@ -1146,26 +1180,45 @@ async function main(): Promise<void> {
       break;
     }
 
-    console.log(
-      `Dropping demos with API drift and regenerating: ${[...regenerate].sort().join(", ")}`
-    );
-    for (const group of regenerate) {
-      const files = groups.get(group) ?? [];
-      if (files.length === 0) {
-        rmSync(join(STORIES_DIR, `${group}.stories.tsx`), { force: true });
-        generated.delete(group);
-        console.log(`  ${group}: all demos dropped, story file removed`);
-        continue;
-      }
-      generated.set(group, generateStoryFile(sourceDir, group, files));
-    }
+    regenerateGroups(regenerate, sourceDir, groups, generated);
   }
 
-  if (lastOutput !== "") {
+  return lastOutput;
+}
+
+async function main(): Promise<void> {
+  const sourceDir = await resolveSourceDir();
+
+  const componentNames = readdirSync(UI_DIR)
+    .filter((file) => file.endsWith(".tsx"))
+    .map((file) => file.replace(TSX_EXT_RE, ""))
+    .sort((a, b) => b.length - a.length);
+
+  const groups = collectGroups(sourceDir, componentNames);
+  const markerSkipped = removeMarkerSkippedGroups(groups);
+
+  console.log(
+    `\nRegenerating stories for ${groups.size} of ${componentNames.length} local components...`
+  );
+
+  const generated = new Map<string, GeneratedGroup>();
+  for (const [group, files] of [...groups.entries()].sort()) {
+    generated.set(group, generateStoryFile(sourceDir, group, files));
+  }
+
+  const dropped = new Map<string, string[]>();
+  const residualErrors = healUntilTypecheckPasses(
+    sourceDir,
+    groups,
+    generated,
+    dropped
+  );
+
+  if (residualErrors !== "") {
     console.error(
       "\nTypecheck still failing after regeneration; manual fix needed:"
     );
-    console.error(lastOutput);
+    console.error(residualErrors);
     process.exit(1);
   }
 

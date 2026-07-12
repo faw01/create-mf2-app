@@ -18,19 +18,16 @@
   },
   "dependencies": {
     "@electron-toolkit/utils": "^4.0.0",
-    "@repo/convex": "workspace:*",
     "@repo/design-system": "workspace:*",
     "convex": "^1.42.1",
     "electron-updater": "^6.8.9",
     "lucide-react": "^1.23.0",
     "react": "19.2.7",
-    "react-dom": "19.2.7",
-    "react-router": "^8.1.0"
+    "react-dom": "19.2.7"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "^4.3.2",
-    "@tailwindcss/typography": "^0.5.20",
     "@types/node": "^25.7.0",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",

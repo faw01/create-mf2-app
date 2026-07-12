@@ -30,8 +30,7 @@
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "require-in-the-middle": "8.0.1",
-    "sharp": "^0.35.3",
-    "zod": "^4.4.3"
+    "sharp": "^0.35.3"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

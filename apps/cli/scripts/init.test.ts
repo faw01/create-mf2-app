@@ -1335,7 +1335,7 @@ describe("init step ordering", () => {
 
   test("renames and env files happen before the commit", () => {
     const commit = orderOf('await run("git add .")');
-    expect(orderOf("dotfileRenames.map")).toBeLessThan(commit);
+    expect(orderOf("await scaffoldTemplate(")).toBeLessThan(commit);
     expect(orderOf("await createEnvFiles(")).toBeLessThan(commit);
   });
 

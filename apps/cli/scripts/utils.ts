@@ -4,6 +4,7 @@ import {
   mkdir,
   readdir,
   readFile,
+  rename,
   rm,
   stat,
   writeFile,
@@ -118,6 +119,34 @@ export const materializeSkills = async (projectDir: string): Promise<void> => {
 
   await rm(skillsDestDir, { force: true, recursive: true });
   await copyDirectory(skillsSourceDir, skillsDestDir);
+};
+
+export const scaffoldTemplate = async (options: {
+  projectDir: string;
+  templatePath: string;
+  tolerateDotfileRenameErrors?: boolean;
+}): Promise<void> => {
+  const { projectDir, templatePath, tolerateDotfileRenameErrors } = options;
+
+  await mkdir(projectDir, { recursive: true });
+  await copyDirectory(templatePath, projectDir);
+  await materializeSkills(projectDir);
+
+  await rename(join(projectDir, "gitignore"), join(projectDir, ".gitignore"));
+
+  await Promise.all(
+    dotfileRenames.map(({ dir, from, to }) => {
+      const renamed = rename(
+        join(projectDir, dir, from),
+        join(projectDir, dir, to)
+      );
+      return tolerateDotfileRenameErrors
+        ? renamed.catch(() => {
+            // noop
+          })
+        : renamed;
+    })
+  );
 };
 
 export const updatePackageJson = async (
@@ -241,10 +270,7 @@ const bunScriptReplacements: Record<string, [string, string][]> = {
   ],
 };
 
-export const rewriteBunTokens = (
-  content: string,
-  packageManager: string
-): string => {
+const rewriteBunTokens = (content: string, packageManager: string): string => {
   const replacements = bunScriptReplacements[packageManager];
   if (!replacements) {
     return content;
