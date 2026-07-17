@@ -1,0 +1,14 @@
+size	trial	elapsed_ms	rc	bytes	sha256	size_ok	sha_ok	path_line
+payload-1KiB.bin	1	2240	0	1024	0985fd608daec3308929c9b8f9d6cf7514b407aea9c1bf5aa2e0d56488c93193	pass	pass	dumbridge: connected via relay
+payload-1KiB.bin	2	2132	0	1024	0985fd608daec3308929c9b8f9d6cf7514b407aea9c1bf5aa2e0d56488c93193	pass	pass	dumbridge: connected via relay
+payload-1KiB.bin	3	2251	0	1024	0985fd608daec3308929c9b8f9d6cf7514b407aea9c1bf5aa2e0d56488c93193	pass	pass	dumbridge: connected via relay
+payload-1MiB.bin	1	4593	0	1048576	00a67854bbe325e0393e0ee7b28ecd64947d6725bf1b1f62d188a9776e359816	pass	pass	dumbridge: connected via relay
+payload-1MiB.bin	2	4276	0	1048576	00a67854bbe325e0393e0ee7b28ecd64947d6725bf1b1f62d188a9776e359816	pass	pass	dumbridge: connected via relay
+payload-1MiB.bin	3	4269	0	1048576	00a67854bbe325e0393e0ee7b28ecd64947d6725bf1b1f62d188a9776e359816	pass	pass	dumbridge: connected via relay
+payload-10MiB.bin	1	6863	0	10485760	54084c9764684ef4464237d418a9958a4996d5eb3b1f5f5286dfb4f188788e58	pass	pass	dumbridge: connected via relay
+payload-10MiB.bin	2	6801	0	10485760	54084c9764684ef4464237d418a9958a4996d5eb3b1f5f5286dfb4f188788e58	pass	pass	dumbridge: connected via relay
+payload-10MiB.bin	3	7035	0	10485760	54084c9764684ef4464237d418a9958a4996d5eb3b1f5f5286dfb4f188788e58	pass	pass	dumbridge: connected via relay
+payload-100MiB.bin	1	34723	0	104857600	6b453b5d29345eae138c100e4b68d1fae5f1458b2b3d01053a66441e7708c574	pass	pass	dumbridge: connected via relay
+payload-100MiB.bin	2	32560	0	104857600	6b453b5d29345eae138c100e4b68d1fae5f1458b2b3d01053a66441e7708c574	pass	pass	dumbridge: connected via relay
+payload-100MiB.bin	3	32790	0	104857600	6b453b5d29345eae138c100e4b68d1fae5f1458b2b3d01053a66441e7708c574	pass	pass	dumbridge: connected via relay
+payload-1GiB.bin	1	54074	1	0	MISSING	fail	fail	dumbridge: connected via relay
